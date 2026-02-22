@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CONALEP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+:root {
+  --verde: #007E67;
+  --verde-bg: rgba(0, 126, 103, 0.08);
+  --gray: #98989A;
+  --border: #CAC4D0;
+  --dark: #161A1D;
+}
+
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+body {
+  max-width: 100vw;
+  font-family: 'Montserrat', sans-serif;
+  touch-action: pan-y;
+}
+
+.page {
+  display: none;
+  position: fixed;
+  inset: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+.page.active { display: flex; }
+
+.field-input {
+  width: 100%;
+  height: 56px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 48px 0 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0.5px;
+  color: var(--dark);
+  appearance: none;
+  background: transparent;
+}
+.field-input::placeholder { color: var(--gray); }
+.field-input:focus { border-color: var(--verde); border-width: 2px; outline: none; }
+
+.field-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: var(--gray);
+  pointer-events: none;
+}
+
+.field-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: var(--gray);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.btn {
+  height: 40px;
+  border-radius: 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  border: none;
+}
+.btn:active { opacity: 0.75; }
+.btn-filled   { background: var(--verde); color: #fff; }
+.btn-outlined { background: transparent; border: 1px solid var(--border); color: var(--verde); }
+.btn-text     { background: transparent; color: var(--verde); padding: 0 12px; }
+
+.screen { display: none; }
+.screen.active {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 12px;
+  padding-bottom: 16px;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.nav-indicator {
+  width: 64px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background 200ms ease;
+}
+.nav-item.active .nav-indicator { background: var(--verde-bg); }
+.nav-icon  { font-size: 24px; color: var(--gray); }
+.nav-label { font-size: 12px; font-weight: 500; line-height: 16px; letter-spacing: 0.5px; color: var(--gray); }
+.nav-item.active .nav-icon  { color: var(--verde); }
+.nav-item.active .nav-label { color: var(--verde); }
+
+.field-input.error        { border-color: #B3261E; border-width: 2px; }
+.field-input.error:focus  { border-color: #B3261E; }
+
+.btn.loading { opacity: 0.6; pointer-events: none; }
+
+.notif-panel {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+.notif-panel.visible { display: flex; }
+
+.supporting-text {
+  display: none;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  padding: 4px 16px 0;
+}
+.supporting-text.error    { color: #B3261E; }
+.supporting-text.info     { color: var(--verde); }
+.supporting-text.centered { text-align: center; padding: 4px 0 0; }
+.supporting-text.visible  { display: block; }
+
+
+  </style>
+</head>
+<body>
+
+  <div id="page-login" class="page active" style="padding: 0 16px;">
+    <div style="flex:1; display:flex; align-items:center; justify-content:center; overflow-y:auto; overflow-x:hidden;">
+      <div style="width:100%; max-width:360px; display:flex; flex-direction:column;">
+        <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_4.png" style="height:80px; width:auto; align-self:center; margin-bottom:48px;" />
+        <div style="margin-bottom:16px;">
+          <div style="position:relative;">
+            <input id="correo" type="email" placeholder="Correo institucional" autocomplete="email" class="field-input" />
+            <i class="ph ph-envelope field-icon"></i>
+          </div>
+          <p id="login-correo-error" class="supporting-text error"></p>
+        </div>
+        <div style="margin-bottom:24px;">
+          <div style="position:relative;">
+            <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password" class="field-input" />
+            <button type="button" onclick="togglePass(this)" class="field-toggle"><i class="ph ph-eye"></i></button>
+          </div>
+          <p id="login-pass-error" class="supporting-text error"></p>
+        </div>
+        <button type="button" onclick="entrar()" class="btn btn-filled">Iniciar sesión</button>
+        <p id="login-error" class="supporting-text centered"></p>
+        <button type="button" onclick="olvidaste()" class="btn btn-text" style="align-self:center; margin-top:8px;">¿Olvidaste tu contraseña?</button>
+      </div>
+    </div>
+    <div style="width:100%; max-width:360px; align-self:center; padding-bottom:24px; flex-shrink:0;">
+      <button type="button" onclick="irARegistro()" class="btn btn-outlined" style="width:100%;">Registrarse</button>
+    </div>
+  </div>
+
+  <div id="page-registro" class="page" style="padding: 0 16px;">
+    <div style="flex:1; display:flex; align-items:center; justify-content:center; overflow-y:auto; overflow-x:hidden;">
+      <div style="width:100%; max-width:360px; display:flex; flex-direction:column;">
+        <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_4.png" alt="CONALEP" style="height:80px; width:auto; align-self:center; margin-bottom:48px;" />
+        <div style="margin-bottom:16px;">
+          <div style="position:relative;">
+            <input id="reg-correo" type="email" placeholder="Correo institucional" autocomplete="email" class="field-input" oninput="validarCorreo(this)" />
+            <i class="ph ph-envelope field-icon"></i>
+          </div>
+          <p id="reg-correo-error" class="supporting-text error">El correo debe ser institucional (@chih.conalep.edu.mx).</p>
+        </div>
+        <div style="position:relative; margin-bottom:24px;">
+          <input id="reg-pass" type="password" placeholder="Nueva contraseña" autocomplete="new-password" class="field-input" />
+          <button type="button" onclick="togglePass(this)" class="field-toggle"><i class="ph ph-eye"></i></button>
+        </div>
+        <button type="button" onclick="registrar()" class="btn btn-filled">Crear cuenta</button>
+        <p id="reg-error" class="supporting-text error centered"></p>
+      </div>
+    </div>
+    <div style="width:100%; max-width:360px; align-self:center; padding-bottom:24px; flex-shrink:0;">
+      <button type="button" onclick="irALogin()" class="btn btn-outlined" style="width:100%;">Iniciar sesión</button>
+    </div>
+  </div>
+
+  <div id="page-app" class="page">
+    <header style="height:64px; display:flex; align-items:center; padding:0 4px; flex-shrink:0; width:100%; overflow:hidden;">
+      <button style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer; flex-shrink:0; padding:0;">
+        <i class="ph ph-list" style="font-size:24px; color:var(--dark);"></i>
+      </button>
+      <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/207.%20Ciudad%20Ju%C3%A1rez%20II/207.%20Ciudad%20Jua%CC%81rez%20II_h1.png" alt="CONALEP" style="height:32px; width:auto;" />
+    </header>
+
+
+<div id="screen-inicio"     class="screen active"></div>
+<div id="screen-aseo"       class="screen"></div>
+<div id="screen-calendario" class="screen"></div>
+
+<div id="screen-actividad" class="screen">
+  <div id="notif-off" class="notif-panel visible">
+    <div style="width:80px; height:80px; border-radius:40px; background:var(--verde-bg); display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+      <i class="ph ph-bell" style="font-size:40px; color:var(--verde);"></i>
+    </div>
+    <p style="font-size:22px; font-weight:400; line-height:28px; color:var(--dark); margin-bottom:8px;">Mantente al tanto</p>
+    <p style="font-size:14px; font-weight:400; line-height:20px; letter-spacing:0.25px; color:var(--gray); margin-bottom:24px;">Activa las notificaciones para recibir avisos sobre clases, tareas y eventos del plantel.</p>
+    <button onclick="activarNotificaciones()" class="btn btn-filled">Activar notificaciones</button>
+  </div>
+  <div id="notif-on" class="notif-panel">
+    <div style="width:80px; height:80px; border-radius:40px; background:var(--verde-bg); display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+      <i class="ph-fill ph-bell-ringing" style="font-size:40px; color:var(--verde);"></i>
+    </div>
+    <p style="font-size:22px; font-weight:400; line-height:28px; color:var(--dark); margin-bottom:8px;">Notificaciones activas</p>
+    <p style="font-size:14px; font-weight:400; line-height:20px; letter-spacing:0.25px; color:var(--gray);">Recibirás avisos sobre clases, tareas y eventos de tu plantel.</p>
+  </div>
+</div>
+
+<nav style="display:flex; align-items:stretch; justify-content:space-around; width:100%; background:#fff; flex-shrink:0; min-height:80px; padding-bottom:env(safe-area-inset-bottom);">
+  <button class="nav-item active" data-tab="inicio" onclick="setActive(this)">
+    <div class="nav-indicator"><i class="nav-icon ph-fill ph-house"></i></div>
+    <span class="nav-label">Inicio</span>
+  </button>
+  <button class="nav-item" data-tab="aseo" onclick="setActive(this)">
+    <div class="nav-indicator"><i class="nav-icon ph ph-broom"></i></div>
+    <span class="nav-label">Aseo</span>
+  </button>
+  <button class="nav-item" data-tab="calendario" onclick="setActive(this)">
+    <div class="nav-indicator"><i class="nav-icon ph ph-calendar"></i></div>
+    <span class="nav-label">Calendario</span>
+  </button>
+  <button class="nav-item" data-tab="actividad" onclick="setActive(this)">
+    <div class="nav-indicator"><i class="nav-icon ph ph-bell"></i></div>
+    <span class="nav-label">Actividad</span>
+  </button>
+</nav>
+
+
+  </div>
+
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyCZpIknDfy3KsV-XtPCkU9s0jDjd9o7nD8",
+      authDomain: "conalep-chihuahua.firebaseapp.com",
+      projectId: "conalep-chihuahua",
+      storageBucket: "conalep-chihuahua.firebasestorage.app",
+      messagingSenderId: "848130047778",
+      appId: "1:848130047778:web:c7cef212c226d08806ef7b",
+      measurementId: "G-568LMD97GW"
+    });
+
+    const auth = firebase.auth();
+
+    const ICONS = {
+      inactive: { inicio: 'ph-fill ph-house', aseo: 'ph ph-broom', calendario: 'ph ph-calendar', actividad: 'ph ph-bell' },
+      active:   { inicio: 'ph-fill ph-house', aseo: 'ph-fill ph-broom', calendario: 'ph-fill ph-calendar', actividad: 'ph-fill ph-bell' }
+    };
+
+    const ERRORES = {
+      'auth/invalid-email':         'El correo no tiene un formato válido.',
+      'auth/user-not-found':        'No hay una cuenta registrada con este correo.',
+      'auth/wrong-password':        'La contraseña es incorrecta.',
+      'auth/invalid-credential':    'El correo o la contraseña son incorrectos.',
+      'auth/too-many-requests':     'Demasiados intentos fallidos. Espera unos minutos.',
+      'auth/email-already-in-use':  'Ya hay una cuenta registrada con este correo.',
+      'auth/weak-password':         'La contraseña debe tener al menos 6 caracteres.',
+      'auth/network-request-failed':'No hay conexión a internet.'
+    };
+
+    function mensajeError(code) {
+      return ERRORES[code] || 'Ocurrió un error inesperado. Intenta de nuevo.';
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) showPage('page-app');
+    });
+
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function resetLogin() {
+      document.getElementById('correo').value = '';
+      document.getElementById('correo').classList.remove('error');
+      document.getElementById('pass').value = '';
+      document.getElementById('pass').classList.remove('error');
+      document.getElementById('pass').type = 'password';
+      document.querySelector('#page-login .field-toggle i').className = 'ph ph-eye';
+      ocultarMsg(document.getElementById('login-correo-error'));
+      ocultarMsg(document.getElementById('login-pass-error'));
+      ocultarMsg(document.getElementById('login-error'));
+    }
+
+    function resetRegistro() {
+      const inputCorreo = document.getElementById('reg-correo');
+      inputCorreo.value = '';
+      inputCorreo.classList.remove('error');
+      document.getElementById('reg-pass').value = '';
+      document.getElementById('reg-pass').type = 'password';
+      document.querySelector('#page-registro .field-toggle i').className = 'ph ph-eye';
+      document.getElementById('reg-correo-error').classList.remove('visible');
+      ocultarMsg(document.getElementById('reg-error'));
+    }
+
+    function irARegistro() { resetRegistro(); showPage('page-registro'); }
+    function irALogin()    { resetLogin();    showPage('page-login'); }
+
+    function setBtn(btn, loading) {
+      btn.disabled = loading;
+      btn.classList.toggle('loading', loading);
+    }
+
+    function mostrarMsg(el, texto, tipo, centrado = false) {
+      el.textContent = texto;
+      el.className = 'supporting-text' + (centrado ? ' centered' : '') + ' ' + tipo + ' visible';
+    }
+
+    function ocultarMsg(el) {
+      el.classList.remove('visible');
+    }
+
+    const ERRORES_CAMPO = {
+      correo: ['auth/invalid-email', 'auth/user-not-found'],
+      pass:   ['auth/wrong-password', 'auth/invalid-credential']
+    };
+
+    function mostrarErrorLogin(code) {
+      const correoEl = document.getElementById('login-correo-error');
+      const passEl   = document.getElementById('login-pass-error');
+      const formEl   = document.getElementById('login-error');
+      ocultarMsg(correoEl); document.getElementById('correo').classList.remove('error');
+      ocultarMsg(passEl);   document.getElementById('pass').classList.remove('error');
+      ocultarMsg(formEl);
+      if (ERRORES_CAMPO.correo.includes(code)) {
+        mostrarMsg(correoEl, mensajeError(code), 'error');
+        document.getElementById('correo').classList.add('error');
+      } else if (ERRORES_CAMPO.pass.includes(code)) {
+        mostrarMsg(passEl, mensajeError(code), 'error');
+        document.getElementById('pass').classList.add('error');
+      } else {
+        mostrarMsg(formEl, mensajeError(code), 'error', true);
+      }
+    }
+
+    function entrar() {
+      const correo = document.getElementById('correo').value.trim();
+      const pass   = document.getElementById('pass').value;
+      ocultarMsg(document.getElementById('login-correo-error'));
+      ocultarMsg(document.getElementById('login-pass-error'));
+      ocultarMsg(document.getElementById('login-error'));
+      if (!correo) { document.getElementById('correo').focus(); return; }
+      if (!pass)   { document.getElementById('pass').focus(); return; }
+      const btn = document.querySelector('#page-login .btn-filled');
+      setBtn(btn, true);
+      auth.signInWithEmailAndPassword(correo, pass)
+        .then(() => showPage('page-app'))
+        .catch(e => {
+          mostrarErrorLogin(e.code);
+          setBtn(btn, false);
+        });
+    }
+
+    function registrar() {
+      const correo = document.getElementById('reg-correo').value.trim();
+      const pass   = document.getElementById('reg-pass').value;
+      const errEl  = document.getElementById('reg-error');
+      ocultarMsg(errEl);
+      if (!correo.endsWith('@chih.conalep.edu.mx')) {
+        const inputCorreo = document.getElementById('reg-correo');
+        inputCorreo.classList.add('error');
+        document.getElementById('reg-correo-error').classList.add('visible');
+        inputCorreo.focus();
+        return;
+      }
+      if (!pass) { document.getElementById('reg-pass').focus(); return; }
+      const btn = document.querySelector('#page-registro .btn-filled');
+      setBtn(btn, true);
+      auth.createUserWithEmailAndPassword(correo, pass)
+        .then(() => showPage('page-app'))
+        .catch(e => {
+          mostrarMsg(errEl, mensajeError(e.code), 'error', true);
+          setBtn(btn, false);
+        });
+    }
+
+    function olvidaste() {
+      const correo = document.getElementById('correo').value.trim();
+      const errEl  = document.getElementById('login-error');
+      if (!correo) {
+        mostrarMsg(errEl, 'Escribe tu correo para recibir el enlace de restablecimiento.', 'info', true);
+        document.getElementById('correo').focus();
+        return;
+      }
+      auth.sendPasswordResetEmail(correo)
+        .then(() => mostrarMsg(errEl, 'Te enviamos un enlace para restablecer tu contraseña.', 'info', true))
+        .catch(e => mostrarMsg(errEl, mensajeError(e.code), 'error', true));
+    }
+
+    function validarCorreo(input) {
+      const valido = input.value === '' || input.value.endsWith('@chih.conalep.edu.mx');
+      const errEl  = document.getElementById('reg-correo-error');
+      errEl.classList.toggle('visible', !valido);
+      input.classList.toggle('error', !valido);
+    }
+
+    function togglePass(btn) {
+      const input = btn.parentElement.querySelector('input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.querySelector('i').className = input.type === 'password' ? 'ph ph-eye' : 'ph ph-eye-slash';
+    }
+
+    function setActive(btn) {
+      document.querySelectorAll('.nav-item').forEach(b => {
+        b.classList.remove('active');
+        b.querySelector('i').className = 'nav-icon ' + ICONS.inactive[b.dataset.tab];
+      });
+      btn.classList.add('active');
+      btn.querySelector('i').className = 'nav-icon ' + ICONS.active[btn.dataset.tab];
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + btn.dataset.tab).classList.add('active');
+    }
+
+    function activarNotificaciones() {
+      document.getElementById('notif-off').classList.remove('visible');
+      document.getElementById('notif-on').classList.add('visible');
+    }
+  </script>
+
+</body>
+</html>
