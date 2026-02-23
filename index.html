@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -14,7 +13,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 
 :root {
   --green:       #007E67;
@@ -197,14 +195,14 @@ html, body {
 .student-row:hover  { background: var(--surface); }
 .s-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--green-tint); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .s-avatar i { font-size: 18px; color: var(--green); }
-.s-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--ink); line-height: 1.3; }
+.s-name-wrap { flex: 1; display: flex; align-items: center; gap: 5px; min-width: 0; }
+.s-name { font-size: 14px; font-weight: 500; color: var(--ink); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-verified { font-size: 15px; color: var(--green); flex-shrink: 0; }
 .s-num  { font-size: 11px; font-weight: 700; letter-spacing: .2px; color: var(--green); background: var(--green-tint); padding: 3px 8px; border-radius: 99px; flex-shrink: 0; }
 .s-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.s-chip         { font-size: 10px; font-weight: 700; letter-spacing: .4px; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; }
-.dual-chip      { color: var(--gold); background: rgba(165,127,44,.10); }
-.suplente-chip  { color: var(--maroon); background: var(--maroon-tint); }
-.s-avatar.dual { background: rgba(165,127,44,.12); }
-.s-avatar.dual i { color: var(--gold); }
+.s-chip        { font-size: 10px; font-weight: 700; letter-spacing: .4px; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; }
+.dual-chip     { color: var(--gold); background: rgba(165,127,44,.10); }
+.suplente-chip { color: var(--maroon); background: var(--maroon-tint); }
 
 .btn-proximos {
   display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -260,8 +258,10 @@ html, body {
 .sa { width: 40px; height: 40px; border-radius: 50%; background: var(--green-tint); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .sa.me { background: rgba(0,126,103,.16); }
 .sa i { font-size: 18px; color: var(--green); }
-.sa-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.sa-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+.sa-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sa-name-wrap { display: flex; align-items: center; gap: 5px; }
+.sa-name { font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sa-verified { font-size: 15px; color: var(--green); flex-shrink: 0; }
 .sa-you  { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: .2px; }
 .sa-num  { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-tint); padding: 3px 8px; border-radius: 99px; flex-shrink: 0; }
 
@@ -341,7 +341,6 @@ html, body {
 .su   { animation: fadeUp .24s var(--ease) both; }
 .su-1 { animation-delay: .06s; }
 .su-2 { animation-delay: .12s; }
-
 
   </style>
 </head>
@@ -476,13 +475,28 @@ html, body {
     const DOMAIN          = '@chih.conalep.edu.mx';
     const ROTACION_INICIO = new Date(2026, 1, 23);
 
+    let _adminCorreos = new Set();
+
     const esAdminEnDB = async (uid) => {
       if (!uid) return false;
       try {
         const snap = await db.ref('admins/' + uid).once('value');
-        return snap.exists() && snap.val() === true;
+        return snap.exists();
       } catch {
         return false;
+      }
+    };
+
+    const cargarAdminCorreos = async () => {
+      try {
+        const snap = await db.ref('admins').once('value');
+        _adminCorreos = new Set();
+        snap.forEach(child => {
+          const val = child.val();
+          if (typeof val === 'string') _adminCorreos.add(val.toLowerCase());
+        });
+      } catch {
+        _adminCorreos = new Set();
       }
     };
 
@@ -706,10 +720,10 @@ html, body {
 
     function simularDias(alumnos, fechas) {
       if (!fechas.length) return new Map();
-      const sorted  = [...fechas].sort((a,b) => a - b);
-      const maxDate = sorted[sorted.length - 1];
+      const sorted   = [...fechas].sort((a,b) => a - b);
+      const maxDate  = sorted[sorted.length - 1];
       const fechaSet = new Set(fechas.map(f => fechaKey(f)));
-      const result  = new Map();
+      const result   = new Map();
       let queue = [...alumnos];
       const d = new Date(ROTACION_INICIO); d.setHours(0,0,0,0);
       const h = new Date(maxDate); h.setHours(0,0,0,0);
@@ -792,12 +806,17 @@ html, body {
       if (esAdmin) head.querySelector('.card-adj').addEventListener('click', function() { abrirAjuste(this); });
       card.appendChild(head);
       equipo.forEach(a => {
-        const dual = esMMFD(a);
+        const dual       = esMMFD(a);
+        const correoAlum = (a['Correo Institucional'] || '').toLowerCase();
+        const esVerif    = _adminCorreos.has(correoAlum);
         const row = document.createElement('div');
         row.className = 'student-row';
         row.innerHTML = `
-          <div class="s-avatar${dual?' dual':''}"><i class="ph-fill ph-broom"></i></div>
-          <span class="s-name">${nombreMostrar(a)}</span>
+          <div class="s-avatar"><i class="ph-fill ph-broom"></i></div>
+          <div class="s-name-wrap">
+            <span class="s-name">${nombreMostrar(a)}</span>
+            ${esVerif ? '<i class="ph-fill ph-seal-check s-verified"></i>' : ''}
+          </div>
           <div class="s-right">
             ${dual ? '<span class="s-chip dual-chip">Dual</span>' : ''}
             <span class="s-num">No. ${a['No']||''}</span>
@@ -856,7 +875,7 @@ html, body {
       const uid           = auth.currentUser?.uid ?? null;
 
       const esAdmin = await esAdminEnDB(uid);
-
+      await cargarAdminCorreos();
       await cargarCancelados();
 
       document.getElementById('cancel-badge').closest('.hdr-btn').style.display = esAdmin ? '' : 'none';
@@ -922,13 +941,18 @@ html, body {
       const body = document.getElementById('sheet-body');
       body.innerHTML = '';
       _sheetEquipo.forEach((a,i) => {
-        const esYo = i === _sheetYoIdx;
-        const row  = document.createElement('div');
+        const esYo       = i === _sheetYoIdx;
+        const correoAlum = (a['Correo Institucional'] || '').toLowerCase();
+        const esVerif    = _adminCorreos.has(correoAlum);
+        const row = document.createElement('div');
         row.className = 'sheet-row';
         row.innerHTML = `
           <div class="sa${esYo?' me':''}"><i class="ph${esYo?'-fill':''} ph-user"></i></div>
           <div class="sa-info">
-            <span class="sa-name">${nombreMostrar(a)}</span>
+            <div class="sa-name-wrap">
+              <span class="sa-name">${nombreMostrar(a)}</span>
+              ${esVerif ? '<i class="ph-fill ph-seal-check sa-verified"></i>' : ''}
+            </div>
             ${esYo ? '<span class="sa-you">Tú</span>' : ''}
           </div>
           <span class="sa-num">No. ${a['No']||''}</span>`;
