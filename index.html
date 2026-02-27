@@ -16,6 +16,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -342,6 +343,36 @@
     .toast-undo:hover  { background: rgba(255,255,255,.10); }
     .toast-undo:active { background: rgba(255,255,255,.16); }
 
+    .menu-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px; border-bottom: 1px solid var(--line);
+    }
+    .menu-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--green-tint); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .menu-avatar i { font-size: 20px; color: var(--green); }
+    .menu-user-info { flex: 1; min-width: 0; overflow: hidden; }
+    .menu-user-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--ink-3); text-transform: uppercase; margin-bottom: 3px; }
+    .menu-user-email { font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .menu-signout {
+      display: flex; align-items: center; gap: 14px;
+      padding: 0 20px; height: 60px; width: 100%;
+      background: none; border: none; cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      transition: background var(--t) var(--ease);
+    }
+    .menu-signout:hover  { background: var(--surface); }
+    .menu-signout:active { background: var(--line); }
+    .menu-signout-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--maroon-tint); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .menu-signout-icon i { font-size: 18px; color: var(--maroon); }
+    .menu-signout-label { font-size: 14px; font-weight: 500; color: var(--maroon); }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -408,7 +439,7 @@
 
   <div id="page-app" class="page">
     <header class="app-header">
-      <button class="hdr-btn"><i class="ph ph-list"></i></button>
+      <button class="hdr-btn" onclick="abrirMenu()"><i class="ph ph-list"></i></button>
       <img class="hdr-logo"
         src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/207.%20Ciudad%20Ju%C3%A1rez%20II/207.%20Ciudad%20Jua%CC%81rez%20II_h1.png"
         alt="CONALEP Plantel 207 Ciudad Juárez II" />
@@ -457,6 +488,25 @@
     <div id="historial-body" class="sheet-scroll"></div>
   </div>
 
+  <div id="menu-sheet" class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <p class="sheet-title">Mi cuenta</p>
+      <button class="sheet-close" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="menu-user">
+      <div class="menu-avatar"><i class="ph-fill ph-user"></i></div>
+      <div class="menu-user-info">
+        <p class="menu-user-label">Sesión activa</p>
+        <span id="menu-email" class="menu-user-email"></span>
+      </div>
+    </div>
+    <button class="menu-signout" onclick="cerrarSesion()">
+      <div class="menu-signout-icon"><i class="ph ph-sign-out"></i></div>
+      <span class="menu-signout-label">Cerrar sesión</span>
+    </button>
+  </div>
+
   <div id="toast" class="toast">
     <i id="toast-icon" class="ph toast-icon"></i>
     <span id="toast-msg" class="toast-msg"></span>
@@ -477,14 +527,12 @@
     const auth = firebase.auth();
     const db   = firebase.database();
 
+    let messaging = null;
+    try { messaging = firebase.messaging(); } catch {}
+
     const DOMAIN          = '@chih.conalep.edu.mx';
     const ROTACION_INICIO = new Date(2026, 1, 23);
-
-    const esAdminEnDB = async (uid) => {
-      if (!uid) return false;
-      try { const snap = await db.ref('admins/' + uid).once('value'); return snap.exists(); }
-      catch { return false; }
-    };
+    const VAPID_KEY       = 'BM7AVmABZal3jhwQvGHuNC2ZEFv1fafGv7ip5Lm_ruqM7WiAYN1vLqyFiHABft5NEmmPC86t3UowlvzP_j3Oc48';
 
     const ERRORES = {
       'auth/invalid-email':          'El correo no tiene un formato válido.',
@@ -502,19 +550,29 @@
       pass:   ['auth/wrong-password','auth/invalid-credential']
     };
 
-    const mensajeError = c => ERRORES[c] || 'Ocurrió un error inesperado. Intenta de nuevo.';
+    let _cancelados  = {};
+    let aseoLoaded   = false;
+    let _sheetEquipo = [];
+    let _sheetYoIdx  = null;
+    let _toastTimer  = null;
+    let _undoAccion  = null;
+    let _ajusteKey       = null;
+    let _ajusteCancelado = false;
 
-    const showPage = id => {
+    function fechaKey(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+    function esCancelado(d) { return !!_cancelados[fechaKey(d)]; }
+    function mensajeError(c) { return ERRORES[c] || 'Ocurrió un error inesperado. Intenta de nuevo.'; }
+
+    function showPage(id) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-    };
-
-    const showHint = (el, text, tipo, center = false) => {
+    }
+    function showHint(el, text, tipo, center = false) {
       el.textContent = text;
       el.className = 'field-hint' + (tipo ? ' '+tipo : '') + (center ? ' center' : '') + ' visible';
-    };
-    const hideHint = el => el.classList.remove('visible');
-    const setBtn   = (btn, loading) => { btn.disabled = loading; btn.classList.toggle('loading', loading); };
+    }
+    function hideHint(el) { el.classList.remove('visible'); }
+    function setBtn(btn, loading) { btn.disabled = loading; btn.classList.toggle('loading', loading); }
 
     function togglePass(btn) {
       const input = btn.parentElement.querySelector('input');
@@ -548,8 +606,8 @@
       hideHint(document.getElementById('reg-error'));
     }
 
-    const irARegistro = () => { resetRegistro(); showPage('page-registro'); };
-    const irALogin    = () => { resetLogin();    showPage('page-login'); };
+    function irARegistro() { resetRegistro(); showPage('page-registro'); }
+    function irALogin()    { resetLogin();    showPage('page-login'); }
 
     function mostrarErrorLogin(code) {
       const cEl = document.getElementById('login-correo-error');
@@ -620,17 +678,22 @@
       }
     }
 
-    auth.onAuthStateChanged(user => { if (user) { showPage('page-app'); cargarAseo(); } });
+    async function esAdminEnDB(uid) {
+      if (!uid) return false;
+      try { const snap = await db.ref('admins/' + uid).once('value'); return snap.exists(); }
+      catch { return false; }
+    }
 
-    let _cancelados  = {};
-    let aseoLoaded   = false;
-    let _sheetEquipo = [];
-    let _sheetYoIdx  = null;
-    let _toastTimer  = null;
-    let _undoAccion  = null;
-
-    const fechaKey    = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    const esCancelado = d => !!_cancelados[fechaKey(d)];
+    async function registrarToken(uid, correo) {
+      if (!messaging) return;
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') return;
+        const swReg = await navigator.serviceWorker.ready;
+        const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+        if (token) await db.ref('fcmTokens/' + uid).set({ token, correo });
+      } catch {}
+    }
 
     function actualizarBadge() {
       const count = Object.keys(_cancelados).length;
@@ -992,9 +1055,6 @@
       }
     }
 
-    let _ajusteKey       = null;
-    let _ajusteCancelado = false;
-
     function abrirAjuste(btn) {
       _ajusteKey       = btn.dataset.key;
       _ajusteCancelado = btn.dataset.cancelado === '1';
@@ -1064,9 +1124,51 @@
 
     function cerrarSheet() {
       const overlay = document.getElementById('sheet-overlay');
-      ['mi-equipo-sheet','ajuste-sheet','historial-sheet'].forEach(id => document.getElementById(id).classList.remove('open'));
+      ['mi-equipo-sheet','ajuste-sheet','historial-sheet','menu-sheet'].forEach(id => document.getElementById(id).classList.remove('open'));
       overlay.classList.remove('visible');
       setTimeout(() => overlay.classList.remove('open'), 260);
+    }
+
+    function abrirMenu() {
+      document.getElementById('menu-email').textContent = auth.currentUser?.email ?? '';
+      abrirOverlay('menu-sheet');
+    }
+
+    async function cerrarSesion() {
+      cerrarSheet();
+      try {
+        await auth.signOut();
+      } catch {}
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        showPage('page-app');
+        registrarToken(user.uid, user.email);
+        cargarAseo();
+      } else {
+        _cancelados  = {};
+        aseoLoaded   = false;
+        _sheetEquipo = [];
+        _sheetYoIdx  = null;
+        document.getElementById('aseo-list').innerHTML = '';
+        actualizarBadge();
+        irALogin();
+      }
+    });
+
+    if (messaging) {
+      messaging.onMessage(payload => {
+        mostrarToast(
+          payload.notification?.body ?? payload.notification?.title ?? 'Nueva notificación',
+          'ph-bell ok',
+          null
+        );
+      });
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
     }
   </script>
 
