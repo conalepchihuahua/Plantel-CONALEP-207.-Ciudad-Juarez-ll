@@ -224,7 +224,6 @@
     .s-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
     .s-chip    { font-size: 10px; font-weight: 700; letter-spacing: .4px; padding: 3px 7px; border-radius: 99px; text-transform: uppercase; }
     .dual-chip { color: var(--gold); background: transparent; border: 1px solid rgba(165,127,44,.30); }
-    .s-extra { font-size: 12px; color: var(--ink-3); margin-top: 3px; display: flex; flex-direction: column; gap: 2px; }
 
     .btn-proximos {
       display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -393,6 +392,68 @@
     }
     .su   { animation: fadeUp .22s var(--ease) both; }
     .su-2 { animation-delay: .10s; }
+
+    /* ═══════════════════════════════
+       CONSOLA VISUAL DE DEPURACIÓN
+       ═══════════════════════════════ */
+    #dc-fab {
+      position: fixed; bottom: 72px; right: 12px; z-index: 9999;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: #1e1e2e; border: 2px solid #45475a;
+      color: #a6e3a1; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.45);
+      font-family: monospace; user-select: none;
+    }
+    #dc-badge {
+      position: absolute; top: -5px; right: -5px;
+      min-width: 18px; height: 18px; border-radius: 99px;
+      background: #f38ba8; color: #1e1e2e;
+      font-size: 10px; font-weight: 700;
+      display: none; align-items: center; justify-content: center;
+      padding: 0 4px; font-family: monospace;
+    }
+    #dc-panel {
+      display: none; flex-direction: column;
+      position: fixed; bottom: 0; left: 0; right: 0; height: 55vh;
+      background: #1e1e2e; border-top: 2px solid #313244;
+      z-index: 9998; font-family: monospace; font-size: 12px;
+    }
+    #dc-panel.open { display: flex; }
+    #dc-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 5px 12px; background: #181825;
+      border-bottom: 1px solid #313244; flex-shrink: 0;
+    }
+    #dc-bar-title { color: #cdd6f4; font-size: 11px; font-weight: 700; letter-spacing: .6px; }
+    #dc-bar-btns  { display: flex; gap: 6px; }
+    #dc-bar-btns button {
+      padding: 3px 10px; border-radius: 4px; border: 1px solid #45475a;
+      background: transparent; color: #a6adc8; font-size: 11px;
+      cursor: pointer; font-family: monospace;
+    }
+    #dc-bar-btns button:hover { background: #313244; color: #cdd6f4; }
+    #dc-log {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 2px 0; -webkit-overflow-scrolling: touch;
+    }
+    .dc-row {
+      display: flex; align-items: flex-start; gap: 6px;
+      padding: 4px 10px; border-bottom: 1px solid #181825;
+      word-break: break-all; line-height: 1.55;
+    }
+    .dc-row:hover { background: #24273a; }
+    .dc-ts  { color: #6c7086; flex-shrink: 0; font-size: 10px; margin-top: 2px; min-width: 58px; }
+    .dc-lv  { flex-shrink: 0; font-size: 10px; font-weight: 700;
+               padding: 1px 5px; border-radius: 3px; margin-top: 1px; }
+    .dc-txt { flex: 1; white-space: pre-wrap; color: #cdd6f4; }
+    .dc-row.dc-log  .dc-lv { background: #313244; color: #a6adc8; }
+    .dc-row.dc-info .dc-lv { background: #1e3a5f; color: #89b4fa; }
+    .dc-row.dc-warn .dc-lv { background: #3d2e00; color: #f9e2af; }
+    .dc-row.dc-warn .dc-txt { color: #f9e2af; }
+    .dc-row.dc-error .dc-lv { background: #3d1a1a; color: #f38ba8; }
+    .dc-row.dc-error .dc-txt { color: #f38ba8; }
+    .dc-row.dc-debug .dc-lv { background: #1e3d2f; color: #a6e3a1; }
   </style>
 </head>
 <body>
@@ -546,6 +607,97 @@
     <button id="toast-undo" class="toast-undo" onclick="deshacerAccion()">Deshacer</button>
   </div>
 
+  <!-- ═══════════════════════════════
+       CONSOLA VISUAL DE DEPURACIÓN
+       ═══════════════════════════════ -->
+  <button id="dc-fab" onclick="dcToggle()">
+    ⌨
+    <span id="dc-badge">0</span>
+  </button>
+
+  <div id="dc-panel">
+    <div id="dc-bar">
+      <span id="dc-bar-title">🖥 Consola</span>
+      <div id="dc-bar-btns">
+        <button onclick="dcClear()">Limpiar</button>
+        <button onclick="dcToggle()">Cerrar ✕</button>
+      </div>
+    </div>
+    <div id="dc-log"></div>
+  </div>
+
+  <script>
+  /* ─── CONSOLA VISUAL ─── */
+  (function () {
+    var log    = document.getElementById('dc-log');
+    var badge  = document.getElementById('dc-badge');
+    var panel  = document.getElementById('dc-panel');
+    var open   = false;
+    var errs   = 0;
+
+    function ts() {
+      var d = new Date();
+      var p = function(n){ return String(n).padStart(2,'0'); };
+      return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+    }
+
+    function addRow(type, args) {
+      var text = args.map(function(a){
+        if (a === null)      return 'null';
+        if (a === undefined) return 'undefined';
+        if (a instanceof Error) return a.message + (a.stack ? '\n'+a.stack : '');
+        if (typeof a === 'object') { try { return JSON.stringify(a,null,2); } catch(e){ return String(a); } }
+        return String(a);
+      }).join(' ');
+
+      var labels = { log:'LOG', info:'INFO', warn:'WARN', error:'ERR', debug:'DBG' };
+      var row = document.createElement('div');
+      row.className = 'dc-row dc-' + type;
+      var ts_el  = document.createElement('span'); ts_el.className  = 'dc-ts';  ts_el.textContent = ts();
+      var lv_el  = document.createElement('span'); lv_el.className  = 'dc-lv';  lv_el.textContent = labels[type] || type.toUpperCase();
+      var txt_el = document.createElement('span'); txt_el.className = 'dc-txt'; txt_el.textContent = text;
+      row.appendChild(ts_el); row.appendChild(lv_el); row.appendChild(txt_el);
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+
+      if (type === 'error' || type === 'warn') {
+        errs++;
+        badge.textContent = errs > 99 ? '99+' : errs;
+        badge.style.display = 'flex';
+      }
+    }
+
+    var orig = {};
+    ['log','info','warn','error','debug'].forEach(function(t){
+      orig[t] = console[t].bind(console);
+      console[t] = function(){
+        var a = Array.prototype.slice.call(arguments);
+        orig[t].apply(console, a);
+        addRow(t, a);
+      };
+    });
+
+    window.addEventListener('error', function(e){
+      addRow('error', ['Uncaught: ' + e.message +
+        (e.filename ? ' (' + e.filename + ':' + e.lineno + ')' : '')]);
+    });
+    window.addEventListener('unhandledrejection', function(e){
+      addRow('error', ['Promise sin manejar: ' +
+        (e.reason && e.reason.message ? e.reason.message : String(e.reason))]);
+    });
+
+    window.dcToggle = function(){
+      open = !open;
+      panel.classList.toggle('open', open);
+      if (open) { errs = 0; badge.style.display = 'none'; log.scrollTop = log.scrollHeight; }
+    };
+    window.dcClear = function(){
+      log.innerHTML = ''; errs = 0; badge.style.display = 'none';
+    };
+  })();
+  /* ─── FIN CONSOLA ─── */
+  </script>
+
   <script>
     firebase.initializeApp({
       apiKey: "AIzaSyCZpIknDfy3KsV-XtPCkU9s0jDjd9o7nD8",
@@ -561,7 +713,7 @@
     const db   = firebase.database();
 
     let messaging = null;
-    try { messaging = firebase.messaging(); } catch (_) {}
+    try { messaging = firebase.messaging(); } catch {}
 
     const DOMAIN          = '@chih.conalep.edu.mx';
     const ROTACION_INICIO = new Date(2026, 1, 23);
@@ -579,8 +731,8 @@
     };
 
     const ERRORES_CAMPO = {
-      correo: ['auth/invalid-email', 'auth/user-not-found'],
-      pass:   ['auth/wrong-password', 'auth/invalid-credential']
+      correo: ['auth/invalid-email','auth/user-not-found'],
+      pass:   ['auth/wrong-password','auth/invalid-credential']
     };
 
     let _cancelados      = {};
@@ -595,7 +747,7 @@
     let _tabActual       = 'aseo';
 
     function fechaKey(d) {
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     }
 
     function esCancelado(d) { return !!_cancelados[fechaKey(d)]; }
@@ -627,24 +779,21 @@
     }
 
     function resetLogin() {
-      ['correo', 'pass'].forEach(id => {
+      ['correo','pass'].forEach(id => {
         const el = document.getElementById(id);
-        el.value = '';
-        el.classList.remove('error');
+        el.value = ''; el.classList.remove('error');
         if (id === 'pass') el.type = 'password';
       });
       document.querySelector('#page-login .field-toggle i').className = 'ph ph-eye';
-      ['login-correo-error', 'login-pass-error', 'login-error'].forEach(id => hideHint(document.getElementById(id)));
+      ['login-correo-error','login-pass-error','login-error'].forEach(id => hideHint(document.getElementById(id)));
     }
 
     function resetRegistro() {
       const c = document.getElementById('reg-correo');
-      c.value = '';
-      c.classList.remove('error');
+      c.value = ''; c.classList.remove('error');
       hideHint(document.getElementById('reg-correo-error'));
       const p = document.getElementById('reg-pass');
-      p.value = '';
-      p.type = 'password';
+      p.value = ''; p.type = 'password';
       document.querySelector('#page-registro .field-toggle i').className = 'ph ph-eye';
       hideHint(document.getElementById('reg-error'));
     }
@@ -673,7 +822,7 @@
     function entrar() {
       const correo = document.getElementById('correo').value.trim();
       const pass   = document.getElementById('pass').value;
-      ['login-correo-error', 'login-pass-error', 'login-error'].forEach(id => hideHint(document.getElementById(id)));
+      ['login-correo-error','login-pass-error','login-error'].forEach(id => hideHint(document.getElementById(id)));
       if (!correo) { document.getElementById('correo').focus(); return; }
       if (!pass)   { document.getElementById('pass').focus();   return; }
       const btn = document.querySelector('#page-login .btn-primary');
@@ -711,8 +860,7 @@
       const errEl  = document.getElementById('login-error');
       if (!correo) {
         showHint(errEl, 'Ingresa tu correo institucional para recibir el enlace de restablecimiento.', 'info', true);
-        document.getElementById('correo').focus();
-        return;
+        document.getElementById('correo').focus(); return;
       }
       try {
         await auth.sendPasswordResetEmail(correo);
@@ -724,38 +872,21 @@
 
     async function esAdminEnDB(uid) {
       if (!uid) return false;
-      try {
-        const snap = await db.ref('admins/' + uid).once('value');
-        return snap.exists();
-      } catch { return false; }
+      try { const snap = await db.ref('admins/' + uid).once('value'); return snap.exists(); }
+      catch { return false; }
     }
 
     async function registrarToken(uid, correo) {
       if (!messaging) return;
       try {
         const perm = await Notification.requestPermission();
-        if (perm !== 'granted') {
-          console.warn('[FCM] Permiso de notificaciones denegado:', perm);
-          return;
-        }
-        let swReg;
-        try {
-          swReg = await navigator.serviceWorker.ready;
-        } catch (swErr) {
-          console.error('[FCM] Service Worker no disponible:', swErr);
-          return;
-        }
+        if (perm !== 'granted') return;
+        const swReg = await navigator.serviceWorker.ready;
         const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
-        if (!token) {
-          console.error('[FCM] No se obtuvo token.');
-          return;
+        if (token) {
+          await db.ref('fcmTokens/' + uid).set({ token, correo, actualizado: Date.now() });
         }
-        console.log('[FCM] Token obtenido:', token);
-        await db.ref('fcmTokens/' + uid).set({ token, correo, actualizado: Date.now() });
-        console.log('[FCM] Token guardado en DB para uid:', uid);
-      } catch (e) {
-        console.error('[FCM] Error al registrar token:', e.code, e.message);
-      }
+      } catch {}
     }
 
     function cambiarTab(tab) {
@@ -798,7 +929,7 @@
       if (!_undoAccion) return;
       document.getElementById('toast').classList.remove('show');
       clearTimeout(_toastTimer);
-      try { await _undoAccion(); } catch (_) {}
+      try { await _undoAccion(); } catch {}
       _undoAccion = null;
     }
 
@@ -807,16 +938,14 @@
     }
 
     function proximoDiaHabilNoCanc(desde) {
-      const d = new Date(desde);
-      d.setHours(0, 0, 0, 0);
+      const d = new Date(desde); d.setHours(0,0,0,0);
       while (d.getDay() === 0 || d.getDay() === 6 || esCancelado(d)) d.setDate(d.getDate() + 1);
       return d;
     }
 
     function siguientesDiasHabiles(desde, count) {
       const dias = [];
-      const d = new Date(desde);
-      d.setHours(0, 0, 0, 0);
+      const d = new Date(desde); d.setHours(0,0,0,0);
       while (dias.length < count) {
         if (d.getDay() !== 0 && d.getDay() !== 6 && !esCancelado(d)) dias.push(new Date(d));
         d.setDate(d.getDate() + 1);
@@ -826,8 +955,7 @@
 
     function diasHabilesRestantesSemana(desde) {
       const dias = [];
-      const d = new Date(desde);
-      d.setHours(0, 0, 0, 0);
+      const d = new Date(desde); d.setHours(0,0,0,0);
       while (d.getDay() >= 1 && d.getDay() <= 5) {
         if (!esCancelado(d)) dias.push(new Date(d));
         d.setDate(d.getDate() + 1);
@@ -842,10 +970,8 @@
       const fechaSet = new Set(fechas.map(f => fechaKey(f)));
       const result   = new Map();
       let queue = [...alumnos];
-      const d = new Date(ROTACION_INICIO);
-      d.setHours(0, 0, 0, 0);
-      const h = new Date(maxDate);
-      h.setHours(0, 0, 0, 0);
+      const d = new Date(ROTACION_INICIO); d.setHours(0,0,0,0);
+      const h = new Date(maxDate); h.setHours(0,0,0,0);
       while (d <= h) {
         const dow = d.getDay();
         if (dow !== 0 && dow !== 6 && !esCancelado(d)) {
@@ -891,16 +1017,14 @@
     }
 
     function toggleNombre(row) {
-      const nameEl  = row.querySelector('.s-name');
-      const extraEl = row.querySelector('.s-extra');
+      const nameEl = row.querySelector('.s-name');
       const expanded = nameEl.classList.toggle('expanded');
       row.classList.toggle('expanded', expanded);
-      if (extraEl) extraEl.style.display = expanded ? 'flex' : 'none';
     }
 
     function renderBanner(cont, fechaTurno, equipo, yoIdx) {
       const str = fechaTurno
-        ? fechaTurno.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })
+        ? fechaTurno.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' })
         : '—';
       _sheetEquipo = equipo || [];
       _sheetYoIdx  = yoIdx ?? null;
@@ -916,7 +1040,7 @@
     }
 
     function renderEquipo(cont, equipo, fecha, titulo, subtitulo, cancelado, esAdmin) {
-      const fStr = fecha.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+      const fStr = fecha.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
       const card = document.createElement('div');
       card.className = 'aseo-card';
       const head = document.createElement('div');
@@ -933,21 +1057,15 @@
           </button>` : ''}
         </div>
         ${cancelado ? '<div class="cancel-banner"><i class="ph ph-warning"></i>Jornada cancelada — rotación ajustada automáticamente</div>' : ''}`;
-      if (esAdmin) head.querySelector('.card-adj').addEventListener('click', function () { abrirAjuste(this); });
+      if (esAdmin) head.querySelector('.card-adj').addEventListener('click', function() { abrirAjuste(this); });
       card.appendChild(head);
       equipo.forEach(a => {
         const row = document.createElement('div');
         row.className = 'student-row';
-        const correoAlumno = (a['Correo Institucional'] || '').trim();
-        const mmfdLabel    = (a['MMFD'] || '').trim();
         row.innerHTML = `
           <div class="s-avatar"><i class="ph-fill ph-broom"></i></div>
           <div class="s-name-wrap">
             <span class="s-name">${nombreMostrar(a)}</span>
-            <div class="s-extra" style="display:none">
-              ${correoAlumno ? `<span>${correoAlumno}</span>` : ''}
-              ${mmfdLabel    ? `<span>${mmfdLabel}</span>`    : ''}
-            </div>
           </div>
           <div class="s-right">
             ${esMMFD(a) ? '<span class="s-chip dual-chip">Dual</span>' : ''}
@@ -978,7 +1096,9 @@
         abierto = !abierto;
         btn.classList.toggle('open', abierto);
         wrap.classList.toggle('open', abierto);
-        btn.querySelector('.icon-cal').className = abierto ? 'ph ph-calendar-check icon-cal' : 'ph ph-calendar-dots icon-cal';
+        btn.querySelector('.icon-cal').className = abierto
+          ? 'ph ph-calendar-check icon-cal'
+          : 'ph ph-calendar-dots icon-cal';
         btn.querySelector('.btn-label').textContent = abierto ? 'Ocultar días' : 'Ver próximos días';
       });
       cont.appendChild(btn);
@@ -1007,12 +1127,8 @@
 
       try {
         const snap = await db.ref('estudiantes').once('value');
-        console.log('[DB] estudiantes snap existe:', snap.exists(), '| num hijos:', snap.numChildren());
         const alumnos = [];
-        snap.forEach(child => {
-          const v = child.val();
-          if (v && typeof v === 'object') alumnos.push(v);
-        });
+        snap.forEach(child => { const v = child.val(); if (v && typeof v === 'object') alumnos.push(v); });
 
         if (alumnos.length === 0) {
           cont.innerHTML = `<div class="empty su"><div class="empty-icon"><i class="ph ph-users"></i></div><p>No hay estudiantes registrados en el sistema.</p></div>`;
@@ -1021,7 +1137,7 @@
 
         alumnos.sort((a, b) => (parseInt(a['No']) || 0) - (parseInt(b['No']) || 0));
 
-        const hoy          = new Date(); hoy.setHours(0, 0, 0, 0);
+        const hoy          = new Date(); hoy.setHours(0,0,0,0);
         const esFDS        = hoy.getDay() === 0 || hoy.getDay() === 6;
         const hoyCancelado = esCancelado(hoy);
         const manana       = new Date(hoy); manana.setDate(manana.getDate() + 1);
@@ -1041,7 +1157,7 @@
             }
           }
           const label = hoyCancelado ? 'Jornada cancelada hoy — próximo día hábil' : 'Equipo del próximo día hábil';
-          renderEquipo(cont, equipoProx, proximo, label, proximo.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }), false, _esAdmin);
+          renderEquipo(cont, equipoProx, proximo, label, proximo.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' }), false, _esAdmin);
           renderBotonProximos(cont, diasDespues, equipos, _esAdmin);
           return;
         }
@@ -1063,9 +1179,9 @@
         renderEquipo(cont, equipoHoy, hoy, 'Equipo de limpieza — hoy', null, false, _esAdmin);
         renderBotonProximos(cont, diasProximos, equipos, _esAdmin);
 
-      } catch (e) {
-        console.error('[Aseo] Error al cargar datos:', e.code, e.message);
-        cont.innerHTML = `<div class="empty su"><div class="empty-icon err"><i class="ph ph-wifi-slash"></i></div><p class="err">No fue posible cargar la información.</p><p>${e.message || 'Verifica tu conexión e intenta de nuevo.'}</p></div>`;
+      } catch (err) {
+        console.error('cargarAseo falló:', err);
+        cont.innerHTML = `<div class="empty su"><div class="empty-icon err"><i class="ph ph-wifi-slash"></i></div><p class="err">No fue posible cargar la información.</p><p>Verifica tu conexión e intenta de nuevo.</p></div>`;
       }
     }
 
@@ -1089,7 +1205,7 @@
     }
 
     function abrirHistorial() {
-      const body = document.getElementById('historial-body');
+      const body  = document.getElementById('historial-body');
       body.innerHTML = '';
       const claves = Object.keys(_cancelados).sort();
       if (claves.length === 0) {
@@ -1100,9 +1216,9 @@
       claves.forEach(key => {
         const [y, m, d] = key.split('-').map(Number);
         const fecha    = new Date(y, m - 1, d);
-        const hoy      = new Date(); hoy.setHours(0, 0, 0, 0);
+        const hoy      = new Date(); hoy.setHours(0,0,0,0);
         const esPasada = fecha < hoy;
-        const fStr     = fecha.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        const fStr     = fecha.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
         const row = document.createElement('div');
         row.className = 'hist-row';
         row.innerHTML = `
@@ -1114,7 +1230,7 @@
           <button class="hist-restore" data-key="${key}">
             <i class="ph ph-arrow-counter-clockwise"></i> Restaurar
           </button>`;
-        row.querySelector('.hist-restore').addEventListener('click', function () { restaurarDesdeHistorial(this); });
+        row.querySelector('.hist-restore').addEventListener('click', function() { restaurarDesdeHistorial(this); });
         body.appendChild(row);
       });
       abrirOverlay('historial-sheet');
@@ -1139,14 +1255,13 @@
         aseoLoaded = false;
         setTimeout(() => cargarAseo(), 300);
         const [y, m, d] = key.split('-').map(Number);
-        const fStr = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+        const fStr = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
         mostrarToast(`Jornada del ${fStr} restaurada`, 'ph-check-circle ok', async () => {
           await db.ref('cancelaciones/' + key).set(true);
-          _cancelados[key] = true;
-          aseoLoaded = false;
-          cargarAseo();
+          _cancelados[key] = true; aseoLoaded = false; cargarAseo();
         });
-      } catch (_) {
+      } catch (err) {
+        console.error('restaurarDesdeHistorial falló:', err);
         btn.classList.remove('loading');
         mostrarToast('No se pudo restaurar. Intenta de nuevo.', 'ph-warning-circle err', null);
       }
@@ -1156,7 +1271,7 @@
       _ajusteKey       = btn.dataset.key;
       _ajusteCancelado = btn.dataset.cancelado === '1';
       const [y, m, d] = _ajusteKey.split('-').map(Number);
-      const fStr   = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+      const fStr   = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
       const title  = document.getElementById('ajuste-title');
       const desc   = document.getElementById('ajuste-desc');
       const accion = document.getElementById('ajuste-accion');
@@ -1183,13 +1298,12 @@
 
     async function confirmarAjuste() {
       const accion = document.getElementById('ajuste-accion');
-      accion.disabled = true;
-      accion.classList.add('loading');
+      accion.disabled = true; accion.classList.add('loading');
       document.getElementById('ajuste-sheet').querySelector('.ajuste-err')?.remove();
       const key          = _ajusteKey;
       const eraCancelado = _ajusteCancelado;
       const [y, m, d]    = key.split('-').map(Number);
-      const fStr         = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+      const fStr         = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
       try {
         if (eraCancelado) {
           await db.ref('cancelaciones/' + key).remove();
@@ -1198,27 +1312,22 @@
           await db.ref('cancelaciones/' + key).set(true);
           _cancelados[key] = true;
         }
-        aseoLoaded = false;
-        cerrarSheet();
+        aseoLoaded = false; cerrarSheet();
         setTimeout(() => cargarAseo(), 300);
         if (eraCancelado) {
           mostrarToast(`Jornada del ${fStr} restaurada`, 'ph-check-circle ok', async () => {
             await db.ref('cancelaciones/' + key).set(true);
-            _cancelados[key] = true;
-            aseoLoaded = false;
-            cargarAseo();
+            _cancelados[key] = true; aseoLoaded = false; cargarAseo();
           });
         } else {
           mostrarToast(`Jornada del ${fStr} cancelada`, 'ph-x-circle err', async () => {
             await db.ref('cancelaciones/' + key).remove();
-            delete _cancelados[key];
-            aseoLoaded = false;
-            cargarAseo();
+            delete _cancelados[key]; aseoLoaded = false; cargarAseo();
           });
         }
       } catch (e) {
-        accion.disabled = false;
-        accion.classList.remove('loading');
+        console.error('confirmarAjuste falló:', e);
+        accion.disabled = false; accion.classList.remove('loading');
         const err = document.createElement('p');
         err.className   = 'ajuste-err';
         err.textContent = e?.message || 'Error al guardar. Intenta de nuevo.';
@@ -1228,7 +1337,7 @@
 
     function cerrarSheet() {
       const overlay = document.getElementById('sheet-overlay');
-      ['mi-equipo-sheet', 'ajuste-sheet', 'historial-sheet', 'menu-sheet'].forEach(id => document.getElementById(id).classList.remove('open'));
+      ['mi-equipo-sheet','ajuste-sheet','historial-sheet','menu-sheet'].forEach(id => document.getElementById(id).classList.remove('open'));
       overlay.classList.remove('visible');
       setTimeout(() => overlay.classList.remove('open'), 240);
     }
@@ -1240,15 +1349,17 @@
 
     async function cerrarSesion() {
       cerrarSheet();
-      try { await auth.signOut(); } catch (_) {}
+      try { await auth.signOut(); } catch {}
     }
 
     auth.onAuthStateChanged(async user => {
       if (user) {
+        console.log('Usuario autenticado:', user.email);
         showPage('page-app');
         await registrarToken(user.uid, user.email);
         cargarAseo();
       } else {
+        console.log('Sin sesión activa');
         _cancelados  = {};
         _esAdmin     = false;
         aseoLoaded   = false;
@@ -1267,6 +1378,7 @@
 
     if (messaging) {
       messaging.onMessage(payload => {
+        console.log('FCM mensaje recibido:', payload);
         mostrarToast(
           payload.notification?.body ?? payload.notification?.title ?? 'Nuevo aviso del plantel',
           'ph-bell ok',
@@ -1276,7 +1388,9 @@
     }
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.register('sw.js')
+        .then(r => console.log('SW registrado:', r.scope))
+        .catch(e => console.error('SW error:', e));
     }
   </script>
 
