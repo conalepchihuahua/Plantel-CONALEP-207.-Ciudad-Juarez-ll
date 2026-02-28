@@ -734,17 +734,28 @@
       if (!messaging) return;
       try {
         const perm = await Notification.requestPermission();
-        if (perm !== 'granted') return;
-        const swReg = await navigator.serviceWorker.ready;
-        const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
-        if (token) {
-          await db.ref('fcmTokens/' + uid).set({
-            token,
-            correo,
-            actualizado: Date.now()
-          });
+        if (perm !== 'granted') {
+          console.warn('[FCM] Permiso de notificaciones denegado:', perm);
+          return;
         }
-      } catch (_) {}
+        let swReg;
+        try {
+          swReg = await navigator.serviceWorker.ready;
+        } catch (swErr) {
+          console.error('[FCM] Service Worker no disponible:', swErr);
+          return;
+        }
+        const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+        if (!token) {
+          console.error('[FCM] No se obtuvo token.');
+          return;
+        }
+        console.log('[FCM] Token obtenido:', token);
+        await db.ref('fcmTokens/' + uid).set({ token, correo, actualizado: Date.now() });
+        console.log('[FCM] Token guardado en DB para uid:', uid);
+      } catch (e) {
+        console.error('[FCM] Error al registrar token:', e.code, e.message);
+      }
     }
 
     function cambiarTab(tab) {
@@ -996,6 +1007,7 @@
 
       try {
         const snap = await db.ref('estudiantes').once('value');
+        console.log('[DB] estudiantes snap existe:', snap.exists(), '| num hijos:', snap.numChildren());
         const alumnos = [];
         snap.forEach(child => {
           const v = child.val();
@@ -1051,8 +1063,9 @@
         renderEquipo(cont, equipoHoy, hoy, 'Equipo de limpieza — hoy', null, false, _esAdmin);
         renderBotonProximos(cont, diasProximos, equipos, _esAdmin);
 
-      } catch (_) {
-        cont.innerHTML = `<div class="empty su"><div class="empty-icon err"><i class="ph ph-wifi-slash"></i></div><p class="err">No fue posible cargar la información.</p><p>Verifica tu conexión e intenta de nuevo.</p></div>`;
+      } catch (e) {
+        console.error('[Aseo] Error al cargar datos:', e.code, e.message);
+        cont.innerHTML = `<div class="empty su"><div class="empty-icon err"><i class="ph ph-wifi-slash"></i></div><p class="err">No fue posible cargar la información.</p><p>${e.message || 'Verifica tu conexión e intenta de nuevo.'}</p></div>`;
       }
     }
 
