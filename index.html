@@ -386,6 +386,42 @@
     .toast-undo:hover  { background: rgba(255,255,255,.08); }
     .toast-undo:active { background: rgba(255,255,255,.14); }
 
+    /* ── AVISOS ── */
+    #screen-avisos { background: var(--surface); justify-content: flex-start; }
+    .avisos-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 10px; padding-bottom: 32px; }
+    .notif-card { border-radius: var(--r); background: var(--white); border: 1px solid var(--line); overflow: hidden; }
+    .notif-card-head { display: flex; align-items: flex-start; gap: 14px; padding: 18px 18px 14px; }
+    .notif-icon { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .notif-icon.green  { background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); }
+    .notif-icon.gold   { background: rgba(165,127,44,.07); border: 1px solid rgba(165,127,44,.20); }
+    .notif-icon.maroon { background: var(--maroon-tint); border: 1px solid rgba(155,34,71,.12); }
+    .notif-icon.grey   { background: var(--surface); border: 1px solid var(--line); }
+    .notif-icon.green  i { font-size: 19px; color: var(--green); }
+    .notif-icon.gold   i { font-size: 19px; color: var(--gold); }
+    .notif-icon.maroon i { font-size: 19px; color: var(--maroon); }
+    .notif-icon.grey   i { font-size: 19px; color: var(--ink-3); }
+    .notif-text { flex: 1; min-width: 0; }
+    .notif-label { font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; margin-bottom: 3px; }
+    .notif-label.green  { color: var(--green); }
+    .notif-label.gold   { color: var(--gold); }
+    .notif-label.maroon { color: var(--maroon); }
+    .notif-label.grey   { color: var(--ink-3); }
+    .notif-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+    .notif-desc  { font-size: 12px; font-weight: 400; color: var(--ink-3); line-height: 1.6; margin-top: 3px; }
+    .notif-card-foot { padding: 0 18px 16px; }
+    .notif-btn { height: 42px; width: 100%; border-radius: 8px; font-family: 'Noto Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity var(--t) var(--ease); }
+    .notif-btn:hover  { opacity: .86; }
+    .notif-btn:active { opacity: .70; }
+    .notif-btn.loading { opacity: .40; pointer-events: none; }
+    .notif-btn.primary { background: var(--green); color: var(--white); }
+    .notif-btn.ghost   { background: var(--surface); border: 1.5px solid var(--line); color: var(--ink-2); }
+    .notif-btn i { font-size: 15px; }
+    .avisos-empty-msg { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 24px; text-align: center; }
+    .avisos-empty-msg .ae-icon { width: 50px; height: 50px; border-radius: 50%; background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
+    .avisos-empty-msg .ae-icon i { font-size: 22px; color: var(--green); }
+    .avisos-empty-msg .ae-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .avisos-empty-msg .ae-sub   { font-size: 12px; font-weight: 400; color: var(--ink-3); line-height: 1.65; max-width: 240px; }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -526,10 +562,13 @@
         <div id="aseo-list" class="aseo-body"></div>
       </div>
       <div id="screen-avisos" class="tab-screen">
-        <div class="avisos-empty su">
-          <div class="avisos-empty-icon"><i class="ph ph-bell-slash"></i></div>
-          <p class="avisos-empty-title">Sin avisos por el momento</p>
-          <p class="avisos-empty-sub">Aquí aparecerán los comunicados y avisos del plantel cuando estén disponibles.</p>
+        <div class="avisos-scroll">
+          <div id="notif-card" class="notif-card su"></div>
+          <div class="avisos-empty-msg">
+            <div class="ae-icon"><i class="ph ph-bell-slash"></i></div>
+            <p class="ae-title">Sin avisos por el momento</p>
+            <p class="ae-sub">Aquí aparecerán los comunicados y avisos del plantel cuando estén disponibles.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -896,6 +935,7 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('screen-' + tab).classList.add('active');
       document.getElementById('tab-' + tab).classList.add('active');
+      if (tab === 'avisos') renderNotifCard();
     }
 
     function renderMenuAdmin() {
@@ -1385,6 +1425,82 @@
           null
         );
       });
+    }
+
+    /* ── TARJETA DE NOTIFICACIONES EN AVISOS ── */
+    function renderNotifCard() {
+      const card = document.getElementById('notif-card');
+      if (!card) return;
+
+      const supported = ('Notification' in window) && !!messaging;
+      const perm = supported ? Notification.permission : 'unsupported';
+
+      const estados = {
+        granted: {
+          color: 'green', icon: 'ph-bell-ringing',
+          label: 'Notificaciones activas',
+          title: 'Recibes avisos del plantel',
+          desc: 'Te notificaremos cuando haya comunicados, cambios en la rotación u otros avisos importantes de CONALEP Plantel 207.',
+          btn: null
+        },
+        default: {
+          color: 'gold', icon: 'ph-bell',
+          label: 'Notificaciones desactivadas',
+          title: 'Activa las notificaciones',
+          desc: 'Permite que CONALEP te avise cuando haya comunicados o cambios importantes en la rotación de aseo.',
+          btn: { label: 'Activar notificaciones', icon: 'ph-bell', cls: 'primary', action: 'activar' }
+        },
+        denied: {
+          color: 'maroon', icon: 'ph-bell-slash',
+          label: 'Notificaciones bloqueadas',
+          title: 'Acceso denegado por el navegador',
+          desc: 'Bloqueaste las notificaciones. Para activarlas, ve a la configuración de tu navegador, busca este sitio y permite las notificaciones.',
+          btn: null
+        },
+        unsupported: {
+          color: 'grey', icon: 'ph-bell-simple-slash',
+          label: 'No compatible',
+          title: 'Notificaciones no disponibles',
+          desc: 'Tu navegador no soporta notificaciones push. Consulta los avisos directamente en esta sección.',
+          btn: null
+        }
+      };
+
+      const e = estados[perm] || estados.unsupported;
+
+      card.innerHTML = `
+        <div class="notif-card-head">
+          <div class="notif-icon ${e.color}"><i class="ph ${e.icon}"></i></div>
+          <div class="notif-text">
+            <p class="notif-label ${e.color}">${e.label}</p>
+            <p class="notif-title">${e.title}</p>
+            <p class="notif-desc">${e.desc}</p>
+          </div>
+        </div>
+        ${e.btn ? `<div class="notif-card-foot">
+          <button id="notif-action-btn" class="notif-btn ${e.btn.cls}">
+            <i class="ph ${e.btn.icon}"></i>${e.btn.label}
+          </button>
+        </div>` : ''}`;
+
+      if (e.btn) {
+        document.getElementById('notif-action-btn').addEventListener('click', async function() {
+          this.classList.add('loading');
+          if (e.btn.action === 'activar') {
+            try {
+              const perm = await Notification.requestPermission();
+              if (perm === 'granted') {
+                const user = auth.currentUser;
+                if (user) await registrarToken(user.uid, user.email);
+              }
+              renderNotifCard();
+            } catch (err) {
+              console.error('Permiso de notificaciones falló:', err);
+              renderNotifCard();
+            }
+          }
+        });
+      }
     }
 
     if ('serviceWorker' in navigator) {
