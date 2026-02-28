@@ -224,6 +224,7 @@
     .s-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
     .s-chip    { font-size: 10px; font-weight: 700; letter-spacing: .4px; padding: 3px 7px; border-radius: 99px; text-transform: uppercase; }
     .dual-chip { color: var(--gold); background: transparent; border: 1px solid rgba(165,127,44,.30); }
+    .s-extra { font-size: 12px; color: var(--ink-3); margin-top: 3px; display: flex; flex-direction: column; gap: 2px; }
 
     .btn-proximos {
       display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -560,7 +561,7 @@
     const db   = firebase.database();
 
     let messaging = null;
-    try { messaging = firebase.messaging(); } catch {}
+    try { messaging = firebase.messaging(); } catch (_) {}
 
     const DOMAIN          = '@chih.conalep.edu.mx';
     const ROTACION_INICIO = new Date(2026, 1, 23);
@@ -578,8 +579,8 @@
     };
 
     const ERRORES_CAMPO = {
-      correo: ['auth/invalid-email','auth/user-not-found'],
-      pass:   ['auth/wrong-password','auth/invalid-credential']
+      correo: ['auth/invalid-email', 'auth/user-not-found'],
+      pass:   ['auth/wrong-password', 'auth/invalid-credential']
     };
 
     let _cancelados      = {};
@@ -594,7 +595,7 @@
     let _tabActual       = 'aseo';
 
     function fechaKey(d) {
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
 
     function esCancelado(d) { return !!_cancelados[fechaKey(d)]; }
@@ -626,21 +627,24 @@
     }
 
     function resetLogin() {
-      ['correo','pass'].forEach(id => {
+      ['correo', 'pass'].forEach(id => {
         const el = document.getElementById(id);
-        el.value = ''; el.classList.remove('error');
+        el.value = '';
+        el.classList.remove('error');
         if (id === 'pass') el.type = 'password';
       });
       document.querySelector('#page-login .field-toggle i').className = 'ph ph-eye';
-      ['login-correo-error','login-pass-error','login-error'].forEach(id => hideHint(document.getElementById(id)));
+      ['login-correo-error', 'login-pass-error', 'login-error'].forEach(id => hideHint(document.getElementById(id)));
     }
 
     function resetRegistro() {
       const c = document.getElementById('reg-correo');
-      c.value = ''; c.classList.remove('error');
+      c.value = '';
+      c.classList.remove('error');
       hideHint(document.getElementById('reg-correo-error'));
       const p = document.getElementById('reg-pass');
-      p.value = ''; p.type = 'password';
+      p.value = '';
+      p.type = 'password';
       document.querySelector('#page-registro .field-toggle i').className = 'ph ph-eye';
       hideHint(document.getElementById('reg-error'));
     }
@@ -669,7 +673,7 @@
     function entrar() {
       const correo = document.getElementById('correo').value.trim();
       const pass   = document.getElementById('pass').value;
-      ['login-correo-error','login-pass-error','login-error'].forEach(id => hideHint(document.getElementById(id)));
+      ['login-correo-error', 'login-pass-error', 'login-error'].forEach(id => hideHint(document.getElementById(id)));
       if (!correo) { document.getElementById('correo').focus(); return; }
       if (!pass)   { document.getElementById('pass').focus();   return; }
       const btn = document.querySelector('#page-login .btn-primary');
@@ -707,7 +711,8 @@
       const errEl  = document.getElementById('login-error');
       if (!correo) {
         showHint(errEl, 'Ingresa tu correo institucional para recibir el enlace de restablecimiento.', 'info', true);
-        document.getElementById('correo').focus(); return;
+        document.getElementById('correo').focus();
+        return;
       }
       try {
         await auth.sendPasswordResetEmail(correo);
@@ -719,8 +724,10 @@
 
     async function esAdminEnDB(uid) {
       if (!uid) return false;
-      try { const snap = await db.ref('admins/' + uid).once('value'); return snap.exists(); }
-      catch { return false; }
+      try {
+        const snap = await db.ref('admins/' + uid).once('value');
+        return snap.exists();
+      } catch { return false; }
     }
 
     async function registrarToken(uid, correo) {
@@ -731,9 +738,13 @@
         const swReg = await navigator.serviceWorker.ready;
         const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
         if (token) {
-          await db.ref('fcmTokens/' + uid).set({ token, correo, actualizado: Date.now() });
+          await db.ref('fcmTokens/' + uid).set({
+            token,
+            correo,
+            actualizado: Date.now()
+          });
         }
-      } catch {}
+      } catch (_) {}
     }
 
     function cambiarTab(tab) {
@@ -776,7 +787,7 @@
       if (!_undoAccion) return;
       document.getElementById('toast').classList.remove('show');
       clearTimeout(_toastTimer);
-      try { await _undoAccion(); } catch {}
+      try { await _undoAccion(); } catch (_) {}
       _undoAccion = null;
     }
 
@@ -785,14 +796,16 @@
     }
 
     function proximoDiaHabilNoCanc(desde) {
-      const d = new Date(desde); d.setHours(0,0,0,0);
+      const d = new Date(desde);
+      d.setHours(0, 0, 0, 0);
       while (d.getDay() === 0 || d.getDay() === 6 || esCancelado(d)) d.setDate(d.getDate() + 1);
       return d;
     }
 
     function siguientesDiasHabiles(desde, count) {
       const dias = [];
-      const d = new Date(desde); d.setHours(0,0,0,0);
+      const d = new Date(desde);
+      d.setHours(0, 0, 0, 0);
       while (dias.length < count) {
         if (d.getDay() !== 0 && d.getDay() !== 6 && !esCancelado(d)) dias.push(new Date(d));
         d.setDate(d.getDate() + 1);
@@ -802,7 +815,8 @@
 
     function diasHabilesRestantesSemana(desde) {
       const dias = [];
-      const d = new Date(desde); d.setHours(0,0,0,0);
+      const d = new Date(desde);
+      d.setHours(0, 0, 0, 0);
       while (d.getDay() >= 1 && d.getDay() <= 5) {
         if (!esCancelado(d)) dias.push(new Date(d));
         d.setDate(d.getDate() + 1);
@@ -817,8 +831,10 @@
       const fechaSet = new Set(fechas.map(f => fechaKey(f)));
       const result   = new Map();
       let queue = [...alumnos];
-      const d = new Date(ROTACION_INICIO); d.setHours(0,0,0,0);
-      const h = new Date(maxDate); h.setHours(0,0,0,0);
+      const d = new Date(ROTACION_INICIO);
+      d.setHours(0, 0, 0, 0);
+      const h = new Date(maxDate);
+      h.setHours(0, 0, 0, 0);
       while (d <= h) {
         const dow = d.getDay();
         if (dow !== 0 && dow !== 6 && !esCancelado(d)) {
@@ -864,14 +880,16 @@
     }
 
     function toggleNombre(row) {
-      const nameEl = row.querySelector('.s-name');
+      const nameEl  = row.querySelector('.s-name');
+      const extraEl = row.querySelector('.s-extra');
       const expanded = nameEl.classList.toggle('expanded');
       row.classList.toggle('expanded', expanded);
+      if (extraEl) extraEl.style.display = expanded ? 'flex' : 'none';
     }
 
     function renderBanner(cont, fechaTurno, equipo, yoIdx) {
       const str = fechaTurno
-        ? fechaTurno.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' })
+        ? fechaTurno.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })
         : '—';
       _sheetEquipo = equipo || [];
       _sheetYoIdx  = yoIdx ?? null;
@@ -887,7 +905,7 @@
     }
 
     function renderEquipo(cont, equipo, fecha, titulo, subtitulo, cancelado, esAdmin) {
-      const fStr = fecha.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
+      const fStr = fecha.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
       const card = document.createElement('div');
       card.className = 'aseo-card';
       const head = document.createElement('div');
@@ -904,15 +922,21 @@
           </button>` : ''}
         </div>
         ${cancelado ? '<div class="cancel-banner"><i class="ph ph-warning"></i>Jornada cancelada — rotación ajustada automáticamente</div>' : ''}`;
-      if (esAdmin) head.querySelector('.card-adj').addEventListener('click', function() { abrirAjuste(this); });
+      if (esAdmin) head.querySelector('.card-adj').addEventListener('click', function () { abrirAjuste(this); });
       card.appendChild(head);
       equipo.forEach(a => {
         const row = document.createElement('div');
         row.className = 'student-row';
+        const correoAlumno = (a['Correo Institucional'] || '').trim();
+        const mmfdLabel    = (a['MMFD'] || '').trim();
         row.innerHTML = `
           <div class="s-avatar"><i class="ph-fill ph-broom"></i></div>
           <div class="s-name-wrap">
             <span class="s-name">${nombreMostrar(a)}</span>
+            <div class="s-extra" style="display:none">
+              ${correoAlumno ? `<span>${correoAlumno}</span>` : ''}
+              ${mmfdLabel    ? `<span>${mmfdLabel}</span>`    : ''}
+            </div>
           </div>
           <div class="s-right">
             ${esMMFD(a) ? '<span class="s-chip dual-chip">Dual</span>' : ''}
@@ -943,9 +967,7 @@
         abierto = !abierto;
         btn.classList.toggle('open', abierto);
         wrap.classList.toggle('open', abierto);
-        btn.querySelector('.icon-cal').className = abierto
-          ? 'ph ph-calendar-check icon-cal'
-          : 'ph ph-calendar-dots icon-cal';
+        btn.querySelector('.icon-cal').className = abierto ? 'ph ph-calendar-check icon-cal' : 'ph ph-calendar-dots icon-cal';
         btn.querySelector('.btn-label').textContent = abierto ? 'Ocultar días' : 'Ver próximos días';
       });
       cont.appendChild(btn);
@@ -975,7 +997,10 @@
       try {
         const snap = await db.ref('estudiantes').once('value');
         const alumnos = [];
-        snap.forEach(child => { const v = child.val(); if (v && typeof v === 'object') alumnos.push(v); });
+        snap.forEach(child => {
+          const v = child.val();
+          if (v && typeof v === 'object') alumnos.push(v);
+        });
 
         if (alumnos.length === 0) {
           cont.innerHTML = `<div class="empty su"><div class="empty-icon"><i class="ph ph-users"></i></div><p>No hay estudiantes registrados en el sistema.</p></div>`;
@@ -984,7 +1009,7 @@
 
         alumnos.sort((a, b) => (parseInt(a['No']) || 0) - (parseInt(b['No']) || 0));
 
-        const hoy          = new Date(); hoy.setHours(0,0,0,0);
+        const hoy          = new Date(); hoy.setHours(0, 0, 0, 0);
         const esFDS        = hoy.getDay() === 0 || hoy.getDay() === 6;
         const hoyCancelado = esCancelado(hoy);
         const manana       = new Date(hoy); manana.setDate(manana.getDate() + 1);
@@ -1004,7 +1029,7 @@
             }
           }
           const label = hoyCancelado ? 'Jornada cancelada hoy — próximo día hábil' : 'Equipo del próximo día hábil';
-          renderEquipo(cont, equipoProx, proximo, label, proximo.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' }), false, _esAdmin);
+          renderEquipo(cont, equipoProx, proximo, label, proximo.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }), false, _esAdmin);
           renderBotonProximos(cont, diasDespues, equipos, _esAdmin);
           return;
         }
@@ -1026,7 +1051,7 @@
         renderEquipo(cont, equipoHoy, hoy, 'Equipo de limpieza — hoy', null, false, _esAdmin);
         renderBotonProximos(cont, diasProximos, equipos, _esAdmin);
 
-      } catch {
+      } catch (_) {
         cont.innerHTML = `<div class="empty su"><div class="empty-icon err"><i class="ph ph-wifi-slash"></i></div><p class="err">No fue posible cargar la información.</p><p>Verifica tu conexión e intenta de nuevo.</p></div>`;
       }
     }
@@ -1051,7 +1076,7 @@
     }
 
     function abrirHistorial() {
-      const body  = document.getElementById('historial-body');
+      const body = document.getElementById('historial-body');
       body.innerHTML = '';
       const claves = Object.keys(_cancelados).sort();
       if (claves.length === 0) {
@@ -1062,9 +1087,9 @@
       claves.forEach(key => {
         const [y, m, d] = key.split('-').map(Number);
         const fecha    = new Date(y, m - 1, d);
-        const hoy      = new Date(); hoy.setHours(0,0,0,0);
+        const hoy      = new Date(); hoy.setHours(0, 0, 0, 0);
         const esPasada = fecha < hoy;
-        const fStr     = fecha.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        const fStr     = fecha.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         const row = document.createElement('div');
         row.className = 'hist-row';
         row.innerHTML = `
@@ -1076,7 +1101,7 @@
           <button class="hist-restore" data-key="${key}">
             <i class="ph ph-arrow-counter-clockwise"></i> Restaurar
           </button>`;
-        row.querySelector('.hist-restore').addEventListener('click', function() { restaurarDesdeHistorial(this); });
+        row.querySelector('.hist-restore').addEventListener('click', function () { restaurarDesdeHistorial(this); });
         body.appendChild(row);
       });
       abrirOverlay('historial-sheet');
@@ -1101,12 +1126,14 @@
         aseoLoaded = false;
         setTimeout(() => cargarAseo(), 300);
         const [y, m, d] = key.split('-').map(Number);
-        const fStr = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
+        const fStr = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
         mostrarToast(`Jornada del ${fStr} restaurada`, 'ph-check-circle ok', async () => {
           await db.ref('cancelaciones/' + key).set(true);
-          _cancelados[key] = true; aseoLoaded = false; cargarAseo();
+          _cancelados[key] = true;
+          aseoLoaded = false;
+          cargarAseo();
         });
-      } catch {
+      } catch (_) {
         btn.classList.remove('loading');
         mostrarToast('No se pudo restaurar. Intenta de nuevo.', 'ph-warning-circle err', null);
       }
@@ -1116,7 +1143,7 @@
       _ajusteKey       = btn.dataset.key;
       _ajusteCancelado = btn.dataset.cancelado === '1';
       const [y, m, d] = _ajusteKey.split('-').map(Number);
-      const fStr   = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
+      const fStr   = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
       const title  = document.getElementById('ajuste-title');
       const desc   = document.getElementById('ajuste-desc');
       const accion = document.getElementById('ajuste-accion');
@@ -1143,12 +1170,13 @@
 
     async function confirmarAjuste() {
       const accion = document.getElementById('ajuste-accion');
-      accion.disabled = true; accion.classList.add('loading');
+      accion.disabled = true;
+      accion.classList.add('loading');
       document.getElementById('ajuste-sheet').querySelector('.ajuste-err')?.remove();
       const key          = _ajusteKey;
       const eraCancelado = _ajusteCancelado;
       const [y, m, d]    = key.split('-').map(Number);
-      const fStr         = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
+      const fStr         = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
       try {
         if (eraCancelado) {
           await db.ref('cancelaciones/' + key).remove();
@@ -1157,21 +1185,27 @@
           await db.ref('cancelaciones/' + key).set(true);
           _cancelados[key] = true;
         }
-        aseoLoaded = false; cerrarSheet();
+        aseoLoaded = false;
+        cerrarSheet();
         setTimeout(() => cargarAseo(), 300);
         if (eraCancelado) {
           mostrarToast(`Jornada del ${fStr} restaurada`, 'ph-check-circle ok', async () => {
             await db.ref('cancelaciones/' + key).set(true);
-            _cancelados[key] = true; aseoLoaded = false; cargarAseo();
+            _cancelados[key] = true;
+            aseoLoaded = false;
+            cargarAseo();
           });
         } else {
           mostrarToast(`Jornada del ${fStr} cancelada`, 'ph-x-circle err', async () => {
             await db.ref('cancelaciones/' + key).remove();
-            delete _cancelados[key]; aseoLoaded = false; cargarAseo();
+            delete _cancelados[key];
+            aseoLoaded = false;
+            cargarAseo();
           });
         }
       } catch (e) {
-        accion.disabled = false; accion.classList.remove('loading');
+        accion.disabled = false;
+        accion.classList.remove('loading');
         const err = document.createElement('p');
         err.className   = 'ajuste-err';
         err.textContent = e?.message || 'Error al guardar. Intenta de nuevo.';
@@ -1181,7 +1215,7 @@
 
     function cerrarSheet() {
       const overlay = document.getElementById('sheet-overlay');
-      ['mi-equipo-sheet','ajuste-sheet','historial-sheet','menu-sheet'].forEach(id => document.getElementById(id).classList.remove('open'));
+      ['mi-equipo-sheet', 'ajuste-sheet', 'historial-sheet', 'menu-sheet'].forEach(id => document.getElementById(id).classList.remove('open'));
       overlay.classList.remove('visible');
       setTimeout(() => overlay.classList.remove('open'), 240);
     }
@@ -1193,7 +1227,7 @@
 
     async function cerrarSesion() {
       cerrarSheet();
-      try { await auth.signOut(); } catch {}
+      try { await auth.signOut(); } catch (_) {}
     }
 
     auth.onAuthStateChanged(async user => {
