@@ -876,7 +876,7 @@ function mkCard(cont,equipo,fecha,titulo,esCancelado,admin){
   }
   equipo.forEach(a=>{
     const row=document.createElement('div');row.className='student-row';
-    row.innerHTML=`<div class="st-icon"><i class="ph ph-broom"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
+    row.innerHTML=`<div class="st-icon"><i class="ph ph-user"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
     row.addEventListener('click',()=>toggleNombre(row));
     wrap.appendChild(row);
   });
