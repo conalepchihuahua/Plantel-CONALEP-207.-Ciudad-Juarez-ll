@@ -175,8 +175,8 @@ html,body{
 .my-turn-info{flex:1;min-width:0}
 .my-turn-label{font-size:12px;font-weight:500;color:rgba(255,255,255,.65);margin-bottom:2px}
 .my-turn-date{font-size:18px;font-weight:700;color:#fff;text-transform:capitalize;line-height:1.3}
-.my-turn-sub{font-size:12px;font-weight:500;color:rgba(255,255,255,.5);margin-top:6px;display:flex;align-items:center;gap:4px}
-.my-turn-sub i{font-size:13px}
+.my-turn-sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.5);margin-top:6px;display:flex;align-items:center;gap:4px}
+.my-turn-sub i{font-size:12px}
 .my-turn-chevron{font-size:20px;color:rgba(255,255,255,.4);flex-shrink:0}
 
 .section-card{
@@ -209,7 +209,7 @@ html,body{
 
 .student-row{
   display:flex;align-items:center;
-  padding:0 16px;gap:12px;min-height:52px;
+  padding:0 16px;gap:12px;min-height:56px;
   border-bottom:1px solid var(--line);cursor:pointer;
   transition:background var(--t)
 }
@@ -327,7 +327,7 @@ html,body{
 .hist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--maroon)}
 .hist-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden}
 .hist-date{font-size:14px;font-weight:500;color:var(--ink);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hist-sub{font-size:11px;color:var(--ink-3)}
+.hist-sub{font-size:11px;font-weight:500;color:var(--ink-3)}
 .hist-btn{
   height:30px;padding:0 10px;border-radius:6px;
   border:1.5px solid var(--line);background:transparent;
@@ -361,16 +361,16 @@ html,body{
 .ajuste-err{font-size:12px;font-weight:500;color:var(--maroon);text-align:center;line-height:1.5}
 
 .menu-user{
-  display:flex;align-items:center;gap:12px;
-  padding:16px 20px;border-bottom:1px solid var(--line)
+  display:flex;align-items:center;gap:14px;
+  padding:20px;border-bottom:1px solid var(--line)
 }
 .menu-avatar{
-  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
   background:var(--green-lt);display:flex;align-items:center;justify-content:center
 }
-.menu-avatar i{font-size:18px;color:var(--green)}
-.menu-user-label{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--ink-3);text-transform:uppercase;margin-bottom:2px}
-.menu-user-email{font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.menu-avatar i{font-size:17px;color:var(--green)}
+.menu-user-name{font-size:14px;font-weight:600;color:var(--ink);text-transform:capitalize;margin-bottom:2px}
+.menu-user-email{font-size:12px;font-weight:500;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 
 .menu-item{
   display:flex;align-items:center;gap:14px;
@@ -381,7 +381,7 @@ html,body{
 .menu-item:last-child{border-bottom:none}
 .menu-item:active{background:var(--bg)}
 .menu-item-ico{
-  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;background:var(--bg)
 }
 .menu-item-ico.danger{background:var(--maroon-lt)}
@@ -389,6 +389,7 @@ html,body{
 .menu-item-ico.danger i{color:var(--maroon)}
 .menu-item-label{font-size:14px;font-weight:500;color:var(--ink)}
 .menu-item-label.danger{color:var(--maroon)}
+.menu-item.danger-zone{border-top:1px solid var(--line)}
 
 .notif-item{
   margin:12px 16px 0;
@@ -409,7 +410,7 @@ html,body{
 .notif-text{flex:1;min-width:0}
 
 .notif-title{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3}
-.notif-desc{font-size:12px;color:var(--ink-3);line-height:1.65;margin-top:4px}
+.notif-desc{font-size:12px;font-weight:500;color:var(--ink-3);line-height:1.65;margin-top:4px}
 .notif-foot{padding:0 16px 16px}
 .notif-action{
   height:40px;width:100%;border-radius:var(--r);border:none;
@@ -578,12 +579,12 @@ html,body{
   <div class="menu-user">
     <div class="menu-avatar"><i class="ph ph-user"></i></div>
     <div style="flex:1;min-width:0">
-      <p class="menu-user-label">Sesión activa</p>
+      <p id="menu-name" class="menu-user-name"></p>
       <span id="menu-email" class="menu-user-email"></span>
     </div>
   </div>
   <div id="menu-admin-rows"></div>
-  <button class="menu-item" onclick="cerrarSesion()">
+  <button class="menu-item danger-zone" onclick="cerrarSesion()">
     <div class="menu-item-ico danger"><i class="ph ph-sign-out"></i></div>
     <span class="menu-item-label danger">Cerrar sesión</span>
   </button>
@@ -1055,7 +1056,25 @@ function cerrarSheet(){
   setTimeout(()=>ov.classList.remove('open'),240);
 }
 
-function abrirMenu(){document.getElementById('menu-email').textContent=auth.currentUser?.email??'';abrirOverlay('sheet-menu')}
+async function abrirMenu(){
+  const email=auth.currentUser?.email??'';
+  document.getElementById('menu-email').textContent=email;
+  document.getElementById('menu-name').textContent='';
+  abrirOverlay('sheet-menu');
+  try{
+    const snap=await db.ref('estudiantes').once('value');
+    let found='';
+    snap.forEach(c=>{
+      const v=c.val();
+      if((v['Correo Institucional']||'').toLowerCase()===email.toLowerCase()){
+        const p1=(v['Primer Nombre']||'').trim();
+        const ap=(v['Apellido Paterno']||'').trim();
+        found=[p1,ap].filter(Boolean).join(' ');
+      }
+    });
+    if(found)document.getElementById('menu-name').textContent=found;
+  }catch{}
+}
 async function cerrarSesion(){cerrarSheet();try{await auth.signOut()}catch{}}
 
 auth.onAuthStateChanged(async user=>{
