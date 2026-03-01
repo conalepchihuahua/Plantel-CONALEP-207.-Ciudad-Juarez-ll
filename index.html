@@ -1,1514 +1,1112 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CONALEP</title>
-  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/favicon.ico" />
-  <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="96x96" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/favicon-96x96.png" />
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/apple-touch-icon.png" />
-  <link rel="manifest" href="data:application/json,{&quot;icons&quot;:[{&quot;src&quot;:&quot;https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/web-app-manifest-192x192.png&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/png&quot;},{&quot;src&quot;:&quot;https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/web-app-manifest-512x512.png&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/png&quot;}]}" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css" />
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>CONALEP 207</title>
+<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/favicon.ico"/>
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/apple-touch-icon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"/>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    :root {
-      --green:       #007E67;
-      --green-tint:  rgba(0,126,103,.07);
-      --maroon:      #9b2247;
-      --maroon-tint: rgba(155,34,71,.06);
-      --gold:        #a57f2c;
-      --gold-light:  #e6d194;
-      --ink:         #161a1d;
-      --ink-2:       #3a3f45;
-      --ink-3:       #98989a;
-      --line:        #E8EAED;
-      --surface:     #F5F6F8;
-      --white:       #FFFFFF;
-      --r:           10px;
-      --ease:        cubic-bezier(.4,0,.2,1);
-      --t:           160ms;
-    }
+:root{
+  --green:    #007E67;
+  --green-lt: #EBF5F2;
+  --maroon:   #9b2247;
+  --maroon-lt:#FDF0F4;
+  --gold:     #a57f2c;
+  --gold-lt:  #FDF8EE;
+  --ink:      #111418;
+  --ink-2:    #464C54;
+  --ink-3:    #8A9099;
+  --line:     #E4E6EA;
+  --bg:       #F5F6F8;
+  --white:    #FFFFFF;
+  --r:        10px;
+  --t:        140ms;
+}
 
-    html, body {
-      width: 100%; height: 100%; overflow: hidden;
-      font-family: 'Noto Sans', sans-serif;
-      background: var(--white); color: var(--ink);
-      -webkit-font-smoothing: antialiased;
-      -webkit-tap-highlight-color: transparent;
-    }
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  font-family:'Noto Sans',sans-serif;
+  background:var(--white);color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
 
-    .page { display: none; position: fixed; inset: 0; flex-direction: column; overflow: hidden; background: var(--white); }
-    .page.active { display: flex; }
+.page{display:none;position:fixed;inset:0;flex-direction:column;overflow:hidden;background:var(--white)}
+.page.active{display:flex}
 
-    .auth-scroll {
-      flex: 1; overflow-y: auto; overflow-x: hidden;
-      display: flex; align-items: center; justify-content: center;
-      padding: 0 24px;
-    }
-    .auth-inner  { width: 100%; max-width: 360px; display: flex; flex-direction: column; padding: 48px 0; }
-    .auth-logo   { height: 56px; width: auto; align-self: center; margin-bottom: 44px; object-fit: contain; }
-    .auth-footer {
-      flex-shrink: 0;
-      padding: 8px 24px max(16px, env(safe-area-inset-bottom));
-      border-top: 1px solid var(--line); background: var(--white);
-    }
+.auth-wrap{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  display:flex;align-items:center;justify-content:center;padding:0 24px
+}
+.auth-box{width:100%;max-width:340px;display:flex;flex-direction:column;padding:48px 0}
+.auth-logo{height:44px;width:auto;align-self:center;margin-bottom:40px;object-fit:contain}
+.auth-foot{
+  flex-shrink:0;padding:12px 24px;
+  padding-bottom:max(16px,env(safe-area-inset-bottom));
+  border-top:1px solid var(--line)
+}
 
-    .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
-    .field-group.last { margin-bottom: 24px; }
-    .field-row { position: relative; }
-    .field-input {
-      width: 100%; height: 50px;
-      background: var(--surface); border: 1.5px solid transparent;
-      border-radius: var(--r); padding: 0 48px 0 16px;
-      font-family: 'Noto Sans', sans-serif; font-size: 15px; font-weight: 400;
-      color: var(--ink); outline: none; appearance: none;
-      transition: border-color var(--t) var(--ease), background var(--t) var(--ease);
-    }
-    .field-input::placeholder { color: var(--ink-3); }
-    .field-input:focus { border-color: var(--green); background: var(--white); }
-    .field-input.error { border-color: var(--maroon); }
-    .field-icon   { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 19px; color: var(--ink-3); pointer-events: none; }
-    .field-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; border-radius: 6px; }
-    .field-toggle i { font-size: 19px; color: var(--ink-3); }
-    .field-hint { display: none; font-size: 12px; font-weight: 500; line-height: 1.5; color: var(--maroon); padding: 0 2px; }
-    .field-hint.info   { color: var(--green); }
-    .field-hint.center { text-align: center; padding: 0; }
-    .field-hint.visible { display: block; }
+.field-block{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field-block.last{margin-bottom:20px}
+.field-label{font-size:12px;font-weight:600;color:var(--ink-2);padding:0 2px}
+.field-wrap{position:relative}
+.field-input{
+  width:100%;height:48px;
+  background:var(--bg);border:1.5px solid var(--line);
+  border-radius:var(--r);padding:0 44px 0 14px;
+  font-family:'Noto Sans',sans-serif;font-size:15px;color:var(--ink);
+  outline:none;appearance:none;transition:border-color var(--t)
+}
+.field-input::placeholder{color:var(--ink-3)}
+.field-input:focus{border-color:var(--green);background:var(--white)}
+.field-input.error{border-color:var(--maroon)}
+.field-ico{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  font-size:18px;color:var(--ink-3);pointer-events:none
+}
+.field-eye{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  width:32px;height:32px;border:none;background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px
+}
+.field-eye i{font-size:18px;color:var(--ink-3)}
+.field-msg{
+  display:none;font-size:12px;font-weight:500;color:var(--maroon);
+  padding:0 2px;line-height:1.5
+}
+.field-msg.info{color:var(--green)}
+.field-msg.center{text-align:center;padding:0}
+.field-msg.show{display:block}
+.mt-8{margin-top:8px}
 
-    .btn {
-      height: 50px; width: 100%; border-radius: var(--r);
-      font-family: 'Noto Sans', sans-serif; font-size: 15px; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      gap: 8px; padding: 0 24px; border: none;
-      transition: opacity var(--t) var(--ease);
-    }
-    .btn:hover   { opacity: .86; }
-    .btn:active  { opacity: .70; }
-    .btn.loading { opacity: .40; pointer-events: none; }
-    .btn-primary { background: var(--green); color: var(--white); }
-    .btn-ghost   { background: transparent; border: 1.5px solid var(--line); color: var(--ink-2); }
-    .btn-text {
-      background: none; border: none; cursor: pointer;
-      font-family: 'Noto Sans', sans-serif; font-size: 13px; font-weight: 500;
-      color: var(--green); padding: 8px; align-self: center; margin-top: 4px;
-      transition: opacity var(--t);
-    }
-    .btn-text:hover  { opacity: .7; }
-    .btn-text:active { opacity: .5; }
-    .gap-top { margin-top: 8px; }
+.btn-primary{
+  height:48px;width:100%;border-radius:var(--r);border:none;
+  background:var(--green);color:var(--white);
+  font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:opacity var(--t)
+}
+.btn-primary:active{opacity:.78}
+.btn-primary.loading{opacity:.4;pointer-events:none}
 
-    .app-header {
-      height: 56px; flex-shrink: 0;
-      display: flex; align-items: center; padding: 0 4px;
-      background: var(--white); border-bottom: 1px solid var(--line);
-      padding-top: env(safe-area-inset-top);
-    }
-    .hdr-btn {
-      width: 44px; height: 44px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      border: none; background: transparent; cursor: pointer;
-      border-radius: 8px; transition: background var(--t) var(--ease);
-    }
-    .hdr-btn:hover  { background: var(--surface); }
-    .hdr-btn:active { background: var(--line); }
-    .hdr-btn i { font-size: 22px; color: var(--ink-2); }
-    .hdr-logo  { height: 28px; width: auto; object-fit: contain; flex: 1; margin: 0 8px; }
+.btn-secondary{
+  height:48px;width:100%;border-radius:var(--r);
+  border:1.5px solid var(--line);background:transparent;color:var(--ink-2);
+  font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background var(--t)
+}
+.btn-secondary:active{background:var(--bg)}
 
-    .tab-bar {
-      flex-shrink: 0; display: flex;
-      background: var(--white); border-top: 1px solid var(--line);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .tab-btn {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 3px; height: 54px;
-      background: transparent; border: none; cursor: pointer;
-      color: var(--ink-3); font-family: 'Noto Sans', sans-serif;
-      font-size: 10px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
-      transition: color var(--t) var(--ease);
-    }
-    .tab-btn i { font-size: 21px; }
-    .tab-btn.active { color: var(--green); }
+.btn-text{
+  background:none;border:none;cursor:pointer;
+  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:500;
+  color:var(--green);padding:10px;align-self:center;margin-top:6px;
+  transition:opacity var(--t)
+}
+.btn-text:active{opacity:.6}
 
-    .tab-content { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-    .tab-screen  { display: none; flex: 1; min-height: 0; flex-direction: column; }
-    .tab-screen.active { display: flex; }
+.app-header{
+  height:56px;flex-shrink:0;display:flex;align-items:center;
+  padding:0 4px;padding-top:env(safe-area-inset-top);
+  background:var(--white)
+}
+.hdr-btn{
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  border:none;background:transparent;cursor:pointer;border-radius:8px;flex-shrink:0;
+  transition:background var(--t)
+}
+.hdr-btn:active{background:var(--bg)}
+.hdr-btn i{font-size:22px;color:var(--ink-2)}
+.hdr-logo{height:24px;width:auto;object-fit:contain;flex:1;margin:0 4px}
 
-    #screen-aseo { overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--surface); }
-    .aseo-body   { display: flex; flex-direction: column; padding: 16px; gap: 10px; padding-bottom: 32px; }
+.tab-bar{
+  flex-shrink:0;display:flex;
+  background:var(--white);
+  padding-bottom:env(safe-area-inset-bottom)
+}
+.tab-btn{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  height:56px;background:transparent;border:none;cursor:pointer;
+  color:var(--ink-3);font-family:'Noto Sans',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  transition:color var(--t);border-top:2px solid transparent
+}
+.tab-btn i{font-size:22px}
+.tab-btn.active{color:var(--green);border-top-color:var(--green)}
 
-    #screen-avisos { align-items: center; justify-content: center; background: var(--white); }
-    .avisos-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 32px; text-align: center; }
-    .avisos-empty-icon {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: var(--green-tint); border: 1px solid rgba(0,126,103,.12);
-      display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
-    }
-    .avisos-empty-icon i  { font-size: 26px; color: var(--green); }
-    .avisos-empty-title   { font-size: 15px; font-weight: 600; color: var(--ink); }
-    .avisos-empty-sub     { font-size: 13px; font-weight: 400; color: var(--ink-3); line-height: 1.65; max-width: 260px; }
+.tab-content{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.tab-screen{display:none;flex:1;min-height:0;flex-direction:column}
+.tab-screen.active{display:flex}
 
-    .aseo-banner {
-      border-radius: var(--r); overflow: hidden;
-      padding: 20px 20px 18px; background: var(--green);
-    }
-    .banner-label { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; color: rgba(255,255,255,.55); text-transform: uppercase; }
-    .banner-date  { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.3; text-transform: capitalize; margin-top: 4px; }
-    .banner-chip  {
-      display: inline-flex; align-items: center; gap: 6px;
-      height: 32px; padding: 0 14px; margin-top: 18px;
-      border-radius: 99px; width: fit-content;
-      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.20);
-      color: #fff; font-family: 'Noto Sans', sans-serif;
-      font-size: 12px; font-weight: 600; cursor: pointer;
-      transition: background var(--t) var(--ease);
-    }
-    .banner-chip:hover  { background: rgba(255,255,255,.18); }
-    .banner-chip:active { background: rgba(255,255,255,.24); }
-    .banner-chip i { font-size: 14px; }
+#screen-aseo{overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
+.aseo-body{display:flex;flex-direction:column;padding-bottom:24px}
 
-    .aseo-card  { border-radius: var(--r); background: var(--white); border: 1px solid var(--line); overflow: hidden; }
-    .card-head  { padding: 14px 16px; border-bottom: 1px solid var(--line); }
-    .card-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-    .card-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
-    .card-title { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.35; }
-    .card-sub   { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-top: 3px; }
-    .card-adj {
-      width: 34px; height: 34px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--line); background: transparent; border-radius: 8px;
-      cursor: pointer; margin-top: 1px;
-      transition: background var(--t) var(--ease);
-    }
-    .card-adj:hover  { background: var(--surface); }
-    .card-adj:active { background: var(--line); }
-    .card-adj i { font-size: 17px; color: var(--ink-3); }
-    .cancel-banner {
-      display: flex; align-items: center; gap: 8px;
-      margin-top: 12px; padding: 10px 12px; border-radius: 7px;
-      background: var(--maroon-tint); border: 1px solid rgba(155,34,71,.12);
-      font-size: 12px; font-weight: 500; color: var(--maroon); line-height: 1.4;
-    }
-    .cancel-banner i { font-size: 14px; flex-shrink: 0; }
+#screen-avisos{background:var(--bg)}
+.avisos-body{
+  overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;
+  display:flex;flex-direction:column;padding-bottom:24px
+}
 
-    .student-row {
-      display: flex; align-items: center;
-      padding: 0 16px; gap: 12px; min-height: 60px;
-      border-bottom: 1px solid var(--line);
-      cursor: pointer; min-width: 0;
-      transition: background var(--t) var(--ease);
-    }
-    .student-row:last-child { border-bottom: none; }
-    .student-row:hover  { background: var(--surface); }
-    .student-row:active { background: var(--line); }
-    .student-row.expanded { align-items: flex-start; padding-top: 14px; padding-bottom: 14px; }
-    .s-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-tint); flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,126,103,.12); }
-    .s-avatar i { font-size: 17px; color: var(--green); }
-    .s-name-wrap { flex: 1; min-width: 0; overflow: hidden; }
-    .s-name {
-      font-size: 14px; font-weight: 500; color: var(--ink); line-height: 1.4;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
-      transition: color var(--t) var(--ease);
-    }
-    .s-name.expanded { white-space: normal; overflow: visible; text-overflow: unset; color: var(--green); }
-    .s-num  { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-tint); padding: 3px 8px; border-radius: 99px; flex-shrink: 0; white-space: nowrap; border: 1px solid rgba(0,126,103,.12); }
-    .s-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-    .s-chip    { font-size: 10px; font-weight: 700; letter-spacing: .4px; padding: 3px 7px; border-radius: 99px; text-transform: uppercase; }
-    .dual-chip { color: var(--gold); background: transparent; border: 1px solid rgba(165,127,44,.30); }
+.my-turn-strip{
+  margin:12px 16px 0;
+  background:var(--green);border-radius:var(--r);
+  padding:16px;display:flex;align-items:center;gap:12px
+}
+.my-turn-info{flex:1;min-width:0}
+.my-turn-label{font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:3px}
+.my-turn-date{font-size:15px;font-weight:600;color:#fff;text-transform:capitalize;line-height:1.3}
+.my-turn-btn{
+  flex-shrink:0;height:34px;padding:0 12px;
+  border:1.5px solid rgba(255,255,255,.5);background:transparent;
+  border-radius:6px;color:#fff;
+  font-family:'Noto Sans',sans-serif;font-size:12px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;gap:5px;transition:background var(--t)
+}
+.my-turn-btn:active{background:rgba(255,255,255,.15)}
+.my-turn-btn i{font-size:15px}
 
-    .btn-proximos {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      height: 50px; width: 100%; border-radius: var(--r);
-      border: 1.5px dashed var(--line); background: transparent; cursor: pointer;
-      font-family: 'Noto Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--ink-2);
-      transition: background var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease);
-    }
-    .btn-proximos:hover  { background: var(--surface); }
-    .btn-proximos:active { background: var(--line); }
-    .btn-proximos .icon-cal   { font-size: 17px; color: var(--ink-3); transition: color var(--t) var(--ease); }
-    .btn-proximos .icon-caret { font-size: 15px; color: var(--ink-3); transition: transform 280ms var(--ease), color var(--t) var(--ease); }
-    .btn-proximos.open { border-style: solid; border-color: var(--green); color: var(--green); background: var(--green-tint); }
-    .btn-proximos.open .icon-cal   { color: var(--green); }
-    .btn-proximos.open .icon-caret { color: var(--green); transform: rotate(180deg); }
+.section-card{
+  margin:12px 16px 0;
+  background:var(--white);border-radius:var(--r);overflow:hidden
+}
 
-    .proximos-wrap { display: flex; flex-direction: column; gap: 10px; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 700ms cubic-bezier(.4,0,.2,1), opacity 300ms var(--ease); }
-    .proximos-wrap.open { max-height: 99999px; opacity: 1; }
+.card-header{
+  padding:14px 16px;border-bottom:1px solid var(--line);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px
+}
+.card-header-info{display:flex;flex-direction:column;gap:3px}
+.card-date{font-size:11px;font-weight:700;letter-spacing:.7px;color:var(--gold);text-transform:uppercase}
+.card-title{font-size:14px;font-weight:600;color:var(--ink)}
+.card-admin-btn{
+  width:32px;height:32px;border:none;background:transparent;
+  border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background var(--t)
+}
+.card-admin-btn:active{background:var(--bg)}
+.card-admin-btn i{font-size:18px;color:var(--ink-3)}
 
-    .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 24px; gap: 10px; text-align: center; }
-    .empty-icon { width: 52px; height: 52px; border-radius: 50%; background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
-    .empty-icon i { font-size: 24px; color: var(--green); }
-    .empty-icon.err { background: var(--maroon-tint); border-color: rgba(155,34,71,.12); }
-    .empty-icon.err i { color: var(--maroon); }
-    .empty p { font-size: 14px; color: var(--ink-3); line-height: 1.6; }
-    .empty p.err { color: var(--maroon); }
+.cancelled-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 16px;background:var(--maroon-lt);
+  border-bottom:1px solid var(--line);
+  font-size:12px;font-weight:500;color:var(--maroon);line-height:1.4
+}
+.cancelled-bar i{font-size:15px;flex-shrink:0}
 
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.30); z-index: 100; opacity: 0; transition: opacity 200ms var(--ease); }
-    .overlay.open    { display: block; }
-    .overlay.visible { opacity: 1; }
+.student-row{
+  display:flex;align-items:center;
+  padding:0 16px;gap:12px;min-height:52px;
+  border-bottom:1px solid var(--line);cursor:pointer;
+  transition:background var(--t)
+}
+.student-row:last-child{border-bottom:none}
+.student-row:active{background:var(--bg)}
+.student-row.expanded{align-items:flex-start;padding-top:12px;padding-bottom:12px}
 
-    .sheet {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--white); border-radius: 16px 16px 0 0;
-      border-top: 1px solid var(--line);
-      z-index: 101; max-height: 82vh;
-      display: flex; flex-direction: column;
-      padding-bottom: env(safe-area-inset-bottom);
-      transform: translateY(100%);
-      transition: transform 280ms cubic-bezier(.32,.72,0,1);
-    }
-    .sheet.open { transform: translateY(0); }
-    .sheet-handle { width: 32px; height: 3px; border-radius: 2px; background: var(--line); align-self: center; margin: 10px 0 4px; flex-shrink: 0; }
-    .sheet-hdr { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 14px; flex-shrink: 0; border-bottom: 1px solid var(--line); }
-    .sheet-title { font-size: 15px; font-weight: 600; color: var(--ink); }
-    .sheet-close { width: 30px; height: 30px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--t) var(--ease); }
-    .sheet-close:hover  { background: var(--line); }
-    .sheet-close:active { background: #dde0e3; }
-    .sheet-close i { font-size: 14px; color: var(--ink-3); }
-    .sheet-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; }
-    .sheet-row { display: flex; align-items: center; padding: 0 20px; gap: 12px; height: 62px; border-bottom: 1px solid var(--line); min-width: 0; }
-    .sheet-row:last-child { border-bottom: none; }
-    .sa { width: 36px; height: 36px; border-radius: 50%; background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .sa.me { background: rgba(0,126,103,.14); }
-    .sa i { font-size: 17px; color: var(--green); }
-    .sa-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }
-    .sa-name { font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-    .sa-you  { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: .2px; }
-    .sa-num  { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-tint); padding: 3px 8px; border-radius: 99px; flex-shrink: 0; white-space: nowrap; border: 1px solid rgba(0,126,103,.12); }
+.st-icon{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:var(--bg);display:flex;align-items:center;justify-content:center
+}
+.st-icon i{font-size:16px;color:var(--ink-3)}
 
-    .hist-row { display: flex; align-items: center; padding: 0 20px; gap: 12px; min-height: 62px; border-bottom: 1px solid var(--line); transition: background var(--t) var(--ease); }
-    .hist-row:last-child { border-bottom: none; }
-    .hist-row:hover { background: var(--surface); }
-    .hist-icon { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; background: var(--maroon-tint); border: 1px solid rgba(155,34,71,.12); display: flex; align-items: center; justify-content: center; }
-    .hist-icon i { font-size: 15px; color: var(--maroon); }
-    .hist-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }
-    .hist-date { font-size: 14px; font-weight: 500; color: var(--ink); text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hist-sub  { font-size: 11px; font-weight: 400; color: var(--ink-3); }
-    .hist-restore {
-      height: 30px; padding: 0 12px; border-radius: 99px;
-      border: 1.5px solid var(--green); background: transparent;
-      color: var(--green); font-family: 'Noto Sans', sans-serif;
-      font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0;
-      display: flex; align-items: center; gap: 5px;
-      transition: background var(--t) var(--ease), opacity var(--t) var(--ease);
-    }
-    .hist-restore:hover  { background: var(--green-tint); }
-    .hist-restore:active { background: rgba(0,126,103,.12); }
-    .hist-restore.loading { opacity: .4; pointer-events: none; }
-    .hist-restore i { font-size: 13px; }
+.st-body{flex:1;min-width:0;overflow:hidden}
+.st-name{
+  font-size:14px;font-weight:500;color:var(--ink);line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color var(--t)
+}
+.st-name.open{white-space:normal;overflow:visible;text-overflow:unset;color:var(--green)}
+.st-meta{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.st-num{font-size:11px;font-weight:600;color:var(--ink-3)}
+.st-badge{
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:2px 6px;border-radius:4px;
+  color:var(--gold);background:var(--gold-lt);text-transform:uppercase
+}
 
-    .ajuste-body    { padding: 22px 20px 8px; display: flex; flex-direction: column; gap: 10px; }
-    .ajuste-desc    { font-size: 14px; font-weight: 400; line-height: 1.7; color: var(--ink-2); }
-    .ajuste-actions { padding: 8px 20px max(20px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; }
-    .ajuste-btn {
-      height: 50px; width: 100%; border-radius: var(--r);
-      font-family: 'Noto Sans', sans-serif; font-size: 15px; font-weight: 600;
-      cursor: pointer; border: none; transition: opacity var(--t) var(--ease);
-    }
-    .ajuste-btn:hover   { opacity: .86; }
-    .ajuste-btn:active  { opacity: .70; }
-    .ajuste-btn.loading { opacity: .40; pointer-events: none; }
-    .ajuste-btn.cancel  { background: var(--maroon); color: var(--white); }
-    .ajuste-btn.restore { background: var(--green);  color: var(--white); }
-    .ajuste-btn-sec {
-      height: 50px; width: 100%; border-radius: var(--r);
-      font-family: 'Noto Sans', sans-serif; font-size: 14px; font-weight: 500;
-      cursor: pointer; background: transparent; border: 1.5px solid var(--line);
-      color: var(--ink-3); transition: background var(--t) var(--ease);
-    }
-    .ajuste-btn-sec:hover  { background: var(--surface); }
-    .ajuste-btn-sec:active { background: var(--line); }
-    .ajuste-err { font-size: 12px; font-weight: 500; color: var(--maroon); text-align: center; line-height: 1.5; padding-bottom: 4px; }
+.expand-btn{
+  margin:12px 16px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  height:44px;border-radius:var(--r);
+  border:none;background:var(--white);cursor:pointer;
+  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink-3);
+  transition:color var(--t)
+}
+.expand-btn:active{background:var(--line)}
+.expand-btn i.caret{font-size:16px;transition:transform 240ms}
+.expand-btn.open{color:var(--green)}
+.expand-btn.open i.caret{transform:rotate(180deg)}
 
-    .menu-user {
-      display: flex; align-items: center; gap: 14px;
-      padding: 18px 20px; border-bottom: 1px solid var(--line);
-    }
-    .menu-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .menu-avatar i { font-size: 19px; color: var(--green); }
-    .menu-user-info { flex: 1; min-width: 0; overflow: hidden; }
-    .menu-user-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--ink-3); text-transform: uppercase; margin-bottom: 3px; }
-    .menu-user-email { font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-    .menu-action {
-      display: flex; align-items: center; gap: 14px;
-      padding: 0 20px; height: 60px; width: 100%;
-      background: none; border: none; border-bottom: 1px solid var(--line); cursor: pointer;
-      font-family: 'Noto Sans', sans-serif;
-      transition: background var(--t) var(--ease);
-    }
-    .menu-action:last-child { border-bottom: none; }
-    .menu-action:hover  { background: var(--surface); }
-    .menu-action:active { background: var(--line); }
-    .menu-action-icon {
-      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .menu-action-icon.green { background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); }
-    .menu-action-icon.red   { background: var(--maroon-tint); border: 1px solid rgba(155,34,71,.12); }
-    .menu-action-icon.green i { font-size: 17px; color: var(--green); }
-    .menu-action-icon.red   i { font-size: 17px; color: var(--maroon); }
-    .menu-action-label     { font-size: 14px; font-weight: 500; color: var(--ink); }
-    .menu-action-label.red { color: var(--maroon); }
+.more-list{display:flex;flex-direction:column;overflow:hidden;max-height:0;opacity:0;transition:max-height 600ms,opacity 200ms}
+.more-list.open{max-height:99999px;opacity:1}
 
-    .toast {
-      position: fixed; bottom: 0; left: 12px; right: 12px;
-      background: var(--ink); border-radius: var(--r);
-      padding: 14px 16px; display: flex; align-items: center; gap: 12px;
-      z-index: 200;
-      transform: translateY(calc(100% + 80px));
-      transition: transform 260ms cubic-bezier(.32,.72,0,1);
-      margin-bottom: max(70px, calc(env(safe-area-inset-bottom) + 70px));
-    }
-    .toast.show { transform: translateY(0); }
-    .toast-icon { font-size: 18px; flex-shrink: 0; }
-    .toast-icon.ok  { color: var(--gold-light); }
-    .toast-icon.err { color: #f87171; }
-    .toast-msg  { flex: 1; font-size: 13px; font-weight: 500; color: var(--white); line-height: 1.4; }
-    .toast-undo {
-      height: 28px; padding: 0 12px; border-radius: 99px; flex-shrink: 0;
-      border: 1px solid rgba(255,255,255,.22); background: transparent;
-      color: var(--white); font-family: 'Noto Sans', sans-serif;
-      font-size: 12px; font-weight: 600; cursor: pointer;
-      transition: background var(--t) var(--ease);
-    }
-    .toast-undo:hover  { background: rgba(255,255,255,.08); }
-    .toast-undo:active { background: rgba(255,255,255,.14); }
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:56px 32px;gap:8px;text-align:center
+}
+.empty-state i{font-size:28px;color:var(--line);margin-bottom:4px}
+.empty-state .e-title{font-size:14px;font-weight:600;color:var(--ink-3)}
+.empty-state .e-sub{font-size:13px;color:var(--ink-3);line-height:1.6;max-width:240px}
+.empty-state.err i{color:var(--maroon)}
+.empty-state.err .e-title{color:var(--maroon)}
 
-    /* ── AVISOS ── */
-    #screen-avisos { background: var(--surface); justify-content: flex-start; }
-    .avisos-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 10px; padding-bottom: 32px; }
-    .notif-card { border-radius: var(--r); background: var(--white); border: 1px solid var(--line); overflow: hidden; }
-    .notif-card-head { display: flex; align-items: flex-start; gap: 14px; padding: 18px 18px 14px; }
-    .notif-icon { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .notif-icon.green  { background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); }
-    .notif-icon.gold   { background: rgba(165,127,44,.07); border: 1px solid rgba(165,127,44,.20); }
-    .notif-icon.maroon { background: var(--maroon-tint); border: 1px solid rgba(155,34,71,.12); }
-    .notif-icon.grey   { background: var(--surface); border: 1px solid var(--line); }
-    .notif-icon.green  i { font-size: 19px; color: var(--green); }
-    .notif-icon.gold   i { font-size: 19px; color: var(--gold); }
-    .notif-icon.maroon i { font-size: 19px; color: var(--maroon); }
-    .notif-icon.grey   i { font-size: 19px; color: var(--ink-3); }
-    .notif-text { flex: 1; min-width: 0; }
-    .notif-label { font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; margin-bottom: 3px; }
-    .notif-label.green  { color: var(--green); }
-    .notif-label.gold   { color: var(--gold); }
-    .notif-label.maroon { color: var(--maroon); }
-    .notif-label.grey   { color: var(--ink-3); }
-    .notif-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.35; }
-    .notif-desc  { font-size: 12px; font-weight: 400; color: var(--ink-3); line-height: 1.6; margin-top: 3px; }
-    .notif-card-foot { padding: 0 18px 16px; }
-    .notif-btn { height: 42px; width: 100%; border-radius: 8px; font-family: 'Noto Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity var(--t) var(--ease); }
-    .notif-btn:hover  { opacity: .86; }
-    .notif-btn:active { opacity: .70; }
-    .notif-btn.loading { opacity: .40; pointer-events: none; }
-    .notif-btn.primary { background: var(--green); color: var(--white); }
-    .notif-btn.ghost   { background: var(--surface); border: 1.5px solid var(--line); color: var(--ink-2); }
-    .notif-btn i { font-size: 15px; }
-    .avisos-empty-msg { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 24px; text-align: center; }
-    .avisos-empty-msg .ae-icon { width: 50px; height: 50px; border-radius: 50%; background: var(--green-tint); border: 1px solid rgba(0,126,103,.12); display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
-    .avisos-empty-msg .ae-icon i { font-size: 22px; color: var(--green); }
-    .avisos-empty-msg .ae-title { font-size: 14px; font-weight: 600; color: var(--ink); }
-    .avisos-empty-msg .ae-sub   { font-size: 12px; font-weight: 400; color: var(--ink-3); line-height: 1.65; max-width: 240px; }
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.32);z-index:100;
+  opacity:0;transition:opacity 180ms
+}
+.overlay.open{display:block}
+.overlay.vis{opacity:1}
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .su   { animation: fadeUp .22s var(--ease) both; }
-    .su-2 { animation-delay: .10s; }
+.sheet{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--white);border-radius:16px 16px 0 0;
+  border-top:1px solid var(--line);z-index:101;max-height:82vh;
+  display:flex;flex-direction:column;
+  padding-bottom:env(safe-area-inset-bottom);
+  transform:translateY(100%);
+  transition:transform 280ms cubic-bezier(.32,.72,0,1)
+}
+.sheet.open{transform:translateY(0)}
 
-    /* ═══════════════════════════════
-       CONSOLA VISUAL DE DEPURACIÓN
-       ═══════════════════════════════ */
-    #dc-fab {
-      position: fixed; bottom: 72px; right: 12px; z-index: 9999;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: #1e1e2e; border: 2px solid #45475a;
-      color: #a6e3a1; font-size: 18px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 3px 12px rgba(0,0,0,.45);
-      font-family: monospace; user-select: none;
-    }
-    #dc-badge {
-      position: absolute; top: -5px; right: -5px;
-      min-width: 18px; height: 18px; border-radius: 99px;
-      background: #f38ba8; color: #1e1e2e;
-      font-size: 10px; font-weight: 700;
-      display: none; align-items: center; justify-content: center;
-      padding: 0 4px; font-family: monospace;
-    }
-    #dc-panel {
-      display: none; flex-direction: column;
-      position: fixed; bottom: 0; left: 0; right: 0; height: 55vh;
-      background: #1e1e2e; border-top: 2px solid #313244;
-      z-index: 9998; font-family: monospace; font-size: 12px;
-    }
-    #dc-panel.open { display: flex; }
-    #dc-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 5px 12px; background: #181825;
-      border-bottom: 1px solid #313244; flex-shrink: 0;
-    }
-    #dc-bar-title { color: #cdd6f4; font-size: 11px; font-weight: 700; letter-spacing: .6px; }
-    #dc-bar-btns  { display: flex; gap: 6px; }
-    #dc-bar-btns button {
-      padding: 3px 10px; border-radius: 4px; border: 1px solid #45475a;
-      background: transparent; color: #a6adc8; font-size: 11px;
-      cursor: pointer; font-family: monospace;
-    }
-    #dc-bar-btns button:hover { background: #313244; color: #cdd6f4; }
-    #dc-log {
-      flex: 1; overflow-y: auto; overflow-x: hidden;
-      padding: 2px 0; -webkit-overflow-scrolling: touch;
-    }
-    .dc-row {
-      display: flex; align-items: flex-start; gap: 6px;
-      padding: 4px 10px; border-bottom: 1px solid #181825;
-      word-break: break-all; line-height: 1.55;
-    }
-    .dc-row:hover { background: #24273a; }
-    .dc-ts  { color: #6c7086; flex-shrink: 0; font-size: 10px; margin-top: 2px; min-width: 58px; }
-    .dc-lv  { flex-shrink: 0; font-size: 10px; font-weight: 700;
-               padding: 1px 5px; border-radius: 3px; margin-top: 1px; }
-    .dc-txt { flex: 1; white-space: pre-wrap; color: #cdd6f4; }
-    .dc-row.dc-log  .dc-lv { background: #313244; color: #a6adc8; }
-    .dc-row.dc-info .dc-lv { background: #1e3a5f; color: #89b4fa; }
-    .dc-row.dc-warn .dc-lv { background: #3d2e00; color: #f9e2af; }
-    .dc-row.dc-warn .dc-txt { color: #f9e2af; }
-    .dc-row.dc-error .dc-lv { background: #3d1a1a; color: #f38ba8; }
-    .dc-row.dc-error .dc-txt { color: #f38ba8; }
-    .dc-row.dc-debug .dc-lv { background: #1e3d2f; color: #a6e3a1; }
-  </style>
+.sheet-grip{
+  width:32px;height:4px;border-radius:2px;background:var(--line);
+  align-self:center;margin:10px 0 0;flex-shrink:0
+}
+.sheet-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;flex-shrink:0;border-bottom:1px solid var(--line)
+}
+.sheet-title{font-size:15px;font-weight:600;color:var(--ink)}
+.sheet-close-btn{
+  width:28px;height:28px;border:1px solid var(--line);background:transparent;
+  border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background var(--t)
+}
+.sheet-close-btn:active{background:var(--bg)}
+.sheet-close-btn i{font-size:14px;color:var(--ink-3)}
+.sheet-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1}
+
+.sheet-row{
+  display:flex;align-items:center;padding:0 20px;
+  gap:12px;min-height:56px;border-bottom:1px solid var(--line)
+}
+.sheet-row:last-child{border-bottom:none}
+.sr-icon{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:var(--bg);display:flex;align-items:center;justify-content:center
+}
+.sr-icon i{font-size:16px;color:var(--ink-3)}
+.sr-icon.me{background:var(--green-lt)}
+.sr-icon.me i{color:var(--green)}
+.sr-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden}
+.sr-name{font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-you{font-size:11px;font-weight:600;color:var(--green)}
+.sr-num{font-size:11px;font-weight:600;color:var(--ink-3);flex-shrink:0}
+
+.hist-row{
+  display:flex;align-items:center;padding:0 20px;
+  gap:12px;min-height:56px;border-bottom:1px solid var(--line);
+  transition:background var(--t)
+}
+.hist-row:last-child{border-bottom:none}
+.hist-row:active{background:var(--bg)}
+.hist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--maroon)}
+.hist-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden}
+.hist-date{font-size:14px;font-weight:500;color:var(--ink);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-sub{font-size:11px;color:var(--ink-3)}
+.hist-btn{
+  height:30px;padding:0 10px;border-radius:6px;
+  border:1.5px solid var(--line);background:transparent;
+  color:var(--ink-2);font-family:'Noto Sans',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;gap:4px;transition:border-color var(--t)
+}
+.hist-btn:active{border-color:var(--ink-3)}
+.hist-btn.loading{opacity:.4;pointer-events:none}
+.hist-btn i{font-size:14px}
+
+.ajuste-body{padding:20px;border-bottom:1px solid var(--line)}
+.ajuste-desc{font-size:14px;line-height:1.75;color:var(--ink-2)}
+.ajuste-foot{padding:16px 20px;padding-bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
+.ajuste-action{
+  height:48px;width:100%;border-radius:var(--r);border:none;
+  font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;transition:opacity var(--t)
+}
+.ajuste-action:active{opacity:.78}
+.ajuste-action.loading{opacity:.4;pointer-events:none}
+.ajuste-action.cancel{background:var(--maroon);color:var(--white)}
+.ajuste-action.restore{background:var(--green);color:var(--white)}
+.ajuste-dismiss{
+  height:44px;width:100%;border-radius:var(--r);
+  border:none;background:transparent;
+  font-family:'Noto Sans',sans-serif;font-size:14px;font-weight:500;
+  color:var(--ink-3);cursor:pointer;transition:background var(--t)
+}
+.ajuste-dismiss:active{background:var(--bg)}
+.ajuste-err{font-size:12px;font-weight:500;color:var(--maroon);text-align:center;line-height:1.5}
+
+.menu-user{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 20px;border-bottom:1px solid var(--line)
+}
+.menu-avatar{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:var(--green-lt);display:flex;align-items:center;justify-content:center
+}
+.menu-avatar i{font-size:18px;color:var(--green)}
+.menu-user-label{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--ink-3);text-transform:uppercase;margin-bottom:2px}
+.menu-user-email{font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+
+.menu-item{
+  display:flex;align-items:center;gap:14px;
+  padding:0 20px;height:54px;width:100%;
+  background:none;border:none;border-bottom:1px solid var(--line);
+  cursor:pointer;font-family:'Noto Sans',sans-serif;transition:background var(--t)
+}
+.menu-item:last-child{border-bottom:none}
+.menu-item:active{background:var(--bg)}
+.menu-item-ico{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;background:var(--bg)
+}
+.menu-item-ico.danger{background:var(--maroon-lt)}
+.menu-item-ico i{font-size:17px;color:var(--ink-2)}
+.menu-item-ico.danger i{color:var(--maroon)}
+.menu-item-label{font-size:14px;font-weight:500;color:var(--ink)}
+.menu-item-label.danger{color:var(--maroon)}
+
+.notif-item{
+  margin:12px 16px 0;
+  background:var(--white);border-radius:var(--r);overflow:hidden
+}
+.notif-main{display:flex;align-items:flex-start;gap:12px;padding:16px}
+.notif-badge{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;background:var(--bg)
+}
+.notif-badge i{font-size:18px;color:var(--ink-3)}
+.notif-badge.green{background:var(--green-lt)}
+.notif-badge.green i{color:var(--green)}
+.notif-badge.gold{background:var(--gold-lt)}
+.notif-badge.gold i{color:var(--gold)}
+.notif-badge.maroon{background:var(--maroon-lt)}
+.notif-badge.maroon i{color:var(--maroon)}
+.notif-text{flex:1;min-width:0}
+.notif-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px;color:var(--ink-3)}
+.notif-tag.green{color:var(--green)}
+.notif-tag.gold{color:var(--gold)}
+.notif-tag.maroon{color:var(--maroon)}
+.notif-title{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3}
+.notif-desc{font-size:12px;color:var(--ink-3);line-height:1.65;margin-top:4px}
+.notif-foot{padding:0 16px 16px}
+.notif-action{
+  height:40px;width:100%;border-radius:var(--r);border:none;
+  background:var(--green);color:var(--white);
+  font-family:'Noto Sans',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:opacity var(--t)
+}
+.notif-action:active{opacity:.78}
+.notif-action.loading{opacity:.4;pointer-events:none}
+.notif-action i{font-size:16px}
+
+.toast{
+  position:fixed;bottom:0;left:12px;right:12px;
+  background:var(--ink);border-radius:var(--r);
+  padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:200;
+  transform:translateY(calc(100% + 80px));
+  transition:transform 240ms cubic-bezier(.32,.72,0,1);
+  margin-bottom:max(68px,calc(env(safe-area-inset-bottom) + 68px))
+}
+.toast.show{transform:translateY(0)}
+.toast-ico{font-size:17px;flex-shrink:0}
+.toast-ico.ok{color:#4ECBA8}
+.toast-ico.err{color:#E07A7A}
+.toast-msg{flex:1;font-size:13px;font-weight:500;color:var(--white);line-height:1.4}
+.toast-undo{
+  height:28px;padding:0 10px;border-radius:6px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.25);background:transparent;
+  color:var(--white);font-family:'Noto Sans',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;transition:background var(--t)
+}
+.toast-undo:active{background:rgba(255,255,255,.1)}
+</style>
 </head>
 <body>
 
-  <div id="page-login" class="page active">
-    <div class="auth-scroll">
-      <div class="auth-inner">
-        <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_4.png" alt="CONALEP" class="auth-logo" />
-        <div class="field-group">
-          <div class="field-row">
-            <input id="correo" type="email" placeholder="Correo institucional" autocomplete="email" class="field-input" />
-            <i class="ph ph-envelope field-icon"></i>
-          </div>
-          <p id="login-correo-error" class="field-hint"></p>
+<div id="page-login" class="page active">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_4.png" alt="CONALEP" class="auth-logo"/>
+      <div class="field-block">
+        <label class="field-label" for="correo">Correo institucional</label>
+        <div class="field-wrap">
+          <input id="correo" type="email" placeholder="usuario@chih.conalep.edu.mx" autocomplete="email" class="field-input"/>
+          <i class="ph ph-envelope field-ico"></i>
         </div>
-        <div class="field-group last">
-          <div class="field-row">
-            <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password" class="field-input" />
-            <button type="button" onclick="togglePass(this)" class="field-toggle"><i class="ph ph-eye"></i></button>
-          </div>
-          <p id="login-pass-error" class="field-hint"></p>
-        </div>
-        <button type="button" onclick="entrar()" class="btn btn-primary">Iniciar sesión</button>
-        <p id="login-error" class="field-hint center gap-top"></p>
-        <button type="button" onclick="olvidaste()" class="btn-text">¿Olvidaste tu contraseña?</button>
+        <p id="login-correo-error" class="field-msg"></p>
       </div>
-    </div>
-    <div class="auth-footer">
-      <button type="button" onclick="irARegistro()" class="btn btn-ghost">Crear cuenta</button>
+      <div class="field-block last">
+        <label class="field-label" for="pass">Contraseña</label>
+        <div class="field-wrap">
+          <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" class="field-input"/>
+          <button type="button" onclick="togglePass(this)" class="field-eye"><i class="ph ph-eye"></i></button>
+        </div>
+        <p id="login-pass-error" class="field-msg"></p>
+      </div>
+      <button type="button" onclick="entrar()" class="btn-primary">Iniciar sesión</button>
+      <p id="login-error" class="field-msg center mt-8"></p>
+      <button type="button" onclick="olvidaste()" class="btn-text">¿Olvidaste tu contraseña?</button>
     </div>
   </div>
-
-  <div id="page-registro" class="page">
-    <div class="auth-scroll">
-      <div class="auth-inner">
-        <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_4.png" alt="CONALEP" class="auth-logo" />
-        <div class="field-group">
-          <div class="field-row">
-            <input id="reg-correo" type="email" placeholder="Correo institucional" autocomplete="email" class="field-input" oninput="validarCorreo(this)" />
-            <i class="ph ph-envelope field-icon"></i>
-          </div>
-          <p id="reg-correo-error" class="field-hint">Debe ser un correo @chih.conalep.edu.mx</p>
-        </div>
-        <div class="field-group last">
-          <div class="field-row">
-            <input id="reg-pass" type="password" placeholder="Nueva contraseña" autocomplete="new-password" class="field-input" />
-            <button type="button" onclick="togglePass(this)" class="field-toggle"><i class="ph ph-eye"></i></button>
-          </div>
-        </div>
-        <button type="button" onclick="registrar()" class="btn btn-primary">Crear cuenta</button>
-        <p id="reg-error" class="field-hint center gap-top"></p>
-      </div>
-    </div>
-    <div class="auth-footer">
-      <button type="button" onclick="irALogin()" class="btn btn-ghost">Ya tengo cuenta</button>
-    </div>
+  <div class="auth-foot">
+    <button type="button" onclick="irARegistro()" class="btn-secondary">Crear cuenta nueva</button>
   </div>
+</div>
 
-  <div id="page-app" class="page">
-    <header class="app-header">
-      <button class="hdr-btn" onclick="abrirMenu()"><i class="ph ph-list"></i></button>
-      <img class="hdr-logo"
-        src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/207.%20Ciudad%20Ju%C3%A1rez%20II/207.%20Ciudad%20Jua%CC%81rez%20II_h1.png"
-        alt="CONALEP Plantel 207 Ciudad Juárez II" />
-      <div style="width:44px;height:44px;"></div>
-    </header>
-
-    <div class="tab-content">
-      <div id="screen-aseo" class="tab-screen active">
-        <div id="aseo-list" class="aseo-body"></div>
+<div id="page-registro" class="page">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_4.png" alt="CONALEP" class="auth-logo"/>
+      <div class="field-block">
+        <label class="field-label" for="reg-correo">Correo institucional</label>
+        <div class="field-wrap">
+          <input id="reg-correo" type="email" placeholder="usuario@chih.conalep.edu.mx" autocomplete="email" class="field-input" oninput="validarCorreo(this)"/>
+          <i class="ph ph-envelope field-ico"></i>
+        </div>
+        <p id="reg-correo-error" class="field-msg">Debe terminar en @chih.conalep.edu.mx</p>
       </div>
-      <div id="screen-avisos" class="tab-screen">
-        <div class="avisos-scroll">
-          <div id="notif-card" class="notif-card su"></div>
-          <div class="avisos-empty-msg">
-            <div class="ae-icon"><i class="ph ph-bell-slash"></i></div>
-            <p class="ae-title">Sin avisos por el momento</p>
-            <p class="ae-sub">Aquí aparecerán los comunicados y avisos del plantel cuando estén disponibles.</p>
-          </div>
+      <div class="field-block last">
+        <label class="field-label" for="reg-pass">Contraseña</label>
+        <div class="field-wrap">
+          <input id="reg-pass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" class="field-input"/>
+          <button type="button" onclick="togglePass(this)" class="field-eye"><i class="ph ph-eye"></i></button>
         </div>
       </div>
-    </div>
-
-    <nav class="tab-bar">
-      <button class="tab-btn active" id="tab-aseo" onclick="cambiarTab('aseo')">
-        <i class="ph ph-broom"></i>
-        Aseo
-      </button>
-      <button class="tab-btn" id="tab-avisos" onclick="cambiarTab('avisos')">
-        <i class="ph ph-bell"></i>
-        Avisos
-      </button>
-    </nav>
-  </div>
-
-  <div id="sheet-overlay" class="overlay" onclick="cerrarSheet()"></div>
-
-  <div id="mi-equipo-sheet" class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-hdr">
-      <p class="sheet-title">Equipo de limpieza</p>
-      <button class="sheet-close" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
-    </div>
-    <div id="sheet-body" class="sheet-scroll"></div>
-  </div>
-
-  <div id="ajuste-sheet" class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-hdr">
-      <p id="ajuste-title" class="sheet-title">Cancelar jornada</p>
-      <button class="sheet-close" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
-    </div>
-    <div class="ajuste-body">
-      <p id="ajuste-desc" class="ajuste-desc"></p>
-    </div>
-    <div class="ajuste-actions">
-      <button id="ajuste-accion" class="ajuste-btn cancel" onclick="confirmarAjuste()"></button>
-      <button class="ajuste-btn-sec" onclick="cerrarSheet()">Cancelar</button>
+      <button type="button" onclick="registrar()" class="btn-primary">Crear cuenta</button>
+      <p id="reg-error" class="field-msg center mt-8"></p>
     </div>
   </div>
-
-  <div id="historial-sheet" class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-hdr">
-      <p class="sheet-title">Jornadas canceladas</p>
-      <button class="sheet-close" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
-    </div>
-    <div id="historial-body" class="sheet-scroll"></div>
+  <div class="auth-foot">
+    <button type="button" onclick="irALogin()" class="btn-secondary">Ya tengo cuenta</button>
   </div>
+</div>
 
-  <div id="menu-sheet" class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-hdr">
-      <p class="sheet-title">Mi cuenta</p>
-      <button class="sheet-close" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+<div id="page-app" class="page">
+  <header class="app-header">
+    <button class="hdr-btn" onclick="abrirMenu()"><i class="ph ph-list"></i></button>
+    <img class="hdr-logo"
+      src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/207.%20Ciudad%20Ju%C3%A1rez%20II/207.%20Ciudad%20Jua%CC%81rez%20II_h1.png"
+      alt="CONALEP Plantel 207 Ciudad Juárez II"/>
+    <div style="width:44px;flex-shrink:0"></div>
+  </header>
+
+  <div class="tab-content">
+    <div id="screen-aseo" class="tab-screen active">
+      <div id="aseo-body" class="aseo-body"></div>
     </div>
-    <div class="menu-user">
-      <div class="menu-avatar"><i class="ph-fill ph-user"></i></div>
-      <div class="menu-user-info">
-        <p class="menu-user-label">Sesión activa</p>
-        <span id="menu-email" class="menu-user-email"></span>
+    <div id="screen-avisos" class="tab-screen">
+      <div class="avisos-body">
+        <div id="notif-card" style="margin-top:12px"></div>
       </div>
     </div>
-    <div id="menu-admin-section"></div>
-    <button class="menu-action" onclick="cerrarSesion()">
-      <div class="menu-action-icon red"><i class="ph ph-sign-out"></i></div>
-      <span class="menu-action-label red">Cerrar sesión</span>
+  </div>
+
+  <nav class="tab-bar">
+    <button class="tab-btn active" id="tab-aseo" onclick="cambiarTab('aseo')">
+      <i class="ph-fill ph-broom"></i>Aseo
     </button>
+    <button class="tab-btn" id="tab-avisos" onclick="cambiarTab('avisos')">
+      <i class="ph ph-bell"></i>Avisos
+    </button>
+  </nav>
+</div>
+
+<div id="overlay" class="overlay" onclick="cerrarSheet()"></div>
+
+<div id="sheet-equipo" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Equipo de limpieza</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
   </div>
+  <div id="sheet-equipo-body" class="sheet-scroll"></div>
+</div>
 
-  <div id="toast" class="toast">
-    <i id="toast-icon" class="ph toast-icon"></i>
-    <span id="toast-msg" class="toast-msg"></span>
-    <button id="toast-undo" class="toast-undo" onclick="deshacerAccion()">Deshacer</button>
+<div id="sheet-ajuste" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p id="ajuste-title" class="sheet-title"></p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
   </div>
+  <div class="ajuste-body">
+    <p id="ajuste-desc" class="ajuste-desc"></p>
+  </div>
+  <div class="ajuste-foot">
+    <button id="ajuste-action" class="ajuste-action cancel" onclick="confirmarAjuste()"></button>
+    <button class="ajuste-dismiss" onclick="cerrarSheet()">Cancelar</button>
+  </div>
+</div>
 
-  <!-- ═══════════════════════════════
-       CONSOLA VISUAL DE DEPURACIÓN
-       ═══════════════════════════════ -->
-  <button id="dc-fab" onclick="dcToggle()">
-    ⌨
-    <span id="dc-badge">0</span>
-  </button>
+<div id="sheet-historial" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Jornadas canceladas</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div id="sheet-historial-body" class="sheet-scroll"></div>
+</div>
 
-  <div id="dc-panel">
-    <div id="dc-bar">
-      <span id="dc-bar-title">🖥 Consola</span>
-      <div id="dc-bar-btns">
-        <button onclick="dcClear()">Limpiar</button>
-        <button onclick="dcToggle()">Cerrar ✕</button>
-      </div>
+<div id="sheet-menu" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Mi cuenta</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="menu-user">
+    <div class="menu-avatar"><i class="ph ph-user"></i></div>
+    <div style="flex:1;min-width:0">
+      <p class="menu-user-label">Sesión activa</p>
+      <span id="menu-email" class="menu-user-email"></span>
     </div>
-    <div id="dc-log"></div>
   </div>
+  <div id="menu-admin-rows"></div>
+  <button class="menu-item" onclick="cerrarSesion()">
+    <div class="menu-item-ico danger"><i class="ph ph-sign-out"></i></div>
+    <span class="menu-item-label danger">Cerrar sesión</span>
+  </button>
+</div>
 
-  <script>
-  /* ─── CONSOLA VISUAL ─── */
-  (function () {
-    var log    = document.getElementById('dc-log');
-    var badge  = document.getElementById('dc-badge');
-    var panel  = document.getElementById('dc-panel');
-    var open   = false;
-    var errs   = 0;
+<div id="toast" class="toast">
+  <i id="toast-ico" class="ph toast-ico"></i>
+  <span id="toast-msg" class="toast-msg"></span>
+  <button id="toast-undo" class="toast-undo" onclick="deshacerAccion()">Deshacer</button>
+</div>
 
-    function ts() {
-      var d = new Date();
-      var p = function(n){ return String(n).padStart(2,'0'); };
-      return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyCZpIknDfy3KsV-XtPCkU9s0jDjd9o7nD8",
+  authDomain:"conalep-chihuahua.firebaseapp.com",
+  databaseURL:"https://conalep-chihuahua-default-rtdb.firebaseio.com",
+  projectId:"conalep-chihuahua",
+  storageBucket:"conalep-chihuahua.firebasestorage.app",
+  messagingSenderId:"848130047778",
+  appId:"1:848130047778:web:c7cef212c226d08806ef7b"
+});
+
+const auth=firebase.auth();
+const db=firebase.database();
+let messaging=null;
+try{messaging=firebase.messaging()}catch{}
+
+const DOMAIN='@chih.conalep.edu.mx';
+const ROTACION_INICIO=new Date(2026,1,23);
+const VAPID_KEY='BM7AVmABZal3jhwQvGHuNC2ZEFv1fafGv7ip5Lm_ruqM7WiAYN1vLqyFiHABft5NEmmPC86t3UowlvzP_j3Oc48';
+
+const ERRORES={
+  'auth/invalid-email':'El correo no tiene un formato válido.',
+  'auth/user-not-found':'No existe ninguna cuenta asociada a este correo.',
+  'auth/wrong-password':'La contraseña es incorrecta.',
+  'auth/invalid-credential':'El correo o la contraseña son incorrectos.',
+  'auth/too-many-requests':'Demasiados intentos. Espera unos minutos e intenta de nuevo.',
+  'auth/email-already-in-use':'Ya existe una cuenta con este correo.',
+  'auth/weak-password':'La contraseña debe tener al menos 6 caracteres.',
+  'auth/network-request-failed':'Sin conexión. Verifica tu red e intenta de nuevo.'
+};
+const ERR_CAMPO={
+  correo:['auth/invalid-email','auth/user-not-found'],
+  pass:['auth/wrong-password','auth/invalid-credential']
+};
+
+let _cancelados={},_aseoLoaded=false,_equipoSheet=[],_yoIdx=null;
+let _toastTimer=null,_undoFn=null,_ajusteKey=null,_ajusteCancelado=false;
+let _esAdmin=false,_tabActual='aseo';
+
+function fkey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function cancelado(d){return!!_cancelados[fkey(d)]}
+function mensErr(c){return ERRORES[c]||'Ocurrió un error inesperado. Intenta de nuevo.'}
+
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function showMsg(el,txt,tipo,center){el.textContent=txt;el.className='field-msg'+(tipo?' '+tipo:'')+(center?' center':'')+' show'}
+function hideMsg(el){el.classList.remove('show')}
+function setBusy(btn,v){btn.disabled=v;btn.classList.toggle('loading',v)}
+
+function togglePass(btn){
+  const i=btn.parentElement.querySelector('input');
+  i.type=i.type==='password'?'text':'password';
+  btn.querySelector('i').className=i.type==='password'?'ph ph-eye':'ph ph-eye-slash';
+}
+function validarCorreo(inp){
+  const ok=inp.value===''||inp.value.endsWith(DOMAIN);
+  document.getElementById('reg-correo-error').classList.toggle('show',!ok);
+  inp.classList.toggle('error',!ok);
+}
+
+function resetLogin(){
+  ['correo','pass'].forEach(id=>{const e=document.getElementById(id);e.value='';e.classList.remove('error');if(id==='pass')e.type='password'});
+  document.querySelector('#page-login .field-eye i').className='ph ph-eye';
+  ['login-correo-error','login-pass-error','login-error'].forEach(id=>hideMsg(document.getElementById(id)));
+}
+function resetRegistro(){
+  const c=document.getElementById('reg-correo');c.value='';c.classList.remove('error');
+  hideMsg(document.getElementById('reg-correo-error'));
+  const p=document.getElementById('reg-pass');p.value='';p.type='password';
+  document.querySelector('#page-registro .field-eye i').className='ph ph-eye';
+  hideMsg(document.getElementById('reg-error'));
+}
+function irARegistro(){resetRegistro();showPage('page-registro')}
+function irALogin(){resetLogin();showPage('page-login')}
+
+function mostrarErrorLogin(code){
+  const cEl=document.getElementById('login-correo-error');
+  const pEl=document.getElementById('login-pass-error');
+  const fEl=document.getElementById('login-error');
+  hideMsg(cEl);document.getElementById('correo').classList.remove('error');
+  hideMsg(pEl);document.getElementById('pass').classList.remove('error');
+  hideMsg(fEl);
+  if(ERR_CAMPO.correo.includes(code)){showMsg(cEl,mensErr(code));document.getElementById('correo').classList.add('error')}
+  else if(ERR_CAMPO.pass.includes(code)){showMsg(pEl,mensErr(code));document.getElementById('pass').classList.add('error')}
+  else{showMsg(fEl,mensErr(code),'','center')}
+}
+
+function entrar(){
+  const correo=document.getElementById('correo').value.trim();
+  const pass=document.getElementById('pass').value;
+  ['login-correo-error','login-pass-error','login-error'].forEach(id=>hideMsg(document.getElementById(id)));
+  if(!correo){document.getElementById('correo').focus();return}
+  if(!pass){document.getElementById('pass').focus();return}
+  const btn=document.querySelector('#page-login .btn-primary');
+  setBusy(btn,true);
+  auth.signInWithEmailAndPassword(correo,pass)
+    .then(()=>showPage('page-app'))
+    .catch(e=>{mostrarErrorLogin(e.code);setBusy(btn,false)});
+}
+
+async function registrar(){
+  const correo=document.getElementById('reg-correo').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const errEl=document.getElementById('reg-error');
+  hideMsg(errEl);
+  if(!correo.endsWith(DOMAIN)){document.getElementById('reg-correo').classList.add('error');document.getElementById('reg-correo-error').classList.add('show');document.getElementById('reg-correo').focus();return}
+  if(!pass){document.getElementById('reg-pass').focus();return}
+  const btn=document.querySelector('#page-registro .btn-primary');
+  setBusy(btn,true);
+  try{await auth.createUserWithEmailAndPassword(correo,pass);showPage('page-app')}
+  catch(e){showMsg(errEl,mensErr(e.code),'','center');setBusy(btn,false)}
+}
+
+async function olvidaste(){
+  const correo=document.getElementById('correo').value.trim();
+  const errEl=document.getElementById('login-error');
+  if(!correo){showMsg(errEl,'Ingresa tu correo para recibir el enlace de restablecimiento.','info',true);document.getElementById('correo').focus();return}
+  try{await auth.sendPasswordResetEmail(correo);showMsg(errEl,'Si existe una cuenta con ese correo, recibirás un enlace de restablecimiento.','info',true)}
+  catch(e){showMsg(errEl,mensErr(e.code),'','center')}
+}
+
+async function esAdmin(uid){
+  if(!uid)return false;
+  try{const s=await db.ref('admins/'+uid).once('value');return s.exists()}
+  catch{return false}
+}
+
+async function registrarToken(uid,correo){
+  if(!messaging)return;
+  try{
+    const p=await Notification.requestPermission();
+    if(p!=='granted')return;
+    const sw=await navigator.serviceWorker.ready;
+    const tok=await messaging.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:sw});
+    if(tok)await db.ref('fcmTokens/'+uid).set({token:tok,correo,actualizado:Date.now()});
+  }catch{}
+}
+
+function cambiarTab(tab){
+  if(_tabActual===tab)return;
+  _tabActual=tab;
+  document.querySelectorAll('.tab-screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.remove('active');
+    b.querySelector('i').className=b.querySelector('i').className.replace('ph-fill ph-','ph ph-');
+  });
+  document.getElementById('screen-'+tab).classList.add('active');
+  const btn=document.getElementById('tab-'+tab);
+  btn.classList.add('active');
+  btn.querySelector('i').className=btn.querySelector('i').className.replace('ph ph-','ph-fill ph-');
+  if(tab==='avisos')renderNotifCard();
+}
+
+function renderMenuAdmin(){
+  const c=document.getElementById('menu-admin-rows');c.innerHTML='';
+  if(!_esAdmin)return;
+  const b=document.createElement('button');
+  b.className='menu-item';
+  b.innerHTML='<div class="menu-item-ico"><i class="ph ph-calendar-x"></i></div><span class="menu-item-label">Jornadas canceladas</span>';
+  b.addEventListener('click',()=>{cerrarSheet();setTimeout(abrirHistorial,300)});
+  c.appendChild(b);
+}
+
+function toast(msg,icoCls,undoFn){
+  clearTimeout(_toastTimer);
+  _undoFn=undoFn||null;
+  const t=document.getElementById('toast');
+  document.getElementById('toast-ico').className='ph '+icoCls+' toast-ico';
+  document.getElementById('toast-msg').textContent=msg;
+  document.getElementById('toast-undo').style.display=_undoFn?'':'none';
+  t.classList.add('show');
+  _toastTimer=setTimeout(()=>t.classList.remove('show'),5000);
+}
+
+async function deshacerAccion(){
+  if(!_undoFn)return;
+  document.getElementById('toast').classList.remove('show');
+  clearTimeout(_toastTimer);
+  try{await _undoFn()}catch{}
+  _undoFn=null;
+}
+
+function esMMFD(a){return(a['MMFD']||'').toLowerCase().includes('incorporado')}
+
+function proximoHabil(desde){
+  const d=new Date(desde);d.setHours(0,0,0,0);
+  while(d.getDay()===0||d.getDay()===6||cancelado(d))d.setDate(d.getDate()+1);
+  return d;
+}
+function siguientes(desde,n){
+  const dias=[];const d=new Date(desde);d.setHours(0,0,0,0);
+  while(dias.length<n){if(d.getDay()!==0&&d.getDay()!==6&&!cancelado(d))dias.push(new Date(d));d.setDate(d.getDate()+1)}
+  return dias;
+}
+function restantesSemana(desde){
+  const dias=[];const d=new Date(desde);d.setHours(0,0,0,0);
+  while(d.getDay()>=1&&d.getDay()<=5){if(!cancelado(d))dias.push(new Date(d));d.setDate(d.getDate()+1)}
+  return dias;
+}
+
+function simular(alumnos,fechas){
+  if(!fechas.length)return new Map();
+  const sorted=[...fechas].sort((a,b)=>a-b);
+  const max=sorted[sorted.length-1];
+  const set=new Set(fechas.map(f=>fkey(f)));
+  const result=new Map();
+  let queue=[...alumnos];
+  const d=new Date(ROTACION_INICIO);d.setHours(0,0,0,0);
+  const h=new Date(max);h.setHours(0,0,0,0);
+  while(d<=h){
+    const dow=d.getDay();
+    if(dow!==0&&dow!==6&&!cancelado(d)){
+      const restr=dow===1||dow===2;
+      const eq=[],skip=[];
+      let i=0;
+      while(eq.length<5&&i<queue.length){const a=queue[i];if(restr&&esMMFD(a))skip.push(a);else eq.push(a);i++}
+      if(set.has(fkey(d)))result.set(fkey(d),[...eq]);
+      queue=[...skip,...queue.slice(i),...eq];
     }
+    d.setDate(d.getDate()+1);
+  }
+  return result;
+}
 
-    function addRow(type, args) {
-      var text = args.map(function(a){
-        if (a === null)      return 'null';
-        if (a === undefined) return 'undefined';
-        if (a instanceof Error) return a.message + (a.stack ? '\n'+a.stack : '');
-        if (typeof a === 'object') { try { return JSON.stringify(a,null,2); } catch(e){ return String(a); } }
-        return String(a);
-      }).join(' ');
+function proximoTurno(alumnos,correo,desde){
+  const futuros=siguientes(desde,90);
+  if(!futuros.length)return null;
+  const eqs=simular(alumnos,futuros);
+  for(const f of futuros){
+    const eq=eqs.get(fkey(f))||[];
+    if(eq.some(a=>(a['Correo Institucional']||'').toLowerCase()===correo))return{fecha:f,equipo:eq};
+  }
+  return null;
+}
 
-      var labels = { log:'LOG', info:'INFO', warn:'WARN', error:'ERR', debug:'DBG' };
-      var row = document.createElement('div');
-      row.className = 'dc-row dc-' + type;
-      var ts_el  = document.createElement('span'); ts_el.className  = 'dc-ts';  ts_el.textContent = ts();
-      var lv_el  = document.createElement('span'); lv_el.className  = 'dc-lv';  lv_el.textContent = labels[type] || type.toUpperCase();
-      var txt_el = document.createElement('span'); txt_el.className = 'dc-txt'; txt_el.textContent = text;
-      row.appendChild(ts_el); row.appendChild(lv_el); row.appendChild(txt_el);
-      log.appendChild(row);
-      log.scrollTop = log.scrollHeight;
+function nombre(a){
+  const p1=(a['Primer Nombre']||'').trim(),p2=(a['Segundo Nombre']||'').trim();
+  const ap=(a['Apellido Paterno']||'').trim(),am=(a['Apellido Materno']||'').trim();
+  const n=[p1,p2].filter(Boolean).join(' ');
+  const ap2=[ap,am].filter(Boolean).join(' ');
+  if(n&&ap2)return n+' '+ap2;
+  return n||ap2||'Alumno '+(a['No']||'');
+}
 
-      if (type === 'error' || type === 'warn') {
-        errs++;
-        badge.textContent = errs > 99 ? '99+' : errs;
-        badge.style.display = 'flex';
+function fstr(d,opts){return d.toLocaleDateString('es-MX',opts||{weekday:'long',day:'numeric',month:'long'})}
+
+function toggleNombre(row){
+  const el=row.querySelector('.st-name');
+  const open=el.classList.toggle('open');
+  row.classList.toggle('expanded',open);
+}
+
+function mkTurnStrip(cont,fecha,equipo,yoIdx){
+  _equipoSheet=equipo||[];_yoIdx=yoIdx??null;
+  const el=document.createElement('div');
+  el.className='my-turn-strip';
+  el.innerHTML=`<div class="my-turn-info"><p class="my-turn-label">Tu próxima asignación</p><p class="my-turn-date">${fstr(fecha)}</p></div><button class="my-turn-btn" onclick="abrirEquipoSheet()"><i class="ph ph-users"></i>Ver equipo</button>`;
+  cont.appendChild(el);
+}
+
+function mkCard(cont,equipo,fecha,titulo,esCancelado,admin){
+  const wrap=document.createElement('div');wrap.className='section-card';
+  const hdr=document.createElement('div');hdr.className='card-header';
+  const info=document.createElement('div');info.className='card-header-info';
+  info.innerHTML=`<p class="card-date">${fstr(fecha)}</p><p class="card-title">${titulo}</p>`;
+  hdr.appendChild(info);
+  if(admin){
+    const ab=document.createElement('button');ab.className='card-admin-btn';
+    ab.dataset.key=fkey(fecha);ab.dataset.cancelado=esCancelado?'1':'0';
+    ab.innerHTML=`<i class="ph ${esCancelado?'ph-arrow-counter-clockwise':'ph-x-circle'}"></i>`;
+    ab.addEventListener('click',function(){abrirAjuste(this)});
+    hdr.appendChild(ab);
+  }
+  wrap.appendChild(hdr);
+  if(esCancelado){
+    const bar=document.createElement('div');bar.className='cancelled-bar';
+    bar.innerHTML='<i class="ph ph-warning-circle"></i>Jornada cancelada — la rotación fue ajustada automáticamente';
+    wrap.appendChild(bar);
+  }
+  equipo.forEach(a=>{
+    const row=document.createElement('div');row.className='student-row';
+    row.innerHTML=`<div class="st-icon"><i class="ph ph-broom"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
+    row.addEventListener('click',()=>toggleNombre(row));
+    wrap.appendChild(row);
+  });
+  cont.appendChild(wrap);
+}
+
+function mkExpandBtn(cont,diasFuturos,equiposPorDia,admin){
+  if(!diasFuturos.length)return;
+  const btn=document.createElement('button');btn.className='expand-btn';
+  btn.innerHTML='<i class="ph ph-calendar-dots"></i><span class="lbl">Ver próximos días</span><i class="ph ph-caret-down caret"></i>';
+  const list=document.createElement('div');list.className='more-list';
+  diasFuturos.forEach(d=>{
+    const eq=equiposPorDia.get(fkey(d))||[];
+    mkCard(list,eq,d,'Equipo de limpieza',false,admin);
+  });
+  let open=false;
+  btn.addEventListener('click',()=>{
+    open=!open;btn.classList.toggle('open',open);list.classList.toggle('open',open);
+    btn.querySelector('.lbl').textContent=open?'Ocultar días':'Ver próximos días';
+  });
+  cont.appendChild(btn);cont.appendChild(list);
+}
+
+async function cargarAseo(){
+  if(_aseoLoaded)return;_aseoLoaded=true;
+  const cont=document.getElementById('aseo-body');cont.innerHTML='';
+  const correoUsuario=auth.currentUser?.email?.toLowerCase()??null;
+  const uid=auth.currentUser?.uid??null;
+  _esAdmin=await esAdmin(uid);
+  try{const s=await db.ref('cancelaciones').once('value');_cancelados=s.val()||{}}
+  catch{_cancelados={}}
+  renderMenuAdmin();
+  try{
+    const snap=await db.ref('estudiantes').once('value');
+    const alumnos=[];
+    snap.forEach(c=>{const v=c.val();if(v&&typeof v==='object')alumnos.push(v)});
+    if(!alumnos.length){
+      cont.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">Sin estudiantes registrados</p></div>';
+      return;
+    }
+    alumnos.sort((a,b)=>(parseInt(a['No'])||0)-(parseInt(b['No'])||0));
+    const hoy=new Date();hoy.setHours(0,0,0,0);
+    const esFDS=hoy.getDay()===0||hoy.getDay()===6;
+    const hoyCancelado=cancelado(hoy);
+    const manana=new Date(hoy);manana.setDate(manana.getDate()+1);
+
+    if(esFDS||hoyCancelado){
+      const prox=proximoHabil(manana);
+      const sigDesde=new Date(prox);sigDesde.setDate(sigDesde.getDate()+1);
+      const rest=_esAdmin?siguientes(sigDesde,19):restantesSemana(sigDesde);
+      const fechas=[prox,...rest];
+      const eqs=simular(alumnos,fechas);
+      const eqProx=eqs.get(fkey(prox))||[];
+      if(correoUsuario){
+        const turno=proximoTurno(alumnos,correoUsuario,manana);
+        if(turno){const yi=turno.equipo.findIndex(a=>(a['Correo Institucional']||'').toLowerCase()===correoUsuario);mkTurnStrip(cont,turno.fecha,turno.equipo,yi>=0?yi:null)}
       }
+      mkCard(cont,eqProx,prox,hoyCancelado?'Próximo equipo disponible':'Equipo del próximo día hábil',false,_esAdmin);
+      mkExpandBtn(cont,rest,eqs,_esAdmin);
+      return;
     }
 
-    var orig = {};
-    ['log','info','warn','error','debug'].forEach(function(t){
-      orig[t] = console[t].bind(console);
-      console[t] = function(){
-        var a = Array.prototype.slice.call(arguments);
-        orig[t].apply(console, a);
-        addRow(t, a);
-      };
+    const resto=_esAdmin?siguientes(manana,20):restantesSemana(manana);
+    const fechas=[hoy,...resto];
+    const eqs=simular(alumnos,fechas);
+    const eqHoy=eqs.get(fkey(hoy))||[];
+    const limpiaHoy=correoUsuario&&eqHoy.some(a=>(a['Correo Institucional']||'').toLowerCase()===correoUsuario);
+    if(correoUsuario&&!limpiaHoy){
+      const turno=proximoTurno(alumnos,correoUsuario,manana);
+      if(turno){const yi=turno.equipo.findIndex(a=>(a['Correo Institucional']||'').toLowerCase()===correoUsuario);mkTurnStrip(cont,turno.fecha,turno.equipo,yi>=0?yi:null)}
+    }
+    mkCard(cont,eqHoy,hoy,'Equipo de hoy',false,_esAdmin);
+    mkExpandBtn(cont,resto,eqs,_esAdmin);
+  }catch{
+    cont.innerHTML='<div class="empty-state err"><i class="ph ph-wifi-slash"></i><p class="e-title">No se pudo cargar la información</p><p class="e-sub">Verifica tu conexión e intenta de nuevo.</p></div>';
+  }
+}
+
+function abrirEquipoSheet(){
+  const body=document.getElementById('sheet-equipo-body');body.innerHTML='';
+  _equipoSheet.forEach((a,i)=>{
+    const esYo=i===_yoIdx;
+    const row=document.createElement('div');row.className='sheet-row';
+    row.innerHTML=`<div class="sr-icon${esYo?' me':''}"><i class="ph ph-user"></i></div><div class="sr-info"><span class="sr-name">${nombre(a)}</span>${esYo?'<span class="sr-you">Tú</span>':''}</div><span class="sr-num">No.${a['No']||''}</span>`;
+    body.appendChild(row);
+  });
+  abrirOverlay('sheet-equipo');
+}
+
+function abrirHistorial(){
+  const body=document.getElementById('sheet-historial-body');body.innerHTML='';
+  const claves=Object.keys(_cancelados).sort();
+  if(!claves.length){
+    body.innerHTML='<div class="empty-state"><i class="ph ph-check-circle"></i><p class="e-title">Sin jornadas canceladas</p></div>';
+    abrirOverlay('sheet-historial');return;
+  }
+  claves.forEach(key=>{
+    const [y,m,d]=key.split('-').map(Number);
+    const fecha=new Date(y,m-1,d);
+    const hoy=new Date();hoy.setHours(0,0,0,0);
+    const row=document.createElement('div');row.className='hist-row';
+    row.innerHTML=`<div class="hist-dot"></div><div class="hist-info"><span class="hist-date">${fstr(fecha,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span><span class="hist-sub">${fecha<hoy?'Fecha pasada':'Próxima'}</span></div><button class="hist-btn" data-key="${key}"><i class="ph ph-arrow-counter-clockwise"></i>Restaurar</button>`;
+    row.querySelector('.hist-btn').addEventListener('click',function(){restaurarHistorial(this)});
+    body.appendChild(row);
+  });
+  abrirOverlay('sheet-historial');
+}
+
+async function restaurarHistorial(btn){
+  const key=btn.dataset.key;btn.classList.add('loading');
+  try{
+    await db.ref('cancelaciones/'+key).remove();delete _cancelados[key];
+    const row=btn.closest('.hist-row');
+    row.style.transition='opacity 160ms';row.style.opacity='0';
+    setTimeout(()=>{
+      row.remove();
+      const body=document.getElementById('sheet-historial-body');
+      if(!body.querySelector('.hist-row'))body.innerHTML='<div class="empty-state"><i class="ph ph-check-circle"></i><p class="e-title">Sin jornadas canceladas</p></div>';
+    },160);
+    _aseoLoaded=false;setTimeout(()=>cargarAseo(),280);
+    const [y,m,d]=key.split('-').map(Number);
+    toast(`Jornada del ${fstr(new Date(y,m-1,d))} restaurada`,'ph-check-circle ok',async()=>{await db.ref('cancelaciones/'+key).set(true);_cancelados[key]=true;_aseoLoaded=false;cargarAseo()});
+  }catch{btn.classList.remove('loading');toast('No se pudo restaurar. Intenta de nuevo.','ph-warning-circle err',null)}
+}
+
+function abrirAjuste(btn){
+  _ajusteKey=btn.dataset.key;_ajusteCancelado=btn.dataset.cancelado==='1';
+  const [y,m,d]=_ajusteKey.split('-').map(Number);
+  const f=fstr(new Date(y,m-1,d));
+  const title=document.getElementById('ajuste-title');
+  const desc=document.getElementById('ajuste-desc');
+  const action=document.getElementById('ajuste-action');
+  if(_ajusteCancelado){
+    title.textContent='Restaurar jornada';
+    desc.textContent=`La jornada del ${f} está cancelada. Al restaurarla, la rotación volverá a incluir este día y el equipo asignado regresará a su posición original.`;
+    action.textContent='Restaurar jornada';action.className='ajuste-action restore';
+  }else{
+    title.textContent='Cancelar jornada';
+    desc.textContent=`Al cancelar la jornada del ${f}, la rotación se ajustará automáticamente y el equipo asignado pasará al siguiente día hábil disponible.`;
+    action.textContent='Cancelar jornada';action.className='ajuste-action cancel';
+  }
+  abrirOverlay('sheet-ajuste');
+}
+
+function abrirOverlay(sheetId){
+  const ov=document.getElementById('overlay');
+  document.getElementById(sheetId).classList.add('open');
+  ov.classList.add('open');
+  requestAnimationFrame(()=>ov.classList.add('vis'));
+}
+
+async function confirmarAjuste(){
+  const action=document.getElementById('ajuste-action');
+  action.disabled=true;action.classList.add('loading');
+  document.getElementById('sheet-ajuste').querySelector('.ajuste-err')?.remove();
+  const key=_ajusteKey,eraCancelado=_ajusteCancelado;
+  const [y,m,d]=key.split('-').map(Number);
+  const f=fstr(new Date(y,m-1,d));
+  try{
+    if(eraCancelado){await db.ref('cancelaciones/'+key).remove();delete _cancelados[key]}
+    else{await db.ref('cancelaciones/'+key).set(true);_cancelados[key]=true}
+    _aseoLoaded=false;cerrarSheet();setTimeout(()=>cargarAseo(),280);
+    if(eraCancelado)toast(`Jornada del ${f} restaurada`,'ph-check-circle ok',async()=>{await db.ref('cancelaciones/'+key).set(true);_cancelados[key]=true;_aseoLoaded=false;cargarAseo()});
+    else toast(`Jornada del ${f} cancelada`,'ph-x-circle err',async()=>{await db.ref('cancelaciones/'+key).remove();delete _cancelados[key];_aseoLoaded=false;cargarAseo()});
+  }catch(e){
+    action.disabled=false;action.classList.remove('loading');
+    const err=document.createElement('p');err.className='ajuste-err';
+    err.textContent=e?.message||'Error al guardar. Intenta de nuevo.';action.before(err);
+  }
+}
+
+function cerrarSheet(){
+  const ov=document.getElementById('overlay');
+  ['sheet-equipo','sheet-ajuste','sheet-historial','sheet-menu'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  ov.classList.remove('vis');
+  setTimeout(()=>ov.classList.remove('open'),240);
+}
+
+function abrirMenu(){document.getElementById('menu-email').textContent=auth.currentUser?.email??'';abrirOverlay('sheet-menu')}
+async function cerrarSesion(){cerrarSheet();try{await auth.signOut()}catch{}}
+
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    showPage('page-app');await registrarToken(user.uid,user.email);cargarAseo();
+  }else{
+    _cancelados={};_esAdmin=false;_aseoLoaded=false;_equipoSheet=[];_yoIdx=null;_tabActual='aseo';
+    document.getElementById('aseo-body').innerHTML='';
+    document.getElementById('menu-admin-rows').innerHTML='';
+    document.querySelectorAll('.tab-screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>{
+      b.classList.remove('active');b.style.borderTopColor='';
+      b.querySelector('i').className=b.querySelector('i').className.replace('ph-fill ph-','ph ph-');
     });
+    document.getElementById('screen-aseo').classList.add('active');
+    const at=document.getElementById('tab-aseo');
+    at.classList.add('active');at.querySelector('i').className='ph-fill ph-broom';
+    irALogin();
+  }
+});
 
-    window.addEventListener('error', function(e){
-      addRow('error', ['Uncaught: ' + e.message +
-        (e.filename ? ' (' + e.filename + ':' + e.lineno + ')' : '')]);
+if(messaging){
+  messaging.onMessage(payload=>{
+    toast(payload.notification?.body??payload.notification?.title??'Nuevo aviso del plantel','ph-bell ok',null);
+  });
+}
+
+function renderNotifCard(){
+  const card=document.getElementById('notif-card');if(!card)return;
+  const supported=('Notification' in window)&&!!messaging;
+  const perm=supported?Notification.permission:'unsupported';
+  const map={
+    granted:    {cls:'green', icon:'ph-bell-ringing',     tag:'Activas',      title:'Recibes avisos del plantel',          desc:'Te notificaremos cuando haya comunicados o cambios importantes en la rotación de CONALEP Plantel 207.',btn:null},
+    default:    {cls:'gold',  icon:'ph-bell',              tag:'Desactivadas', title:'Activa las notificaciones de avisos', desc:'Permítenos avisarte cuando haya comunicados o cambios en la rotación de aseo.',btn:{label:'Activar notificaciones',icon:'ph-bell'}},
+    denied:     {cls:'maroon',icon:'ph-bell-slash',        tag:'Bloqueadas',   title:'Acceso denegado por el navegador',    desc:'Para activarlas, ve a la configuración de tu navegador, busca este sitio y permite las notificaciones.',btn:null},
+    unsupported:{cls:'',      icon:'ph-bell-simple-slash', tag:'No compatible',title:'Notificaciones no disponibles',       desc:'Tu navegador no soporta notificaciones push. Consulta los avisos directamente en esta sección.',btn:null}
+  };
+  const e=map[perm]||map.unsupported;
+  card.className='notif-item';
+  card.innerHTML=`<div class="notif-main"><div class="notif-badge ${e.cls}"><i class="ph ${e.icon}"></i></div><div class="notif-text"><p class="notif-tag ${e.cls}">${e.tag}</p><p class="notif-title">${e.title}</p><p class="notif-desc">${e.desc}</p></div></div>${e.btn?`<div class="notif-foot"><button id="notif-btn" class="notif-action"><i class="ph ${e.btn.icon}"></i>${e.btn.label}</button></div>`:''}`;
+  if(e.btn){
+    document.getElementById('notif-btn').addEventListener('click',async function(){
+      this.classList.add('loading');
+      try{const p=await Notification.requestPermission();if(p==='granted'){const u=auth.currentUser;if(u)await registrarToken(u.uid,u.email)}renderNotifCard()}
+      catch{renderNotifCard()}
     });
-    window.addEventListener('unhandledrejection', function(e){
-      addRow('error', ['Promise sin manejar: ' +
-        (e.reason && e.reason.message ? e.reason.message : String(e.reason))]);
-    });
-
-    window.dcToggle = function(){
-      open = !open;
-      panel.classList.toggle('open', open);
-      if (open) { errs = 0; badge.style.display = 'none'; log.scrollTop = log.scrollHeight; }
-    };
-    window.dcClear = function(){
-      log.innerHTML = ''; errs = 0; badge.style.display = 'none';
-    };
-  })();
-  /* ─── FIN CONSOLA ─── */
-  </script>
-
-  <script>
-    firebase.initializeApp({
-      apiKey: "AIzaSyCZpIknDfy3KsV-XtPCkU9s0jDjd9o7nD8",
-      authDomain: "conalep-chihuahua.firebaseapp.com",
-      databaseURL: "https://conalep-chihuahua-default-rtdb.firebaseio.com",
-      projectId: "conalep-chihuahua",
-      storageBucket: "conalep-chihuahua.firebasestorage.app",
-      messagingSenderId: "848130047778",
-      appId: "1:848130047778:web:c7cef212c226d08806ef7b"
-    });
-
-    const auth = firebase.auth();
-    const db   = firebase.database();
-
-    let messaging = null;
-    try { messaging = firebase.messaging(); } catch {}
-
-    const DOMAIN          = '@chih.conalep.edu.mx';
-    const ROTACION_INICIO = new Date(2026, 1, 23);
-    const VAPID_KEY       = 'BM7AVmABZal3jhwQvGHuNC2ZEFv1fafGv7ip5Lm_ruqM7WiAYN1vLqyFiHABft5NEmmPC86t3UowlvzP_j3Oc48';
-
-    const ERRORES = {
-      'auth/invalid-email':          'El correo no tiene un formato válido.',
-      'auth/user-not-found':         'No existe ninguna cuenta asociada a este correo.',
-      'auth/wrong-password':         'La contraseña es incorrecta.',
-      'auth/invalid-credential':     'El correo o la contraseña son incorrectos.',
-      'auth/too-many-requests':      'Demasiados intentos fallidos. Espera unos minutos e intenta de nuevo.',
-      'auth/email-already-in-use':   'Ya existe una cuenta con este correo.',
-      'auth/weak-password':          'La contraseña debe tener al menos 6 caracteres.',
-      'auth/network-request-failed': 'Sin conexión a internet. Verifica tu red e intenta de nuevo.'
-    };
-
-    const ERRORES_CAMPO = {
-      correo: ['auth/invalid-email','auth/user-not-found'],
-      pass:   ['auth/wrong-password','auth/invalid-credential']
-    };
-
-    let _cancelados      = {};
-    let aseoLoaded       = false;
-    let _sheetEquipo     = [];
-    let _sheetYoIdx      = null;
-    let _toastTimer      = null;
-    let _undoAccion      = null;
-    let _ajusteKey       = null;
-    let _ajusteCancelado = false;
-    let _esAdmin         = false;
-    let _tabActual       = 'aseo';
-
-    function fechaKey(d) {
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    }
-
-    function esCancelado(d) { return !!_cancelados[fechaKey(d)]; }
-    function mensajeError(c) { return ERRORES[c] || 'Ocurrió un error inesperado. Intenta de nuevo.'; }
-
-    function showPage(id) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
-
-    function showHint(el, text, tipo, center = false) {
-      el.textContent = text;
-      el.className = 'field-hint' + (tipo ? ' ' + tipo : '') + (center ? ' center' : '') + ' visible';
-    }
-
-    function hideHint(el) { el.classList.remove('visible'); }
-    function setBtn(btn, loading) { btn.disabled = loading; btn.classList.toggle('loading', loading); }
-
-    function togglePass(btn) {
-      const input = btn.parentElement.querySelector('input');
-      input.type = input.type === 'password' ? 'text' : 'password';
-      btn.querySelector('i').className = input.type === 'password' ? 'ph ph-eye' : 'ph ph-eye-slash';
-    }
-
-    function validarCorreo(input) {
-      const ok = input.value === '' || input.value.endsWith(DOMAIN);
-      document.getElementById('reg-correo-error').classList.toggle('visible', !ok);
-      input.classList.toggle('error', !ok);
-    }
-
-    function resetLogin() {
-      ['correo','pass'].forEach(id => {
-        const el = document.getElementById(id);
-        el.value = ''; el.classList.remove('error');
-        if (id === 'pass') el.type = 'password';
-      });
-      document.querySelector('#page-login .field-toggle i').className = 'ph ph-eye';
-      ['login-correo-error','login-pass-error','login-error'].forEach(id => hideHint(document.getElementById(id)));
-    }
-
-    function resetRegistro() {
-      const c = document.getElementById('reg-correo');
-      c.value = ''; c.classList.remove('error');
-      hideHint(document.getElementById('reg-correo-error'));
-      const p = document.getElementById('reg-pass');
-      p.value = ''; p.type = 'password';
-      document.querySelector('#page-registro .field-toggle i').className = 'ph ph-eye';
-      hideHint(document.getElementById('reg-error'));
-    }
-
-    function irARegistro() { resetRegistro(); showPage('page-registro'); }
-    function irALogin()    { resetLogin();    showPage('page-login'); }
-
-    function mostrarErrorLogin(code) {
-      const cEl = document.getElementById('login-correo-error');
-      const pEl = document.getElementById('login-pass-error');
-      const fEl = document.getElementById('login-error');
-      hideHint(cEl); document.getElementById('correo').classList.remove('error');
-      hideHint(pEl); document.getElementById('pass').classList.remove('error');
-      hideHint(fEl);
-      if (ERRORES_CAMPO.correo.includes(code)) {
-        showHint(cEl, mensajeError(code), 'error');
-        document.getElementById('correo').classList.add('error');
-      } else if (ERRORES_CAMPO.pass.includes(code)) {
-        showHint(pEl, mensajeError(code), 'error');
-        document.getElementById('pass').classList.add('error');
-      } else {
-        showHint(fEl, mensajeError(code), 'error', true);
-      }
-    }
-
-    function entrar() {
-      const correo = document.getElementById('correo').value.trim();
-      const pass   = document.getElementById('pass').value;
-      ['login-correo-error','login-pass-error','login-error'].forEach(id => hideHint(document.getElementById(id)));
-      if (!correo) { document.getElementById('correo').focus(); return; }
-      if (!pass)   { document.getElementById('pass').focus();   return; }
-      const btn = document.querySelector('#page-login .btn-primary');
-      setBtn(btn, true);
-      auth.signInWithEmailAndPassword(correo, pass)
-        .then(() => showPage('page-app'))
-        .catch(e => { mostrarErrorLogin(e.code); setBtn(btn, false); });
-    }
-
-    async function registrar() {
-      const correo = document.getElementById('reg-correo').value.trim();
-      const pass   = document.getElementById('reg-pass').value;
-      const errEl  = document.getElementById('reg-error');
-      hideHint(errEl);
-      if (!correo.endsWith(DOMAIN)) {
-        document.getElementById('reg-correo').classList.add('error');
-        document.getElementById('reg-correo-error').classList.add('visible');
-        document.getElementById('reg-correo').focus();
-        return;
-      }
-      if (!pass) { document.getElementById('reg-pass').focus(); return; }
-      const btn = document.querySelector('#page-registro .btn-primary');
-      setBtn(btn, true);
-      try {
-        await auth.createUserWithEmailAndPassword(correo, pass);
-        showPage('page-app');
-      } catch (e) {
-        showHint(errEl, mensajeError(e.code), 'error', true);
-        setBtn(btn, false);
-      }
-    }
-
-    async function olvidaste() {
-      const correo = document.getElementById('correo').value.trim();
-      const errEl  = document.getElementById('login-error');
-      if (!correo) {
-        showHint(errEl, 'Ingresa tu correo institucional para recibir el enlace de restablecimiento.', 'info', true);
-        document.getElementById('correo').focus(); return;
-      }
-      try {
-        await auth.sendPasswordResetEmail(correo);
-        showHint(errEl, 'Si este correo tiene una cuenta activa, recibirás un enlace de restablecimiento.', 'info', true);
-      } catch (e) {
-        showHint(errEl, mensajeError(e.code), 'error', true);
-      }
-    }
-
-    async function esAdminEnDB(uid) {
-      if (!uid) return false;
-      try { const snap = await db.ref('admins/' + uid).once('value'); return snap.exists(); }
-      catch { return false; }
-    }
-
-    async function registrarToken(uid, correo) {
-      if (!messaging) return;
-      try {
-        const perm = await Notification.requestPermission();
-        if (perm !== 'granted') return;
-        const swReg = await navigator.serviceWorker.ready;
-        const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
-        if (token) {
-          await db.ref('fcmTokens/' + uid).set({ token, correo, actualizado: Date.now() });
-        }
-      } catch {}
-    }
-
-    function cambiarTab(tab) {
-      if (_tabActual === tab) return;
-      _tabActual = tab;
-      document.querySelectorAll('.tab-screen').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('screen-' + tab).classList.add('active');
-      document.getElementById('tab-' + tab).classList.add('active');
-      if (tab === 'avisos') renderNotifCard();
-    }
-
-    function renderMenuAdmin() {
-      const cont = document.getElementById('menu-admin-section');
-      cont.innerHTML = '';
-      if (!_esAdmin) return;
-      const btn = document.createElement('button');
-      btn.className = 'menu-action';
-      btn.innerHTML = `
-        <div class="menu-action-icon green"><i class="ph ph-calendar-x"></i></div>
-        <span class="menu-action-label">Jornadas canceladas</span>`;
-      btn.addEventListener('click', () => { cerrarSheet(); setTimeout(abrirHistorial, 300); });
-      cont.appendChild(btn);
-    }
-
-    function mostrarToast(msg, iconCls, accionDeshacer) {
-      clearTimeout(_toastTimer);
-      _undoAccion = accionDeshacer || null;
-      const toast  = document.getElementById('toast');
-      const icon   = document.getElementById('toast-icon');
-      const msgEl  = document.getElementById('toast-msg');
-      const undoEl = document.getElementById('toast-undo');
-      icon.className       = 'ph ' + iconCls + ' toast-icon';
-      msgEl.textContent    = msg;
-      undoEl.style.display = _undoAccion ? '' : 'none';
-      toast.classList.add('show');
-      _toastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
-    }
-
-    async function deshacerAccion() {
-      if (!_undoAccion) return;
-      document.getElementById('toast').classList.remove('show');
-      clearTimeout(_toastTimer);
-      try { await _undoAccion(); } catch {}
-      _undoAccion = null;
-    }
-
-    function esMMFD(a) {
-      return (a['MMFD'] || '').toLowerCase().includes('incorporado');
-    }
-
-    function proximoDiaHabilNoCanc(desde) {
-      const d = new Date(desde); d.setHours(0,0,0,0);
-      while (d.getDay() === 0 || d.getDay() === 6 || esCancelado(d)) d.setDate(d.getDate() + 1);
-      return d;
-    }
-
-    function siguientesDiasHabiles(desde, count) {
-      const dias = [];
-      const d = new Date(desde); d.setHours(0,0,0,0);
-      while (dias.length < count) {
-        if (d.getDay() !== 0 && d.getDay() !== 6 && !esCancelado(d)) dias.push(new Date(d));
-        d.setDate(d.getDate() + 1);
-      }
-      return dias;
-    }
-
-    function diasHabilesRestantesSemana(desde) {
-      const dias = [];
-      const d = new Date(desde); d.setHours(0,0,0,0);
-      while (d.getDay() >= 1 && d.getDay() <= 5) {
-        if (!esCancelado(d)) dias.push(new Date(d));
-        d.setDate(d.getDate() + 1);
-      }
-      return dias;
-    }
-
-    function simularDias(alumnos, fechas) {
-      if (!fechas.length) return new Map();
-      const sorted   = [...fechas].sort((a, b) => a - b);
-      const maxDate  = sorted[sorted.length - 1];
-      const fechaSet = new Set(fechas.map(f => fechaKey(f)));
-      const result   = new Map();
-      let queue = [...alumnos];
-      const d = new Date(ROTACION_INICIO); d.setHours(0,0,0,0);
-      const h = new Date(maxDate); h.setHours(0,0,0,0);
-      while (d <= h) {
-        const dow = d.getDay();
-        if (dow !== 0 && dow !== 6 && !esCancelado(d)) {
-          const restringido = dow === 1 || dow === 2;
-          const equipo = [], saltados = [];
-          let i = 0;
-          while (equipo.length < 5 && i < queue.length) {
-            const a = queue[i];
-            if (restringido && esMMFD(a)) saltados.push(a);
-            else equipo.push(a);
-            i++;
-          }
-          const key = fechaKey(d);
-          if (fechaSet.has(key)) result.set(key, [...equipo]);
-          queue = [...saltados, ...queue.slice(i), ...equipo];
-        }
-        d.setDate(d.getDate() + 1);
-      }
-      return result;
-    }
-
-    function proximoTurnoUsuario(alumnos, correo, desde) {
-      const futuros = siguientesDiasHabiles(desde, 90);
-      if (!futuros.length) return null;
-      const equipos = simularDias(alumnos, futuros);
-      for (const f of futuros) {
-        const eq = equipos.get(fechaKey(f)) || [];
-        if (eq.some(a => (a['Correo Institucional'] || '').toLowerCase() === correo))
-          return { fecha: f, equipo: eq };
-      }
-      return null;
-    }
-
-    function nombreMostrar(a) {
-      const p1 = (a['Primer Nombre']    || '').trim();
-      const p2 = (a['Segundo Nombre']   || '').trim();
-      const ap = (a['Apellido Paterno'] || '').trim();
-      const am = (a['Apellido Materno'] || '').trim();
-      const nombre   = [p1, p2].filter(Boolean).join(' ');
-      const apellido = [ap, am].filter(Boolean).join(' ');
-      if (nombre && apellido) return nombre + ' ' + apellido;
-      return nombre || apellido || 'Estudiante ' + (a['No'] || '');
-    }
-
-    function toggleNombre(row) {
-      const nameEl = row.querySelector('.s-name');
-      const expanded = nameEl.classList.toggle('expanded');
-      row.classList.toggle('expanded', expanded);
-    }
-
-    function renderBanner(cont, fechaTurno, equipo, yoIdx) {
-      const str = fechaTurno
-        ? fechaTurno.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' })
-        : '—';
-      _sheetEquipo = equipo || [];
-      _sheetYoIdx  = yoIdx ?? null;
-      const el = document.createElement('div');
-      el.className = 'aseo-banner su';
-      el.innerHTML = `
-        <p class="banner-label">Tu próxima asignación</p>
-        <p class="banner-date">${str}</p>
-        <button class="banner-chip" onclick="abrirSheet()">
-          <i class="ph ph-users"></i> Ver equipo asignado
-        </button>`;
-      cont.appendChild(el);
-    }
-
-    function renderEquipo(cont, equipo, fecha, titulo, subtitulo, cancelado, esAdmin) {
-      const fStr = fecha.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
-      const card = document.createElement('div');
-      card.className = 'aseo-card';
-      const head = document.createElement('div');
-      head.className = 'card-head';
-      head.innerHTML = `
-        <div class="card-head-row">
-          <div>
-            <p class="card-label">${fStr}</p>
-            <p class="card-title">${titulo}</p>
-            ${subtitulo ? `<p class="card-sub">${subtitulo}</p>` : ''}
-          </div>
-          ${esAdmin ? `<button class="card-adj" data-key="${fechaKey(fecha)}" data-cancelado="${cancelado ? '1' : '0'}">
-            <i class="ph ${cancelado ? 'ph-arrow-counter-clockwise' : 'ph-x-circle'}"></i>
-          </button>` : ''}
-        </div>
-        ${cancelado ? '<div class="cancel-banner"><i class="ph ph-warning"></i>Jornada cancelada — rotación ajustada automáticamente</div>' : ''}`;
-      if (esAdmin) head.querySelector('.card-adj').addEventListener('click', function() { abrirAjuste(this); });
-      card.appendChild(head);
-      equipo.forEach(a => {
-        const row = document.createElement('div');
-        row.className = 'student-row';
-        row.innerHTML = `
-          <div class="s-avatar"><i class="ph-fill ph-broom"></i></div>
-          <div class="s-name-wrap">
-            <span class="s-name">${nombreMostrar(a)}</span>
-          </div>
-          <div class="s-right">
-            ${esMMFD(a) ? '<span class="s-chip dual-chip">Dual</span>' : ''}
-            <span class="s-num">No. ${a['No'] || ''}</span>
-          </div>`;
-        row.addEventListener('click', () => toggleNombre(row));
-        card.appendChild(row);
-      });
-      cont.appendChild(card);
-    }
-
-    function renderBotonProximos(cont, diasFuturos, equiposPorDia, esAdmin) {
-      if (!diasFuturos.length) return;
-      const btn = document.createElement('button');
-      btn.className = 'btn-proximos su su-2';
-      btn.innerHTML = `
-        <i class="ph ph-calendar-dots icon-cal"></i>
-        <span class="btn-label">Ver próximos días</span>
-        <i class="ph ph-caret-down icon-caret"></i>`;
-      const wrap = document.createElement('div');
-      wrap.className = 'proximos-wrap';
-      diasFuturos.forEach(d => {
-        const eq = equiposPorDia.get(fechaKey(d)) || [];
-        renderEquipo(wrap, eq, d, 'Equipo de limpieza', null, false, esAdmin);
-      });
-      let abierto = false;
-      btn.addEventListener('click', () => {
-        abierto = !abierto;
-        btn.classList.toggle('open', abierto);
-        wrap.classList.toggle('open', abierto);
-        btn.querySelector('.icon-cal').className = abierto
-          ? 'ph ph-calendar-check icon-cal'
-          : 'ph ph-calendar-dots icon-cal';
-        btn.querySelector('.btn-label').textContent = abierto ? 'Ocultar días' : 'Ver próximos días';
-      });
-      cont.appendChild(btn);
-      cont.appendChild(wrap);
-    }
-
-    async function cargarCancelados() {
-      try {
-        const snap = await db.ref('cancelaciones').once('value');
-        _cancelados = snap.val() || {};
-      } catch { _cancelados = {}; }
-    }
-
-    async function cargarAseo() {
-      if (aseoLoaded) return;
-      aseoLoaded = true;
-      const cont = document.getElementById('aseo-list');
-      cont.innerHTML = '';
-
-      const correoUsuario = auth.currentUser?.email?.toLowerCase() ?? null;
-      const uid           = auth.currentUser?.uid ?? null;
-      _esAdmin            = await esAdminEnDB(uid);
-
-      await cargarCancelados();
-      renderMenuAdmin();
-
-      try {
-        const snap = await db.ref('estudiantes').once('value');
-        const alumnos = [];
-        snap.forEach(child => { const v = child.val(); if (v && typeof v === 'object') alumnos.push(v); });
-
-        if (alumnos.length === 0) {
-          cont.innerHTML = `<div class="empty su"><div class="empty-icon"><i class="ph ph-users"></i></div><p>No hay estudiantes registrados en el sistema.</p></div>`;
-          return;
-        }
-
-        alumnos.sort((a, b) => (parseInt(a['No']) || 0) - (parseInt(b['No']) || 0));
-
-        const hoy          = new Date(); hoy.setHours(0,0,0,0);
-        const esFDS        = hoy.getDay() === 0 || hoy.getDay() === 6;
-        const hoyCancelado = esCancelado(hoy);
-        const manana       = new Date(hoy); manana.setDate(manana.getDate() + 1);
-
-        if (esFDS || hoyCancelado) {
-          const proximo     = proximoDiaHabilNoCanc(manana);
-          const sigDesde    = new Date(proximo); sigDesde.setDate(sigDesde.getDate() + 1);
-          const diasDespues = _esAdmin ? siguientesDiasHabiles(sigDesde, 19) : diasHabilesRestantesSemana(sigDesde);
-          const todasFechas = [proximo, ...diasDespues];
-          const equipos     = simularDias(alumnos, todasFechas);
-          const equipoProx  = equipos.get(fechaKey(proximo)) || [];
-          if (correoUsuario) {
-            const turno = proximoTurnoUsuario(alumnos, correoUsuario, manana);
-            if (turno) {
-              const yoIdx = turno.equipo.findIndex(a => (a['Correo Institucional'] || '').toLowerCase() === correoUsuario);
-              renderBanner(cont, turno.fecha, turno.equipo, yoIdx >= 0 ? yoIdx : null);
-            }
-          }
-          const label = hoyCancelado ? 'Jornada cancelada hoy — próximo día hábil' : 'Equipo del próximo día hábil';
-          renderEquipo(cont, equipoProx, proximo, label, proximo.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' }), false, _esAdmin);
-          renderBotonProximos(cont, diasDespues, equipos, _esAdmin);
-          return;
-        }
-
-        const diasProximos = _esAdmin ? siguientesDiasHabiles(manana, 20) : diasHabilesRestantesSemana(manana);
-        const todasFechas  = [hoy, ...diasProximos];
-        const equipos      = simularDias(alumnos, todasFechas);
-        const equipoHoy    = equipos.get(fechaKey(hoy)) || [];
-        const limpiaHoy    = correoUsuario && equipoHoy.some(a => (a['Correo Institucional'] || '').toLowerCase() === correoUsuario);
-
-        if (correoUsuario && !limpiaHoy) {
-          const turno = proximoTurnoUsuario(alumnos, correoUsuario, manana);
-          if (turno) {
-            const yoIdx = turno.equipo.findIndex(a => (a['Correo Institucional'] || '').toLowerCase() === correoUsuario);
-            renderBanner(cont, turno.fecha, turno.equipo, yoIdx >= 0 ? yoIdx : null);
-          }
-        }
-
-        renderEquipo(cont, equipoHoy, hoy, 'Equipo de limpieza — hoy', null, false, _esAdmin);
-        renderBotonProximos(cont, diasProximos, equipos, _esAdmin);
-
-      } catch (err) {
-        console.error('cargarAseo falló:', err);
-        cont.innerHTML = `<div class="empty su"><div class="empty-icon err"><i class="ph ph-wifi-slash"></i></div><p class="err">No fue posible cargar la información.</p><p>Verifica tu conexión e intenta de nuevo.</p></div>`;
-      }
-    }
-
-    function abrirSheet() {
-      const body = document.getElementById('sheet-body');
-      body.innerHTML = '';
-      _sheetEquipo.forEach((a, i) => {
-        const esYo = i === _sheetYoIdx;
-        const row  = document.createElement('div');
-        row.className = 'sheet-row';
-        row.innerHTML = `
-          <div class="sa${esYo ? ' me' : ''}"><i class="ph${esYo ? '-fill' : ''} ph-user"></i></div>
-          <div class="sa-info">
-            <span class="sa-name">${nombreMostrar(a)}</span>
-            ${esYo ? '<span class="sa-you">Tú</span>' : ''}
-          </div>
-          <span class="sa-num">No. ${a['No'] || ''}</span>`;
-        body.appendChild(row);
-      });
-      abrirOverlay('mi-equipo-sheet');
-    }
-
-    function abrirHistorial() {
-      const body  = document.getElementById('historial-body');
-      body.innerHTML = '';
-      const claves = Object.keys(_cancelados).sort();
-      if (claves.length === 0) {
-        body.innerHTML = `<div class="empty"><div class="empty-icon"><i class="ph ph-check-circle"></i></div><p>No hay jornadas canceladas.</p></div>`;
-        abrirOverlay('historial-sheet');
-        return;
-      }
-      claves.forEach(key => {
-        const [y, m, d] = key.split('-').map(Number);
-        const fecha    = new Date(y, m - 1, d);
-        const hoy      = new Date(); hoy.setHours(0,0,0,0);
-        const esPasada = fecha < hoy;
-        const fStr     = fecha.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-        const row = document.createElement('div');
-        row.className = 'hist-row';
-        row.innerHTML = `
-          <div class="hist-icon"><i class="ph ph-calendar-x"></i></div>
-          <div class="hist-info">
-            <span class="hist-date">${fStr}</span>
-            <span class="hist-sub">${esPasada ? 'Fecha pasada' : 'Próxima'}</span>
-          </div>
-          <button class="hist-restore" data-key="${key}">
-            <i class="ph ph-arrow-counter-clockwise"></i> Restaurar
-          </button>`;
-        row.querySelector('.hist-restore').addEventListener('click', function() { restaurarDesdeHistorial(this); });
-        body.appendChild(row);
-      });
-      abrirOverlay('historial-sheet');
-    }
-
-    async function restaurarDesdeHistorial(btn) {
-      const key = btn.dataset.key;
-      btn.classList.add('loading');
-      try {
-        await db.ref('cancelaciones/' + key).remove();
-        delete _cancelados[key];
-        const row = btn.closest('.hist-row');
-        row.style.transition = 'opacity 180ms, transform 180ms';
-        row.style.opacity    = '0';
-        row.style.transform  = 'translateX(12px)';
-        setTimeout(() => {
-          row.remove();
-          const body = document.getElementById('historial-body');
-          if (!body.querySelector('.hist-row'))
-            body.innerHTML = `<div class="empty"><div class="empty-icon"><i class="ph ph-check-circle"></i></div><p>No hay jornadas canceladas.</p></div>`;
-        }, 180);
-        aseoLoaded = false;
-        setTimeout(() => cargarAseo(), 300);
-        const [y, m, d] = key.split('-').map(Number);
-        const fStr = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
-        mostrarToast(`Jornada del ${fStr} restaurada`, 'ph-check-circle ok', async () => {
-          await db.ref('cancelaciones/' + key).set(true);
-          _cancelados[key] = true; aseoLoaded = false; cargarAseo();
-        });
-      } catch (err) {
-        console.error('restaurarDesdeHistorial falló:', err);
-        btn.classList.remove('loading');
-        mostrarToast('No se pudo restaurar. Intenta de nuevo.', 'ph-warning-circle err', null);
-      }
-    }
-
-    function abrirAjuste(btn) {
-      _ajusteKey       = btn.dataset.key;
-      _ajusteCancelado = btn.dataset.cancelado === '1';
-      const [y, m, d] = _ajusteKey.split('-').map(Number);
-      const fStr   = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
-      const title  = document.getElementById('ajuste-title');
-      const desc   = document.getElementById('ajuste-desc');
-      const accion = document.getElementById('ajuste-accion');
-      if (_ajusteCancelado) {
-        title.textContent  = 'Restaurar jornada';
-        desc.textContent   = `La jornada del ${fStr} está cancelada. Al restaurarla, la rotación volverá a incluir este día.`;
-        accion.textContent = 'Restaurar jornada';
-        accion.className   = 'ajuste-btn restore';
-      } else {
-        title.textContent  = 'Cancelar jornada';
-        desc.textContent   = `Al cancelar el ${fStr}, la rotación se ajustará automáticamente y el equipo asignado pasará al siguiente día hábil.`;
-        accion.textContent = 'Cancelar jornada';
-        accion.className   = 'ajuste-btn cancel';
-      }
-      abrirOverlay('ajuste-sheet');
-    }
-
-    function abrirOverlay(sheetId) {
-      const overlay = document.getElementById('sheet-overlay');
-      document.getElementById(sheetId).classList.add('open');
-      overlay.classList.add('open');
-      requestAnimationFrame(() => overlay.classList.add('visible'));
-    }
-
-    async function confirmarAjuste() {
-      const accion = document.getElementById('ajuste-accion');
-      accion.disabled = true; accion.classList.add('loading');
-      document.getElementById('ajuste-sheet').querySelector('.ajuste-err')?.remove();
-      const key          = _ajusteKey;
-      const eraCancelado = _ajusteCancelado;
-      const [y, m, d]    = key.split('-').map(Number);
-      const fStr         = new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
-      try {
-        if (eraCancelado) {
-          await db.ref('cancelaciones/' + key).remove();
-          delete _cancelados[key];
-        } else {
-          await db.ref('cancelaciones/' + key).set(true);
-          _cancelados[key] = true;
-        }
-        aseoLoaded = false; cerrarSheet();
-        setTimeout(() => cargarAseo(), 300);
-        if (eraCancelado) {
-          mostrarToast(`Jornada del ${fStr} restaurada`, 'ph-check-circle ok', async () => {
-            await db.ref('cancelaciones/' + key).set(true);
-            _cancelados[key] = true; aseoLoaded = false; cargarAseo();
-          });
-        } else {
-          mostrarToast(`Jornada del ${fStr} cancelada`, 'ph-x-circle err', async () => {
-            await db.ref('cancelaciones/' + key).remove();
-            delete _cancelados[key]; aseoLoaded = false; cargarAseo();
-          });
-        }
-      } catch (e) {
-        console.error('confirmarAjuste falló:', e);
-        accion.disabled = false; accion.classList.remove('loading');
-        const err = document.createElement('p');
-        err.className   = 'ajuste-err';
-        err.textContent = e?.message || 'Error al guardar. Intenta de nuevo.';
-        accion.before(err);
-      }
-    }
-
-    function cerrarSheet() {
-      const overlay = document.getElementById('sheet-overlay');
-      ['mi-equipo-sheet','ajuste-sheet','historial-sheet','menu-sheet'].forEach(id => document.getElementById(id).classList.remove('open'));
-      overlay.classList.remove('visible');
-      setTimeout(() => overlay.classList.remove('open'), 240);
-    }
-
-    function abrirMenu() {
-      document.getElementById('menu-email').textContent = auth.currentUser?.email ?? '';
-      abrirOverlay('menu-sheet');
-    }
-
-    async function cerrarSesion() {
-      cerrarSheet();
-      try { await auth.signOut(); } catch {}
-    }
-
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        console.log('Usuario autenticado:', user.email);
-        showPage('page-app');
-        await registrarToken(user.uid, user.email);
-        cargarAseo();
-      } else {
-        console.log('Sin sesión activa');
-        _cancelados  = {};
-        _esAdmin     = false;
-        aseoLoaded   = false;
-        _sheetEquipo = [];
-        _sheetYoIdx  = null;
-        _tabActual   = 'aseo';
-        document.getElementById('aseo-list').innerHTML = '';
-        document.getElementById('menu-admin-section').innerHTML = '';
-        document.querySelectorAll('.tab-screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('screen-aseo').classList.add('active');
-        document.getElementById('tab-aseo').classList.add('active');
-        irALogin();
-      }
-    });
-
-    if (messaging) {
-      messaging.onMessage(payload => {
-        console.log('FCM mensaje recibido:', payload);
-        mostrarToast(
-          payload.notification?.body ?? payload.notification?.title ?? 'Nuevo aviso del plantel',
-          'ph-bell ok',
-          null
-        );
-      });
-    }
-
-    /* ── TARJETA DE NOTIFICACIONES EN AVISOS ── */
-    function renderNotifCard() {
-      const card = document.getElementById('notif-card');
-      if (!card) return;
-
-      const supported = ('Notification' in window) && !!messaging;
-      const perm = supported ? Notification.permission : 'unsupported';
-
-      const estados = {
-        granted: {
-          color: 'green', icon: 'ph-bell-ringing',
-          label: 'Notificaciones activas',
-          title: 'Recibes avisos del plantel',
-          desc: 'Te notificaremos cuando haya comunicados, cambios en la rotación u otros avisos importantes de CONALEP Plantel 207.',
-          btn: null
-        },
-        default: {
-          color: 'gold', icon: 'ph-bell',
-          label: 'Notificaciones desactivadas',
-          title: 'Activa las notificaciones',
-          desc: 'Permite que CONALEP te avise cuando haya comunicados o cambios importantes en la rotación de aseo.',
-          btn: { label: 'Activar notificaciones', icon: 'ph-bell', cls: 'primary', action: 'activar' }
-        },
-        denied: {
-          color: 'maroon', icon: 'ph-bell-slash',
-          label: 'Notificaciones bloqueadas',
-          title: 'Acceso denegado por el navegador',
-          desc: 'Bloqueaste las notificaciones. Para activarlas, ve a la configuración de tu navegador, busca este sitio y permite las notificaciones.',
-          btn: null
-        },
-        unsupported: {
-          color: 'grey', icon: 'ph-bell-simple-slash',
-          label: 'No compatible',
-          title: 'Notificaciones no disponibles',
-          desc: 'Tu navegador no soporta notificaciones push. Consulta los avisos directamente en esta sección.',
-          btn: null
-        }
-      };
-
-      const e = estados[perm] || estados.unsupported;
-
-      card.innerHTML = `
-        <div class="notif-card-head">
-          <div class="notif-icon ${e.color}"><i class="ph ${e.icon}"></i></div>
-          <div class="notif-text">
-            <p class="notif-label ${e.color}">${e.label}</p>
-            <p class="notif-title">${e.title}</p>
-            <p class="notif-desc">${e.desc}</p>
-          </div>
-        </div>
-        ${e.btn ? `<div class="notif-card-foot">
-          <button id="notif-action-btn" class="notif-btn ${e.btn.cls}">
-            <i class="ph ${e.btn.icon}"></i>${e.btn.label}
-          </button>
-        </div>` : ''}`;
-
-      if (e.btn) {
-        document.getElementById('notif-action-btn').addEventListener('click', async function() {
-          this.classList.add('loading');
-          if (e.btn.action === 'activar') {
-            try {
-              const perm = await Notification.requestPermission();
-              if (perm === 'granted') {
-                const user = auth.currentUser;
-                if (user) await registrarToken(user.uid, user.email);
-              }
-              renderNotifCard();
-            } catch (err) {
-              console.error('Permiso de notificaciones falló:', err);
-              renderNotifCard();
-            }
-          }
-        });
-      }
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(r => console.log('SW registrado:', r.scope))
-        .catch(e => console.error('SW error:', e));
-    }
-  </script>
-
+  }
+}
+
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
 </body>
 </html>
