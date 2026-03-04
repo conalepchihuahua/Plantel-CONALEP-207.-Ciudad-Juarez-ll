@@ -276,6 +276,8 @@ html,body{
   background:var(--bg);display:flex;align-items:center;justify-content:center
 }
 .st-icon i{font-size:17px;color:var(--ink-3)}
+.st-icon.me{background:var(--green-lt)}
+.st-icon.me i{color:var(--green)}
 
 .estado-card{
   margin:12px 16px 0;
@@ -1188,8 +1190,9 @@ function mkCard(cont,equipo,fecha,titulo,esCancelado,admin){
     const correo=(a['Correo Institucional']||'').toLowerCase();
     const fbKey=_fbKeyMap.get(correo)||null;
     const pagado=fbKey?(_pagoData.get(fbKey)===true):false;
+    const esYo=correo===(auth.currentUser?.email?.toLowerCase()??'');
     row.dataset.pagado=pagado?'true':'false';
-    row.innerHTML=`<div class="st-icon"><i class="ph ph-user"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
+    row.innerHTML=`<div class="st-icon${esYo?' me':''}"><i class="ph ph-user"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
     row.addEventListener('click',()=>_esAdmin?abrirAlumnoSheet(a):toggleNombre(row));
     wrap.appendChild(row);
   });
@@ -1281,8 +1284,9 @@ function _aplicarFiltros(){
         const row=document.createElement('div');row.className='student-row';
         const fbKey=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase())||null;
         const pagado=fbKey?(_pagoData.get(fbKey)===true):false;
+        const esYo=(a['Correo Institucional']||'').toLowerCase()===(auth.currentUser?.email?.toLowerCase()??'');
         row.dataset.pagado=pagado?'true':'false';
-        row.innerHTML=`<div class="st-icon"><i class="ph ph-user"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
+        row.innerHTML=`<div class="st-icon${esYo?' me':''}"><i class="ph ph-user"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
         row.addEventListener('click',()=>abrirAlumnoSheet(a));
         card.appendChild(row);
       });
