@@ -1,23 +1,24 @@
 {
-  "name": "CONALEP Plantel 207",
-  "short_name": "CONALEP 207",
-  "description": "Rotación de aseo — CONALEP Plantel 207 Ciudad Juárez II",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#F5F5F7",
-  "theme_color": "#007E67",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/apple-touch-icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/apple-touch-icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+“name”: “CONALEP Plantel 207”,
+“short_name”: “CONALEP 207”,
+“description”: “Rotación de aseo — CONALEP Plantel 207 Ciudad Juárez II”,
+“start_url”: “/Plantel-CONALEP-207.-Ciudad-Juarez-ll/”,
+“scope”: “/Plantel-CONALEP-207.-Ciudad-Juarez-ll/”,
+“display”: “standalone”,
+“background_color”: “#F5F5F7”,
+“theme_color”: “#007E67”,
+“orientation”: “portrait”,
+“icons”: [
+{
+“src”: “https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/apple-touch-icon.png”,
+“sizes”: “192x192”,
+“type”: “image/png”
+},
+{
+“src”: “https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/apple-touch-icon.png”,
+“sizes”: “512x512”,
+“type”: “image/png”,
+“purpose”: “any maskable”
+}
+]
 }
