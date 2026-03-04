@@ -160,6 +160,56 @@ html,body{
 #screen-aseo{overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
 .aseo-body{display:flex;flex-direction:column;padding-bottom:24px}
 
+.search-row{
+  margin:12px 16px 0;
+  display:flex;align-items:center;gap:8px
+}
+.search-bar{
+  flex:1;position:relative;display:flex;align-items:center
+}
+.search-bar-ico{
+  position:absolute;left:12px;font-size:16px;color:var(--ink-3);pointer-events:none
+}
+.search-bar-inp{
+  width:100%;height:44px;
+  background:var(--white);border:1.5px solid var(--line);border-radius:var(--r);
+  padding:0 14px 0 38px;
+  font-family:'Noto Sans',sans-serif;font-size:14px;font-weight:500;color:var(--ink);
+  outline:none;appearance:none;transition:border-color var(--t)
+}
+.search-bar-inp::placeholder{color:var(--ink-3);font-weight:400}
+.search-bar-inp:focus{border-color:var(--green);background:var(--white)}
+.search-bar-inp::-webkit-search-cancel-button{-webkit-appearance:none}
+.filter-btn{
+  width:44px;height:44px;flex-shrink:0;
+  border-radius:var(--r);border:1.5px solid var(--line);
+  background:var(--white);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color var(--t),background var(--t)
+}
+.filter-btn i{font-size:18px;color:var(--ink-3);transition:color var(--t)}
+.filter-btn.active{border-color:var(--green);background:var(--green-lt)}
+.filter-btn.active i{color:var(--green)}
+
+.filter-option{
+  display:flex;align-items:center;gap:14px;
+  padding:0 20px;height:56px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background var(--t)
+}
+.filter-option:last-child{border-bottom:none}
+.filter-option:active{background:var(--bg)}
+.filter-option-ico{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  background:var(--bg);display:flex;align-items:center;justify-content:center
+}
+.filter-option-ico i{font-size:17px;color:var(--ink-3)}
+.filter-option-label{flex:1;font-size:14px;font-weight:500;color:var(--ink)}
+.filter-option-check{font-size:18px;color:var(--green);opacity:0}
+.filter-option.selected .filter-option-check{opacity:1}
+.filter-option.selected .filter-option-ico{background:var(--green-lt)}
+.filter-option.selected .filter-option-ico i{color:var(--green)}
+
 #screen-avisos{background:var(--bg)}
 .avisos-body{
   overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;
@@ -191,7 +241,10 @@ html,body{
 }
 .card-header-info{display:flex;flex-direction:column;gap:4px}
 .card-date{font-size:11px;font-weight:700;letter-spacing:.7px;color:var(--gold);text-transform:uppercase}
+.card-title-row{display:flex;align-items:baseline;gap:8px}
 .card-title{font-size:14px;font-weight:600;color:var(--ink)}
+.card-count{font-size:11px;font-weight:500;color:var(--ink-3);display:flex;align-items:center;gap:3px}
+.card-count i{font-size:12px}
 .card-admin-btn{
   width:32px;height:32px;border:none;background:transparent;
   border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;
@@ -223,6 +276,40 @@ html,body{
   background:var(--bg);display:flex;align-items:center;justify-content:center
 }
 .st-icon i{font-size:17px;color:var(--ink-3)}
+
+.estado-card{
+  margin:12px 16px 0;
+  background:var(--white);border-radius:var(--r);overflow:hidden
+}
+.estado-row{
+  display:flex;align-items:center;gap:12px;
+  padding:0 16px;min-height:60px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background var(--t)
+}
+.estado-row:last-child{border-bottom:none}
+.estado-row:active{background:var(--bg)}
+.estado-ico{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center
+}
+.estado-ico i{font-size:17px}
+.estado-ico.ok{background:var(--green-lt)}
+.estado-ico.ok i{color:var(--green)}
+.estado-ico.warn{background:var(--maroon-lt)}
+.estado-ico.warn i{color:var(--maroon)}
+.estado-ico.neutral{background:var(--gold-lt)}
+.estado-ico.neutral i{color:var(--gold)}
+.estado-info{flex:1;min-width:0}
+.estado-titulo{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.estado-desc{font-size:11px;font-weight:500;color:var(--ink-3);line-height:1.4}
+.estado-badge{
+  font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap
+}
+.estado-badge.ok{background:var(--green-lt);color:var(--green)}
+.estado-badge.warn{background:var(--maroon-lt);color:var(--maroon)}
+.estado-badge.neutral{background:var(--gold-lt);color:var(--gold)}
 
 .st-body{flex:1;min-width:0;overflow:hidden}
 .st-name{
@@ -489,6 +576,7 @@ html,body{
       <p class="reset-heading">Crear cuenta</p>
       <p class="reset-desc">Usa tu correo institucional para registrarte en la plataforma.</p>
       <div class="field-block">
+        <label class="field-label" for="reg-correo">Correo institucional</label>
         <div class="field-wrap">
           <input id="reg-correo" type="email" placeholder="usuario@chih.conalep.edu.mx" autocomplete="email" class="field-input" oninput="validarCorreo(this)"/>
           <i class="ph ph-envelope field-ico"></i>
@@ -563,6 +651,38 @@ html,body{
   </nav>
 </div>
 
+<div id="sheet-filtro" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Filtro de búsqueda</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="sheet-scroll">
+    <div class="filter-option selected" data-filter="todos" onclick="seleccionarFiltro('todos')">
+      <div class="filter-option-ico"><i class="ph ph-users"></i></div>
+      <span class="filter-option-label">Todos los alumnos</span>
+      <i class="ph ph-check filter-option-check"></i>
+    </div>
+    <div class="filter-option" data-filter="dual" onclick="seleccionarFiltro('dual')">
+      <div class="filter-option-ico"><i class="ph ph-graduation-cap"></i></div>
+      <span class="filter-option-label">Sistema dual</span>
+      <i class="ph ph-check filter-option-check"></i>
+    </div>
+    <div id="filter-admin-opts">
+      <div class="filter-option" data-filter="pagado" onclick="seleccionarFiltro('pagado')">
+        <div class="filter-option-ico"><i class="ph ph-check-circle"></i></div>
+        <span class="filter-option-label">Aportación registrada</span>
+        <i class="ph ph-check filter-option-check"></i>
+      </div>
+      <div class="filter-option" data-filter="pendiente" onclick="seleccionarFiltro('pendiente')">
+        <div class="filter-option-ico"><i class="ph ph-clock"></i></div>
+        <span class="filter-option-label">Aportación pendiente</span>
+        <i class="ph ph-check filter-option-check"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="overlay" class="overlay" onclick="cerrarSheet()"></div>
 
 <div id="sheet-equipo" class="sheet">
@@ -618,6 +738,34 @@ html,body{
   </button>
 </div>
 
+<div id="sheet-alumno" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Perfil del alumno</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="sheet-scroll">
+    <div class="menu-user">
+      <div class="menu-avatar" id="alumno-avatar"><i class="ph ph-user"></i></div>
+      <div style="flex:1;min-width:0">
+        <p id="alumno-nombre" class="menu-user-name"></p>
+        <span id="alumno-no" class="menu-user-email"></span>
+      </div>
+    </div>
+    <div id="alumno-estado-pago" class="sheet-row">
+      <div class="sr-icon" id="alumno-pago-ico"><i class="ph ph-money"></i></div>
+      <div class="sr-info">
+        <p class="sr-name">Aportación grupal</p>
+        <p id="alumno-pago-desc" class="sr-you"></p>
+      </div>
+      <button id="alumno-pago-btn" class="hist-btn" type="button">
+        <i class="ph ph-check" id="alumno-pago-btn-ico"></i>
+        <span id="alumno-pago-btn-lbl">Validar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast">
   <i id="toast-ico" class="ph toast-ico"></i>
   <span id="toast-msg" class="toast-msg"></span>
@@ -661,12 +809,13 @@ const ERR_CAMPO={
 
 let _cancelados={},_aseoLoaded=false,_equipoSheet=[],_yoIdx=null;
 let _toastTimer=null,_undoFn=null,_ajusteKey=null,_ajusteCancelado=false;
-let _esAdmin=false,_tabActual='aseo';
+let _esAdmin=false,_tabActual='aseo',_pagoListener=null;
+let _fbKeyMap=new Map(),_pagoData=new Map(),_alumnos=[];
+let _searchTerm='',_searchFilter='todos';
 
 function fkey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function cancelado(d){return!!_cancelados[fkey(d)]}
 function mensErr(c){return ERRORES[c]||'Ocurrió un error inesperado. Intenta de nuevo.'}
-
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function showMsg(el,txt,tipo,center){el.textContent=txt;el.className='field-msg'+(tipo?' '+tipo:'')+(center?' center':'')+' show'}
 function hideMsg(el){el.classList.remove('show')}
@@ -738,8 +887,7 @@ async function registrar(){
 
 function irAReset(){
   const correo=document.getElementById('correo').value.trim();
-  const rInp=document.getElementById('reset-correo');
-  rInp.value=correo;
+  document.getElementById('reset-correo').value=correo;
   hideMsg(document.getElementById('reset-msg'));
   showPage('page-reset');
 }
@@ -794,6 +942,8 @@ function cambiarTab(tab){
 
 function renderMenuAdmin(){
   const c=document.getElementById('menu-admin-rows');c.innerHTML='';
+  const adminOpts=document.getElementById('filter-admin-opts');
+  if(adminOpts)adminOpts.style.display=_esAdmin?'':'none';
   if(!_esAdmin)return;
   const b=document.createElement('button');
   b.className='menu-item';
@@ -839,24 +989,45 @@ function restantesSemana(desde){
   return dias;
 }
 
+function buildFixedTeams(alumnos){
+  const n=alumnos.length;
+  const numTeams=Math.max(1,Math.round(n/5));
+  const base=Math.floor(n/numTeams);
+  const extra=n%numTeams;
+  const teams=[];
+  let idx=0;
+  for(let t=0;t<numTeams;t++){
+    const size=base+(t<extra?1:0);
+    const miembros=alumnos.slice(idx,idx+size);
+    const tieneMMFD=miembros.some(a=>esMMFD(a));
+    teams.push({miembros,tieneMMFD});
+    idx+=size;
+  }
+  return teams;
+}
+
 function simular(alumnos,fechas){
   if(!fechas.length)return new Map();
+  const teams=buildFixedTeams(alumnos);
+  if(!teams.length)return new Map();
   const sorted=[...fechas].sort((a,b)=>a-b);
   const max=sorted[sorted.length-1];
   const set=new Set(fechas.map(f=>fkey(f)));
   const result=new Map();
-  let queue=[...alumnos];
+  let queue=[...teams];
   const d=new Date(ROTACION_INICIO);d.setHours(0,0,0,0);
   const h=new Date(max);h.setHours(0,0,0,0);
   while(d<=h){
     const dow=d.getDay();
     if(dow!==0&&dow!==6&&!cancelado(d)){
       const restr=dow===1||dow===2;
-      const eq=[],skip=[];
-      let i=0;
-      while(eq.length<5&&i<queue.length){const a=queue[i];if(restr&&esMMFD(a))skip.push(a);else eq.push(a);i++}
-      if(set.has(fkey(d)))result.set(fkey(d),[...eq]);
-      queue=[...skip,...queue.slice(i),...eq];
+      let idx=-1;
+      for(let i=0;i<queue.length;i++){if(!restr||!queue[i].tieneMMFD){idx=i;break}}
+      if(idx>=0){
+        const team=queue.splice(idx,1)[0];
+        if(set.has(fkey(d)))result.set(fkey(d),team.miembros);
+        queue.push(team);
+      }
     }
     d.setDate(d.getDate()+1);
   }
@@ -891,6 +1062,99 @@ function toggleNombre(row){
   row.classList.toggle('expanded',open);
 }
 
+async function abrirAlumnoSheet(a){
+  const pagoDesc=document.getElementById('alumno-pago-desc');
+  const pagoIco=document.getElementById('alumno-pago-ico');
+  const pagoBtn=document.getElementById('alumno-pago-btn');
+  const pagoBtnIco=document.getElementById('alumno-pago-btn-ico');
+  const pagoBtnLbl=document.getElementById('alumno-pago-btn-lbl');
+
+  document.getElementById('alumno-nombre').textContent=nombre(a);
+  document.getElementById('alumno-no').textContent=`No. ${a['No']||''}${esMMFD(a)?' · Dual':''}`;
+  pagoDesc.textContent='Cargando…';
+  pagoDesc.style.color='var(--ink-3)';
+  pagoBtn.style.display='none';
+  abrirOverlay('sheet-alumno');
+
+  const fbKey=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase());
+  if(!fbKey){pagoDesc.textContent='No disponible';return;}
+
+  try{
+    const pagado=(await db.ref(`estudiantes/${fbKey}/pagado`).once('value')).val()===true;
+    _actualizarPagoUI(pagado,pagoDesc,pagoIco,pagoBtn,pagoBtnIco,pagoBtnLbl);
+    pagoBtn.onclick=()=>_togglePago(fbKey,!pagado,pagoDesc,pagoIco,pagoBtn,pagoBtnIco,pagoBtnLbl);
+    pagoBtn.style.display='flex';
+  }catch{
+    pagoDesc.textContent='No disponible';
+  }
+}
+
+function _actualizarPagoUI(pagado,desc,ico,btn,btnIco,btnLbl){
+  desc.textContent=pagado?'Aportación registrada':'Pendiente de pago';
+  desc.style.color=pagado?'var(--green)':'var(--maroon)';
+  ico.style.background=pagado?'var(--green-lt)':'var(--maroon-lt)';
+  ico.querySelector('i').style.color=pagado?'var(--green)':'var(--maroon)';
+  btnIco.className=pagado?'ph ph-arrow-counter-clockwise':'ph ph-check';
+  btnLbl.textContent=pagado?'Deshacer':'Validar';
+}
+
+async function _togglePago(fbKey,nuevoPagado,desc,ico,btn,btnIco,btnLbl){
+  btn.classList.add('loading');
+  try{
+    await db.ref(`estudiantes/${fbKey}/pagado`).set(nuevoPagado);
+    _actualizarPagoUI(nuevoPagado,desc,ico,btn,btnIco,btnLbl);
+    btn.onclick=()=>_togglePago(fbKey,!nuevoPagado,desc,ico,btn,btnIco,btnLbl);
+    if(nuevoPagado){
+      toast('Aportación validada','ph-check-circle ok',async()=>{
+        await db.ref(`estudiantes/${fbKey}/pagado`).set(false);
+        _actualizarPagoUI(false,desc,ico,btn,btnIco,btnLbl);
+        btn.onclick=()=>_togglePago(fbKey,true,desc,ico,btn,btnIco,btnLbl);
+      });
+    }else{
+      toast('Validación revertida','ph-arrow-counter-clockwise ok');
+    }
+  }catch{
+    toast('No se pudo actualizar. Intenta de nuevo.','ph-warning err');
+  }
+  btn.classList.remove('loading');
+}
+
+function mkEstadoCard(cont,pagado){
+  const ok=pagado===true;
+  const card=document.createElement('div');
+  card.className='estado-card';
+  card.innerHTML=`
+    <div class="estado-row">
+      <div class="estado-ico ok"><i class="ph ph-star"></i></div>
+      <div class="estado-info">
+        <p class="estado-titulo">Conducta</p>
+        <p class="estado-desc">Sin registros de faltas o incidencias</p>
+      </div>
+      <span class="estado-badge ok">Excelente</span>
+    </div>
+    <div class="estado-row">
+      <div class="estado-ico ${ok?'ok':'warn'}" id="estado-pago-ico"><i class="ph ph-money"></i></div>
+      <div class="estado-info">
+        <p class="estado-titulo">Aportación grupal</p>
+        <p class="estado-desc" id="estado-pago-desc">${ok?'Aportación registrada':'Pendiente con el responsable de limpieza'}</p>
+      </div>
+      <span class="estado-badge ${ok?'ok':'warn'}" id="estado-pago-badge">${ok?'Al corriente':'Pendiente'}</span>
+    </div>`;
+  cont.appendChild(card);
+}
+
+function _actualizarEstadoPagoUI(pagado){
+  const ok=pagado===true;
+  const ico=document.getElementById('estado-pago-ico');
+  const desc=document.getElementById('estado-pago-desc');
+  const badge=document.getElementById('estado-pago-badge');
+  if(!ico||!desc||!badge)return;
+  ico.className=`estado-ico ${ok?'ok':'warn'}`;
+  desc.textContent=ok?'Aportación registrada':'Pendiente con el responsable de limpieza';
+  badge.className=`estado-badge ${ok?'ok':'warn'}`;
+  badge.textContent=ok?'Al corriente':'Pendiente';
+}
+
 function mkTurnStrip(cont,fecha,equipo,yoIdx){
   _equipoSheet=equipo||[];_yoIdx=yoIdx??null;
   const el=document.createElement('div');
@@ -904,7 +1168,7 @@ function mkCard(cont,equipo,fecha,titulo,esCancelado,admin){
   const wrap=document.createElement('div');wrap.className='section-card';
   const hdr=document.createElement('div');hdr.className='card-header';
   const info=document.createElement('div');info.className='card-header-info';
-  info.innerHTML=`<p class="card-date">${fstr(fecha)}</p><p class="card-title">${titulo}</p>`;
+  info.innerHTML=`<p class="card-date">${fstr(fecha)}</p><div class="card-title-row"><p class="card-title">${titulo}</p><span class="card-count"><i class="ph ph-users"></i>${equipo.length} integrantes</span></div>`;
   hdr.appendChild(info);
   if(admin){
     const ab=document.createElement('button');ab.className='card-admin-btn';
@@ -921,8 +1185,12 @@ function mkCard(cont,equipo,fecha,titulo,esCancelado,admin){
   }
   equipo.forEach(a=>{
     const row=document.createElement('div');row.className='student-row';
+    const correo=(a['Correo Institucional']||'').toLowerCase();
+    const fbKey=_fbKeyMap.get(correo)||null;
+    const pagado=fbKey?(_pagoData.get(fbKey)===true):false;
+    row.dataset.pagado=pagado?'true':'false';
     row.innerHTML=`<div class="st-icon"><i class="ph ph-user"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
-    row.addEventListener('click',()=>toggleNombre(row));
+    row.addEventListener('click',()=>_esAdmin?abrirAlumnoSheet(a):toggleNombre(row));
     wrap.appendChild(row);
   });
   cont.appendChild(wrap);
@@ -945,8 +1213,121 @@ function mkExpandBtn(cont,diasFuturos,equiposPorDia,admin){
   cont.appendChild(btn);cont.appendChild(list);
 }
 
+function mkSearchBar(cont){
+  const wrap=document.createElement('div');
+  wrap.className='search-bar';
+  wrap.innerHTML='<i class="ph ph-magnifying-glass search-bar-ico"></i><input class="search-bar-inp" type="search" placeholder="Buscar por nombre o número…" autocomplete="off">';
+  const inp=wrap.querySelector('input');
+  inp.addEventListener('input',()=>filtrarAlumnos(inp.value));
+  cont.appendChild(wrap);
+}
+
+function mkSearchBar(cont){
+  const row=document.createElement('div');
+  row.className='search-row';
+  row.innerHTML=`
+    <div class="search-bar">
+      <i class="ph ph-magnifying-glass search-bar-ico"></i>
+      <input class="search-bar-inp" type="search" placeholder="Nombre o número de alumno…" autocomplete="off">
+    </div>
+    <button class="filter-btn" id="filter-btn" onclick="abrirOverlay('sheet-filtro')" type="button">
+      <i class="ph ph-funnel"></i>
+    </button>`;
+  row.querySelector('.search-bar-inp').addEventListener('input',function(){_searchTerm=this.value;_aplicarFiltros();});
+  cont.appendChild(row);
+}
+
+function seleccionarFiltro(filtro){
+  _searchFilter=filtro;
+  document.querySelectorAll('.filter-option').forEach(el=>{
+    el.classList.toggle('selected',el.dataset.filter===filtro);
+  });
+  const btn=document.getElementById('filter-btn');
+  if(btn)btn.classList.toggle('active',filtro!=='todos');
+  cerrarSheet();
+  _aplicarFiltros();
+}
+
+function _aplicarFiltros(){
+  const term=_searchTerm.trim().toLowerCase();
+  const filter=_searchFilter;
+  const body=document.getElementById('aseo-body');
+  const moreList=body.querySelector('.more-list');
+  const expandBtn=body.querySelector('.expand-btn');
+  const esFiltroAdmin=filter==='pagado'||filter==='pendiente';
+  const activo=term||filter!=='todos';
+
+  document.getElementById('flat-list')?.remove();
+
+  if(esFiltroAdmin){
+    if(expandBtn)expandBtn.style.display='none';
+    if(moreList)moreList.classList.add('open');
+    body.querySelectorAll('.section-card').forEach(c=>c.style.display='none');
+
+    const card=document.createElement('div');
+    card.className='section-card';card.id='flat-list';
+
+    const filtered=_alumnos.filter(a=>{
+      const nom=nombre(a).toLowerCase();
+      const num=(a['No']||'').toString();
+      const matchTerm=!term||nom.includes(term)||num.includes(term);
+      const fbKey=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase());
+      const pagado=fbKey?(_pagoData.get(fbKey)===true):false;
+      return matchTerm&&(filter==='pagado'?pagado:!pagado);
+    });
+
+    if(filtered.length){
+      filtered.forEach(a=>{
+        const row=document.createElement('div');row.className='student-row';
+        const fbKey=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase())||null;
+        const pagado=fbKey?(_pagoData.get(fbKey)===true):false;
+        row.dataset.pagado=pagado?'true':'false';
+        row.innerHTML=`<div class="st-icon"><i class="ph ph-user"></i></div><div class="st-body"><p class="st-name">${nombre(a)}</p></div><div class="st-meta">${esMMFD(a)?'<span class="st-badge">Dual</span>':''}<span class="st-num">No.${a['No']||''}</span></div>`;
+        row.addEventListener('click',()=>abrirAlumnoSheet(a));
+        card.appendChild(row);
+      });
+    }else{
+      card.innerHTML='<div class="empty-state"><i class="ph ph-magnifying-glass"></i><p class="e-title">Sin resultados</p></div>';
+    }
+
+    const searchRow=body.querySelector('.search-row');
+    if(searchRow)searchRow.after(card);else body.appendChild(card);
+    return;
+  }
+
+  body.querySelectorAll('.section-card').forEach(c=>c.style.display='');
+  if(moreList){
+    if(activo){
+      moreList.classList.add('open');
+      if(expandBtn)expandBtn.style.display='none';
+    }else{
+      const wasOpen=expandBtn?.classList.contains('open');
+      moreList.classList.toggle('open',!!wasOpen);
+      if(expandBtn)expandBtn.style.display='';
+    }
+  }
+
+  body.querySelectorAll('.section-card').forEach(card=>{
+    let vis=0;
+    card.querySelectorAll('.student-row').forEach(row=>{
+      const nom=row.querySelector('.st-name')?.textContent?.toLowerCase()||'';
+      const num=row.querySelector('.st-num')?.textContent?.toLowerCase()||'';
+      const esDual=!!row.querySelector('.st-badge');
+      const matchTerm=!term||nom.includes(term)||num.includes(term);
+      const matchFilter=filter==='dual'?esDual:true;
+      const show=matchTerm&&matchFilter;
+      row.style.display=show?'':'none';
+      if(show)vis++;
+    });
+    const hdr=card.querySelector('.card-header');
+    if(hdr)hdr.style.display='';
+    card.style.display=vis>0||!activo?'':'none';
+  });
+}
+
 async function cargarAseo(){
   if(_aseoLoaded)return;_aseoLoaded=true;
+  _searchTerm='';_searchFilter='todos';
   const cont=document.getElementById('aseo-body');cont.innerHTML='';
   const correoUsuario=auth.currentUser?.email?.toLowerCase()??null;
   const uid=auth.currentUser?.uid??null;
@@ -957,12 +1338,36 @@ async function cargarAseo(){
   try{
     const snap=await db.ref('estudiantes').once('value');
     const alumnos=[];
-    snap.forEach(c=>{const v=c.val();if(v&&typeof v==='object')alumnos.push(v)});
+    let userFbKey=null,userPagado=false;
+    _fbKeyMap.clear();_pagoData.clear();
+    snap.forEach(c=>{
+      const v=c.val();
+      if(v&&typeof v==='object'){
+        alumnos.push(v);
+        const correo=(v['Correo Institucional']||'').toLowerCase();
+        _fbKeyMap.set(correo,c.key);
+        _pagoData.set(c.key,v.pagado===true);
+        if(correoUsuario&&correo===correoUsuario){
+          userFbKey=c.key;
+          userPagado=v.pagado===true;
+        }
+      }
+    });
     if(!alumnos.length){
       cont.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">Sin estudiantes registrados</p></div>';
       return;
     }
     alumnos.sort((a,b)=>(parseInt(a['No'])||0)-(parseInt(b['No'])||0));
+    _alumnos=alumnos;
+
+    if(_pagoListener){_pagoListener();_pagoListener=null;}
+    if(userFbKey){
+      const ref=db.ref(`estudiantes/${userFbKey}/pagado`);
+      const handler=s=>_actualizarEstadoPagoUI(s.val()===true);
+      ref.on('value',handler);
+      _pagoListener=()=>ref.off('value',handler);
+    }
+
     const hoy=new Date();hoy.setHours(0,0,0,0);
     const esFDS=hoy.getDay()===0||hoy.getDay()===6;
     const hoyCancelado=cancelado(hoy);
@@ -979,6 +1384,8 @@ async function cargarAseo(){
         const turno=proximoTurno(alumnos,correoUsuario,manana);
         if(turno){const yi=turno.equipo.findIndex(a=>(a['Correo Institucional']||'').toLowerCase()===correoUsuario);mkTurnStrip(cont,turno.fecha,turno.equipo,yi>=0?yi:null)}
       }
+      mkEstadoCard(cont,userPagado);
+      mkSearchBar(cont);
       mkCard(cont,eqProx,prox,hoyCancelado?'Próximo equipo disponible':'Equipo del próximo día hábil',false,_esAdmin);
       mkExpandBtn(cont,rest,eqs,_esAdmin);
       return;
@@ -993,6 +1400,8 @@ async function cargarAseo(){
       const turno=proximoTurno(alumnos,correoUsuario,manana);
       if(turno){const yi=turno.equipo.findIndex(a=>(a['Correo Institucional']||'').toLowerCase()===correoUsuario);mkTurnStrip(cont,turno.fecha,turno.equipo,yi>=0?yi:null)}
     }
+    mkEstadoCard(cont,userPagado);
+    mkSearchBar(cont);
     mkCard(cont,eqHoy,hoy,'Equipo de hoy',false,_esAdmin);
     mkExpandBtn(cont,resto,eqs,_esAdmin);
   }catch{
@@ -1095,7 +1504,7 @@ async function confirmarAjuste(){
 
 function cerrarSheet(){
   const ov=document.getElementById('overlay');
-  ['sheet-equipo','sheet-ajuste','sheet-historial','sheet-menu'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  ['sheet-equipo','sheet-ajuste','sheet-historial','sheet-menu','sheet-alumno','sheet-filtro'].forEach(id=>document.getElementById(id).classList.remove('open'));
   ov.classList.remove('vis');
   setTimeout(()=>ov.classList.remove('open'),240);
 }
@@ -1106,26 +1515,27 @@ async function abrirMenu(){
   document.getElementById('menu-name').textContent='';
   abrirOverlay('sheet-menu');
   try{
-    const snap=await db.ref('estudiantes').once('value');
-    let found='';
-    snap.forEach(c=>{
-      const v=c.val();
-      if((v['Correo Institucional']||'').toLowerCase()===email.toLowerCase()){
-        const p1=(v['Primer Nombre']||'').trim();
-        const ap=(v['Apellido Paterno']||'').trim();
-        found=[p1,ap].filter(Boolean).join(' ');
+    const fbKey=_fbKeyMap.get(email.toLowerCase());
+    if(fbKey){
+      const snap=await db.ref(`estudiantes/${fbKey}`).once('value');
+      const v=snap.val();
+      if(v){
+        const found=[v['Primer Nombre']||'',v['Apellido Paterno']||''].map(s=>s.trim()).filter(Boolean).join(' ');
+        if(found)document.getElementById('menu-name').textContent=found;
       }
-    });
-    if(found)document.getElementById('menu-name').textContent=found;
+    }
   }catch{}
 }
+
 async function cerrarSesion(){cerrarSheet();try{await auth.signOut()}catch{}}
 
 auth.onAuthStateChanged(async user=>{
   if(user){
     showPage('page-app');await registrarToken(user.uid,user.email);cargarAseo();
   }else{
+    if(_pagoListener){_pagoListener();_pagoListener=null;}
     _cancelados={};_esAdmin=false;_aseoLoaded=false;_equipoSheet=[];_yoIdx=null;_tabActual='aseo';
+    _fbKeyMap.clear();
     document.getElementById('aseo-body').innerHTML='';
     document.getElementById('menu-admin-rows').innerHTML='';
     document.querySelectorAll('.tab-screen').forEach(s=>s.classList.remove('active'));
