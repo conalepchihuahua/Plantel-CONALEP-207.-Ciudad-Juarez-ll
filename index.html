@@ -565,11 +565,11 @@ html,body{
 .toast-undo:active{background:rgba(255,255,255,.15)}
 .orden-toolbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px 20px;border-bottom:1px solid var(--line);flex-shrink:0
+  padding:12px 20px;border-bottom:1px solid var(--line);flex-shrink:0;gap:12px
 }
-.orden-info{font-size:12px;font-weight:500;color:var(--ink-3);flex:1}
+.orden-info{font-size:12px;font-weight:500;color:var(--ink-3);flex:1;line-height:1.5}
 .orden-restore{
-  height:32px;padding:0 12px;border-radius:6px;
+  height:32px;padding:0 12px;border-radius:6px;flex-shrink:0;
   border:1.5px solid var(--line);background:transparent;
   font-family:'Noto Sans',sans-serif;font-size:12px;font-weight:600;
   color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:4px;
@@ -578,24 +578,24 @@ html,body{
 .orden-restore:active{border-color:var(--ink-3)}
 .orden-restore i{font-size:13px}
 .orden-row{
-  display:flex;align-items:center;padding:0 16px;gap:12px;
+  display:flex;align-items:center;padding:0 16px;gap:10px;
   min-height:56px;border-bottom:1px solid var(--line);
-  background:var(--white);transition:background var(--t);user-select:none
+  background:var(--white);user-select:none
 }
 .orden-row:last-child{border-bottom:none}
-.orden-row.dragging{background:var(--green-lt);opacity:.9;box-shadow:0 4px 16px rgba(0,0,0,.12)}
-.orden-row.drag-over{border-top:2px solid var(--green)}
 .orden-handle{
-  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;color:var(--ink-3);cursor:grab;border-radius:6px;touch-action:none
+  width:32px;height:44px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--line);border-radius:6px;touch-action:none;cursor:grab
 }
-.orden-handle:active{cursor:grabbing;background:var(--bg)}
-.orden-handle i{font-size:18px}
-.orden-num{
-  width:28px;font-size:11px;font-weight:700;color:var(--ink-3);
+.orden-handle:active{cursor:grabbing;color:var(--ink-3)}
+.orden-handle i{font-size:20px}
+.orden-eq{
+  width:20px;font-size:10px;font-weight:700;color:var(--ink-3);
   text-align:center;flex-shrink:0
 }
-.orden-name{flex:1;font-size:14px;font-weight:500;color:var(--ink)}
+.orden-name{flex:1;font-size:14px;font-weight:500;color:var(--ink);min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orden-tags{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .reset-heading{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px}
 .reset-desc{font-size:14px;font-weight:500;color:var(--ink-3);line-height:1.65;margin-bottom:20px}
 </style>
@@ -760,7 +760,7 @@ html,body{
     <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
   </div>
   <div class="orden-toolbar">
-    <span class="orden-info">Arrastra para reordenar los equipos</span>
+    <span class="orden-info">El número indica el equipo. Alumnos <span class="st-badge" style="vertical-align:middle">Dual</span> no limpian lunes ni martes.</span>
     <button class="orden-restore" onclick="_restaurarOrdenOriginal()">
       <i class="ph ph-arrow-counter-clockwise"></i>Restablecer
     </button>
@@ -1548,15 +1548,38 @@ function abrirOrdenSheet(){
     body.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">Sin estudiantes registrados</p></div>';
     abrirOverlay('sheet-orden');return;
   }
+
+  const n=_alumnos.length;
+  const numTeams=Math.max(1,Math.round(n/5));
+  const base=Math.floor(n/numTeams);
+  const extra=n%numTeams;
+  let teamSizes=[];
+  for(let t=0;t<numTeams;t++)teamSizes.push(base+(t<extra?1:0));
+
+  let teamIdx=0,countInTeam=0;
   _alumnos.forEach((a,i)=>{
+    if(countInTeam>=teamSizes[teamIdx]){teamIdx++;countInTeam=0;}
+    const eq=teamIdx+1;
+    countInTeam++;
+
+    const dual=esMMFD(a);
     const row=document.createElement('div');
     row.className='orden-row';
-    row.dataset.idx=i;
     const fbKey=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase())||'';
     row.dataset.fbkey=fbKey;
-    row.innerHTML=`<div class="orden-handle"><i class="ph ph-dots-six-vertical"></i></div><span class="orden-num">${i+1}</span><span class="orden-name">${nombre(a)}</span>${esMMFD(a)?'<span class="orden-badge">Dual</span>':''}`;
+
+    const tags=dual
+      ?`<div class="orden-tags"><span class="st-badge">Dual</span></div>`
+      :'';
+
+    row.innerHTML=`
+      <div class="orden-handle"><i class="ph ph-dots-six-vertical"></i></div>
+      <span class="orden-eq">${eq}</span>
+      <span class="orden-name">${nombre(a)}</span>
+      ${tags}`;
     body.appendChild(row);
   });
+
   _initOrdenDrag(body);
   abrirOverlay('sheet-orden');
 }
@@ -1624,9 +1647,19 @@ function _initOrdenDrag(body){
 }
 
 function _renumerarOrden(body){
-  body.querySelectorAll('.orden-row').forEach((row,i)=>{
-    row.dataset.idx=i;
-    row.querySelector('.orden-num').textContent=i+1;
+  const rows=[...body.querySelectorAll('.orden-row')];
+  const n=rows.length;
+  const numTeams=Math.max(1,Math.round(n/5));
+  const base=Math.floor(n/numTeams);
+  const extra=n%numTeams;
+  let teamIdx=0,countInTeam=0;
+  const sizes=[];
+  for(let t=0;t<numTeams;t++)sizes.push(base+(t<extra?1:0));
+  rows.forEach((row,i)=>{
+    if(countInTeam>=sizes[teamIdx]){teamIdx++;countInTeam=0;}
+    const eq=row.querySelector('.orden-eq');
+    if(eq)eq.textContent=teamIdx+1;
+    countInTeam++;
   });
 }
 
