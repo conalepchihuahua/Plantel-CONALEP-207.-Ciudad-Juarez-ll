@@ -607,7 +607,7 @@ html,body{
     <div class="auth-box">
       <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_2.png" alt="CONALEP" class="auth-logo"/>
       <p class="reset-heading">Iniciar sesión</p>
-      <p class="reset-desc">Ingresa tu correo y contraseña institucionales para continuar.</p>
+      <p class="reset-desc">Accede con tus credenciales institucionales para continuar.</p>
       <div class="field-block">
         <label class="field-label" for="correo">Correo institucional</label>
         <div class="field-wrap">
@@ -630,7 +630,7 @@ html,body{
     </div>
   </div>
   <div class="auth-foot">
-    <button type="button" onclick="irARegistro()" class="btn-secondary">Crear cuenta nueva</button>
+    <button type="button" onclick="irARegistro()" class="btn-secondary">Registrarse</button>
   </div>
 </div>
 
@@ -639,14 +639,14 @@ html,body{
     <div class="auth-box">
       <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_2.png" alt="CONALEP" class="auth-logo"/>
       <p class="reset-heading">Crear cuenta</p>
-      <p class="reset-desc">Usa tu correo institucional para registrarte en la plataforma.</p>
+      <p class="reset-desc">Utiliza tu correo institucional para registrarte en la plataforma de CONALEP Plantel 207.</p>
       <div class="field-block">
         <label class="field-label" for="reg-correo">Correo institucional</label>
         <div class="field-wrap">
           <input id="reg-correo" type="email" placeholder="usuario@chih.conalep.edu.mx" autocomplete="email" class="field-input" oninput="validarCorreo(this)"/>
           <i class="ph ph-envelope field-ico"></i>
         </div>
-        <p id="reg-correo-error" class="field-msg">Debe terminar en @chih.conalep.edu.mx</p>
+        <p id="reg-correo-error" class="field-msg">El correo debe pertenecer al dominio @chih.conalep.edu.mx</p>
       </div>
       <div class="field-block last">
         <label class="field-label" for="reg-pass">Contraseña</label>
@@ -660,7 +660,7 @@ html,body{
     </div>
   </div>
   <div class="auth-foot">
-    <button type="button" onclick="irALogin()" class="btn-secondary">Ya tengo cuenta</button>
+    <button type="button" onclick="irALogin()" class="btn-secondary">Iniciar sesión</button>
   </div>
 </div>
 
@@ -669,7 +669,7 @@ html,body{
     <div class="auth-box">
       <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_2.png" alt="CONALEP" class="auth-logo"/>
       <p class="reset-heading">Restablecer contraseña</p>
-      <p class="reset-desc">Ingresa tu correo institucional y te enviaremos un enlace para crear una nueva contraseña.</p>
+      <p class="reset-desc">Ingresa tu correo institucional y recibirás un enlace para restablecer tu contraseña.</p>
       <div class="field-block last">
         <label class="field-label" for="reset-correo">Correo institucional</label>
         <div class="field-wrap">
@@ -708,7 +708,7 @@ html,body{
 
   <nav class="tab-bar">
     <button class="tab-btn active" id="tab-aseo" onclick="cambiarTab('aseo')">
-      <i class="ph-fill ph-broom"></i>Aseo
+      <i class="ph-fill ph-broom"></i>Limpieza
     </button>
     <button class="tab-btn" id="tab-avisos" onclick="cambiarTab('avisos')">
       <i class="ph ph-bell"></i>Avisos
@@ -914,7 +914,7 @@ let _ordenPersonalizado=null,_ordenDebounce=null;
 
 function fkey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function cancelado(d){return!!_cancelados[fkey(d)]}
-function mensErr(c){return ERRORES[c]||'Ocurrió un error inesperado. Intenta de nuevo.'}
+function mensErr(c){return ERRORES[c]||'Ocurrió un error inesperado. Inténtalo de nuevo.'}
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function showMsg(el,txt,tipo,center){el.textContent=txt;el.className='field-msg'+(tipo?' '+tipo:'')+(center?' center':'')+' show'}
 function hideMsg(el){el.classList.remove('show')}
@@ -1181,23 +1181,23 @@ async function abrirAlumnoSheet(a,fecha){
 
   document.getElementById('alumno-nombre').textContent=nombre(a);
   document.getElementById('alumno-no').textContent=`No. ${a['No']||''}${esMMFD(a)?' · Dual':''}`;
-  pagoDesc.textContent='Cargando…';pagoDesc.style.color='var(--ink-3)';
+  pagoDesc.textContent='Verificando…';pagoDesc.style.color='var(--ink-3)';
   pagoBtn.style.display='none';
-  ausDesc.textContent='Cargando…';ausDesc.style.color='var(--ink-3)';
+  ausDesc.textContent='Verificando…';ausDesc.style.color='var(--ink-3)';
   ausBtn.style.display='none';
   deudasList.innerHTML='';
 
   abrirOverlay('sheet-alumno');
 
   const fbKey=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase());
-  if(!fbKey){pagoDesc.textContent='No disponible';ausDesc.textContent='No disponible';return;}
+  if(!fbKey){pagoDesc.textContent='Información no disponible';ausDesc.textContent='Información no disponible';return;}
 
   try{
     const pagado=(await db.ref(`estudiantes/${fbKey}/pagado`).once('value')).val()===true;
     _actualizarPagoUI(pagado,pagoDesc,pagoIco,pagoBtn,pagoBtnIco,pagoBtnLbl);
     pagoBtn.onclick=()=>_togglePago(fbKey,!pagado,pagoDesc,pagoIco,pagoBtn,pagoBtnIco,pagoBtnLbl);
     pagoBtn.style.display='flex';
-  }catch{pagoDesc.textContent='No disponible';}
+  }catch{pagoDesc.textContent='Información no disponible';}
 
   try{
     const ausSnap=(await db.ref(`ausencias/${fbKey}`).once('value')).val()||{};
@@ -1209,12 +1209,12 @@ async function abrirAlumnoSheet(a,fecha){
 }
 
 function _actualizarPagoUI(pagado,desc,ico,btn,btnIco,btnLbl){
-  desc.textContent=pagado?'Aportación registrada':'Pendiente de pago';
+  desc.textContent=pagado?'Aportación registrada':'Aportación pendiente';
   desc.style.color=pagado?'var(--green)':'var(--maroon)';
   ico.style.background=pagado?'var(--green-lt)':'var(--maroon-lt)';
   ico.querySelector('i').style.color=pagado?'var(--green)':'var(--maroon)';
   btnIco.className=pagado?'ph ph-arrow-counter-clockwise':'ph ph-check';
-  btnLbl.textContent=pagado?'Deshacer':'Validar';
+  btnLbl.textContent=pagado?'Revertir':'Validar';
 }
 
 async function _togglePago(fbKey,nuevoPagado,desc,ico,btn,btnIco,btnLbl){
@@ -1233,7 +1233,7 @@ async function _togglePago(fbKey,nuevoPagado,desc,ico,btn,btnIco,btnLbl){
       toast('Validación revertida','ph-arrow-counter-clockwise ok');
     }
   }catch{
-    toast('No se pudo actualizar. Intenta de nuevo.','ph-warning err');
+    toast('No fue posible actualizar. Inténtalo de nuevo.','ph-warning err');
   }
   btn.classList.remove('loading');
 }
@@ -1285,7 +1285,7 @@ function _renderAusenciasUI(fbKey,aus,fecha,desc,ico,btn,btnIco,btnLbl,list){
   if(dateKey&&!saldada){
     btn.style.display='flex';
     if(yaRegistrada){
-      btnIco.className='ph ph-check';btnLbl.textContent='Registrada';
+      btnIco.className='ph ph-check';btnLbl.textContent='Ya registrada';
       btn.disabled=true;
     }else{
       btnIco.className='ph ph-plus';btnLbl.textContent='Registrar';
@@ -1327,9 +1327,9 @@ async function _registrarAusencia(fbKey,dateKey,aus,desc,ico,btn,btnIco,btnLbl,l
     _ausenciasData.set(fbKey,aus);
     _renderAusenciasUI(fbKey,aus,null,desc,ico,btn,btnIco,btnLbl,list);
     btn.style.display='none';
-    toast('Ausencia registrada','ph-calendar-x ok');
+    toast('Ausencia registrada correctamente','ph-calendar-x ok');
   }catch{
-    toast('No se pudo registrar. Intenta de nuevo.','ph-warning err');
+    toast('No fue posible registrar la ausencia. Inténtalo de nuevo.','ph-warning err');
   }
   btn.classList.remove('loading');
 }
@@ -1350,9 +1350,9 @@ async function _saldarDeuda(fbKey,dateKey,aus,sBtn,desc,ico,btnLbl,list){
     const badge=sBtn.closest('.deuda-row')?.querySelector('.deuda-badge');
     if(badge){badge.textContent='Saldada';badge.classList.add('saldada');}
     sBtn.remove();
-    toast('Ausencia saldada','ph-check-circle ok');
+    toast('Ausencia liquidada','ph-check-circle ok');
   }catch{
-    toast('No se pudo actualizar. Intenta de nuevo.','ph-warning err');
+    toast('No fue posible actualizar. Inténtalo de nuevo.','ph-warning err');
   }
   sBtn.classList.remove('loading');
 }
@@ -1394,7 +1394,7 @@ function mkCard(cont,equipo,fecha,titulo,esCancelado,admin){
   wrap.appendChild(hdr);
   if(esCancelado){
     const bar=document.createElement('div');bar.className='cancelled-bar';
-    bar.innerHTML='<i class="ph ph-warning-circle"></i>Jornada cancelada — la rotación fue ajustada automáticamente';
+    bar.innerHTML='<i class="ph ph-warning-circle"></i>Jornada suspendida — la rotación fue ajustada de forma automática';
     wrap.appendChild(bar);
   }
   equipo.forEach(a=>{
@@ -1416,7 +1416,7 @@ function mkCard(cont,equipo,fecha,titulo,esCancelado,admin){
 function mkExpandBtn(cont,diasFuturos,equiposPorDia,admin){
   if(!diasFuturos.length)return;
   const btn=document.createElement('button');btn.className='expand-btn';
-  btn.innerHTML='<i class="ph ph-calendar-dots"></i><span class="lbl">Ver próximos días</span><i class="ph ph-caret-down caret"></i>';
+  btn.innerHTML='<i class="ph ph-calendar-dots"></i><span class="lbl">Ver próximas jornadas</span><i class="ph ph-caret-down caret"></i>';
   const list=document.createElement('div');list.className='more-list';
   diasFuturos.forEach(d=>{
     const eq=equiposPorDia.get(fkey(d))||[];
@@ -1425,7 +1425,7 @@ function mkExpandBtn(cont,diasFuturos,equiposPorDia,admin){
   let open=false;
   btn.addEventListener('click',()=>{
     open=!open;btn.classList.toggle('open',open);list.classList.toggle('open',open);
-    btn.querySelector('.lbl').textContent=open?'Ocultar días':'Ver próximos días';
+    btn.querySelector('.lbl').textContent=open?'Ocultar jornadas':'Ver próximas jornadas';
   });
   cont.appendChild(btn);cont.appendChild(list);
 }
@@ -1503,7 +1503,7 @@ function _aplicarFiltros(){
         card.appendChild(row);
       });
     }else{
-      card.innerHTML='<div class="empty-state"><i class="ph ph-magnifying-glass"></i><p class="e-title">Sin resultados</p></div>';
+      card.innerHTML='<div class="empty-state"><i class="ph ph-magnifying-glass"></i><p class="e-title">Sin resultados para la búsqueda</p></div>';
     }
 
     const searchRow=body.querySelector('.search-row');
@@ -1545,7 +1545,7 @@ function abrirOrdenSheet(){
   const body=document.getElementById('sheet-orden-body');
   body.innerHTML='';
   if(!_alumnos.length){
-    body.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">Sin estudiantes registrados</p></div>';
+    body.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">No hay alumnos registrados en el sistema</p></div>';
     abrirOverlay('sheet-orden');return;
   }
 
@@ -1677,9 +1677,9 @@ async function _guardarOrden(body){
     _alumnos=[...body.querySelectorAll('.orden-row')].map(r=>{
       return _alumnos.find(a=>_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase())===r.dataset.fbkey);
     }).filter(Boolean);
-    toast('Orden guardado','ph-check-circle ok');
+    toast('Orden de rotación actualizado','ph-check-circle ok');
   }catch{
-    toast('No se pudo guardar el orden. Intenta de nuevo.','ph-warning err');
+    toast('No fue posible guardar el orden. Inténtalo de nuevo.','ph-warning err');
   }
 }
 
@@ -1688,11 +1688,11 @@ async function _restaurarOrdenOriginal(){
     await db.ref('ordenAlumnos').remove();
     _ordenPersonalizado=null;
     _alumnos.sort((a,b)=>(parseInt(a['No'])||0)-(parseInt(b['No'])||0));
-    toast('Orden restablecido por número','ph-check-circle ok');
+    toast('Orden restablecido al número de lista','ph-check-circle ok');
     cerrarSheet();
     _aseoLoaded=false;setTimeout(()=>cargarAseo(),280);
   }catch{
-    toast('No se pudo restablecer. Intenta de nuevo.','ph-warning err');
+    toast('No fue posible restablecer el orden. Inténtalo de nuevo.','ph-warning err');
   }
 }
 
@@ -1725,7 +1725,7 @@ async function cargarAseo(){
       }
     });
     if(!alumnos.length){
-      cont.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">Sin estudiantes registrados</p></div>';
+      cont.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">No hay alumnos registrados en el sistema</p></div>';
       return;
     }
     alumnos.sort((a,b)=>(parseInt(a['No'])||0)-(parseInt(b['No'])||0));
@@ -1799,7 +1799,7 @@ async function cargarAseo(){
     mkCard(cont,eqHoy,hoy,'Equipo de hoy',false,_esAdmin);
     mkExpandBtn(cont,resto,eqs,_esAdmin);
   }catch{
-    cont.innerHTML='<div class="empty-state err"><i class="ph ph-wifi-slash"></i><p class="e-title">No se pudo cargar la información</p><p class="e-sub">Verifica tu conexión e intenta de nuevo.</p></div>';
+    cont.innerHTML='<div class="empty-state err"><i class="ph ph-wifi-slash"></i><p class="e-title">No fue posible cargar la información</p><p class="e-sub">Verifica tu conexión a internet e inténtalo de nuevo.</p></div>';
   }
 }
 
@@ -1826,7 +1826,7 @@ function abrirHistorial(){
     const fecha=new Date(y,m-1,d);
     const hoy=new Date();hoy.setHours(0,0,0,0);
     const row=document.createElement('div');row.className='hist-row';
-    row.innerHTML=`<div class="hist-dot"></div><div class="hist-info"><span class="hist-date">${fstr(fecha,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span><span class="hist-sub">${fecha<hoy?'Fecha pasada':'Próxima'}</span></div><button class="hist-btn" data-key="${key}"><i class="ph ph-arrow-counter-clockwise"></i>Restaurar</button>`;
+    row.innerHTML=`<div class="hist-dot"></div><div class="hist-info"><span class="hist-date">${fstr(fecha,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span><span class="hist-sub">${fecha<hoy?'Jornada pasada':'Jornada próxima'}</span></div><button class="hist-btn" data-key="${key}"><i class="ph ph-arrow-counter-clockwise"></i>Restaurar</button>`;
     row.querySelector('.hist-btn').addEventListener('click',function(){restaurarHistorial(this)});
     body.appendChild(row);
   });
@@ -1847,7 +1847,7 @@ async function restaurarHistorial(btn){
     _aseoLoaded=false;setTimeout(()=>cargarAseo(),280);
     const [y,m,d]=key.split('-').map(Number);
     toast(`Jornada del ${fstr(new Date(y,m-1,d))} restaurada`,'ph-check-circle ok',async()=>{await db.ref('cancelaciones/'+key).set(true);_cancelados[key]=true;_aseoLoaded=false;cargarAseo()});
-  }catch{btn.classList.remove('loading');toast('No se pudo restaurar. Intenta de nuevo.','ph-warning-circle err',null)}
+  }catch{btn.classList.remove('loading');toast('No fue posible restaurar la jornada. Inténtalo de nuevo.','ph-warning-circle err',null)}
 }
 
 function abrirAjuste(btn){
@@ -1892,7 +1892,7 @@ async function confirmarAjuste(){
   }catch(e){
     action.disabled=false;action.classList.remove('loading');
     const err=document.createElement('p');err.className='ajuste-err';
-    err.textContent=e?.message||'Error al guardar. Intenta de nuevo.';action.before(err);
+    err.textContent=e?.message||'No fue posible guardar los cambios. Inténtalo de nuevo.';action.before(err);
   }
 }
 
@@ -1958,7 +1958,7 @@ function renderNotifCard(){
   const perm=supported?Notification.permission:'unsupported';
   const map={
     granted:    {cls:'green', icon:'ph-bell-ringing',     tag:'Activas',      title:'Recibes avisos del plantel',          desc:'Te notificaremos cuando haya comunicados o cambios importantes en la rotación de CONALEP Plantel 207.',btn:null},
-    default:    {cls:'gold',  icon:'ph-bell',              tag:'Desactivadas', title:'Activa las notificaciones de avisos', desc:'Permítenos avisarte cuando haya comunicados o cambios en la rotación de aseo.',btn:{label:'Activar notificaciones',icon:'ph-bell'}},
+    default:    {cls:'gold',  icon:'ph-bell',              tag:'Desactivadas', title:'Activa las notificaciones de avisos', desc:'Permite recibir notificaciones cuando se publiquen comunicados o cambios en la rotación de limpieza.',btn:{label:'Activar notificaciones',icon:'ph-bell'}},
     denied:     {cls:'maroon',icon:'ph-bell-slash',        tag:'Bloqueadas',   title:'Acceso denegado por el navegador',    desc:'Para activarlas, ve a la configuración de tu navegador, busca este sitio y permite las notificaciones.',btn:null},
     unsupported:{cls:'',      icon:'ph-bell-simple-slash', tag:'No compatible',title:'Notificaciones no disponibles',       desc:'Tu navegador no soporta notificaciones push. Consulta los avisos directamente en esta sección.',btn:null}
   };
