@@ -580,15 +580,14 @@ html,body{
 .orden-row{
   display:flex;align-items:center;padding:0 16px;gap:12px;
   min-height:56px;border-bottom:1px solid var(--line);
-  background:var(--white);transition:background var(--t);user-select:none;
-  touch-action:none
+  background:var(--white);transition:background var(--t);user-select:none
 }
 .orden-row:last-child{border-bottom:none}
 .orden-row.dragging{background:var(--green-lt);opacity:.9;box-shadow:0 4px 16px rgba(0,0,0,.12)}
 .orden-row.drag-over{border-top:2px solid var(--green)}
 .orden-handle{
   width:32px;height:32px;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;color:var(--ink-3);cursor:grab;border-radius:6px
+  flex-shrink:0;color:var(--ink-3);cursor:grab;border-radius:6px;touch-action:none
 }
 .orden-handle:active{cursor:grabbing;background:var(--bg)}
 .orden-handle i{font-size:18px}
@@ -1563,11 +1562,27 @@ function abrirOrdenSheet(){
 }
 
 function _initOrdenDrag(body){
-  let dragging=null,startY=0,origNext=null;
+  let dragging=null,ghost=null,offsetY=0,scrollTop=0;
 
-  function getRowAt(y){
-    const rows=[...body.querySelectorAll('.orden-row:not(.dragging)')];
-    for(const r of rows){const rect=r.getBoundingClientRect();if(y>=rect.top&&y<=rect.bottom)return r;}
+  function rows(){return[...body.querySelectorAll('.orden-row')];}
+
+  function createGhost(row){
+    const g=row.cloneNode(true);
+    const r=row.getBoundingClientRect();
+    g.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;
+      height:${r.height}px;z-index:999;pointer-events:none;
+      background:var(--green-lt);box-shadow:0 8px 24px rgba(0,0,0,.18);
+      border-radius:8px;opacity:.95;transition:none`;
+    document.body.appendChild(g);
+    return g;
+  }
+
+  function rowAt(y){
+    const list=rows().filter(r=>r!==dragging);
+    for(const r of list){
+      const rc=r.getBoundingClientRect();
+      if(y>=rc.top&&y<=rc.bottom)return r;
+    }
     return null;
   }
 
@@ -1576,31 +1591,35 @@ function _initOrdenDrag(body){
     if(!handle)return;
     dragging=handle.closest('.orden-row');
     if(!dragging)return;
-    startY=e.touches[0].clientY;
-    origNext=dragging.nextSibling;
-    dragging.classList.add('dragging');
+    const touch=e.touches[0];
+    const rc=dragging.getBoundingClientRect();
+    offsetY=touch.clientY-rc.top;
+    scrollTop=body.scrollTop;
+    ghost=createGhost(dragging);
+    dragging.style.opacity='0.3';
     e.preventDefault();
   },{passive:false});
 
-  body.addEventListener('touchmove',e=>{
-    if(!dragging)return;
+  document.addEventListener('touchmove',e=>{
+    if(!dragging||!ghost)return;
     e.preventDefault();
     const y=e.touches[0].clientY;
-    const target=getRowAt(y);
-    if(target&&target!==dragging){
-      const rect=target.getBoundingClientRect();
-      const mid=rect.top+rect.height/2;
-      if(y<mid)body.insertBefore(dragging,target);
+    ghost.style.top=(y-offsetY)+'px';
+    const target=rowAt(y);
+    if(target){
+      const rc=target.getBoundingClientRect();
+      if(y<rc.top+rc.height/2)body.insertBefore(dragging,target);
       else body.insertBefore(dragging,target.nextSibling);
     }
   },{passive:false});
 
-  body.addEventListener('touchend',()=>{
+  document.addEventListener('touchend',()=>{
     if(!dragging)return;
-    dragging.classList.remove('dragging');
-    dragging=null;
+    dragging.style.opacity='';
+    if(ghost){ghost.remove();ghost=null;}
     _renumerarOrden(body);
     _programarGuardado(body);
+    dragging=null;
   });
 }
 
