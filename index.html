@@ -563,6 +563,40 @@ html,body{
   font-size:12px;font-weight:600;cursor:pointer;transition:background var(--t)
 }
 .toast-undo:active{background:rgba(255,255,255,.15)}
+.orden-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;border-bottom:1px solid var(--line);flex-shrink:0
+}
+.orden-info{font-size:12px;font-weight:500;color:var(--ink-3);flex:1}
+.orden-restore{
+  height:32px;padding:0 12px;border-radius:6px;
+  border:1.5px solid var(--line);background:transparent;
+  font-family:'Noto Sans',sans-serif;font-size:12px;font-weight:600;
+  color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:4px;
+  transition:border-color var(--t)
+}
+.orden-restore:active{border-color:var(--ink-3)}
+.orden-restore i{font-size:13px}
+.orden-row{
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+  min-height:56px;border-bottom:1px solid var(--line);
+  background:var(--white);transition:background var(--t);user-select:none;
+  touch-action:none
+}
+.orden-row:last-child{border-bottom:none}
+.orden-row.dragging{background:var(--green-lt);opacity:.9;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.orden-row.drag-over{border-top:2px solid var(--green)}
+.orden-handle{
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--ink-3);cursor:grab;border-radius:6px
+}
+.orden-handle:active{cursor:grabbing;background:var(--bg)}
+.orden-handle i{font-size:18px}
+.orden-num{
+  width:28px;font-size:11px;font-weight:700;color:var(--ink-3);
+  text-align:center;flex-shrink:0
+}
+.orden-name{flex:1;font-size:14px;font-weight:500;color:var(--ink)}
 .reset-heading{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px}
 .reset-desc{font-size:14px;font-weight:500;color:var(--ink-3);line-height:1.65;margin-bottom:20px}
 </style>
@@ -700,7 +734,7 @@ html,body{
       <span class="filter-option-label">Sistema dual</span>
       <i class="ph ph-check filter-option-check"></i>
     </div>
-    <div id="filter-admin-opts">
+    <div id="filter-admin-opts" style="display:none">
       <div class="filter-option" data-filter="pagado" onclick="seleccionarFiltro('pagado')">
         <div class="filter-option-ico"><i class="ph ph-check-circle"></i></div>
         <span class="filter-option-label">Aportación registrada</span>
@@ -718,6 +752,21 @@ html,body{
       </div>
     </div>
   </div>
+</div>
+
+<div id="sheet-orden" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Orden de rotación</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="orden-toolbar">
+    <span class="orden-info">Arrastra para reordenar los equipos</span>
+    <button class="orden-restore" onclick="_restaurarOrdenOriginal()">
+      <i class="ph ph-arrow-counter-clockwise"></i>Restablecer
+    </button>
+  </div>
+  <div id="sheet-orden-body" class="sheet-scroll"></div>
 </div>
 
 <div id="overlay" class="overlay" onclick="cerrarSheet()"></div>
@@ -862,6 +911,7 @@ let _esAdmin=false,_tabActual='aseo',_pagoListener=null;
 let _fbKeyMap=new Map(),_pagoData=new Map(),_alumnos=[];
 let _ausenciasData=new Map();
 let _searchTerm='',_searchFilter='todos';
+let _ordenPersonalizado=null,_ordenDebounce=null;
 
 function fkey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function cancelado(d){return!!_cancelados[fkey(d)]}
@@ -997,9 +1047,14 @@ function renderMenuAdmin(){
   if(!_esAdmin)return;
   const b=document.createElement('button');
   b.className='menu-item';
-  b.innerHTML='<div class="menu-item-ico"><i class="ph ph-calendar-x"></i></div><span class="menu-item-label">Jornadas canceladas</span>';
-  b.addEventListener('click',()=>{cerrarSheet();setTimeout(abrirHistorial,300)});
+  b.innerHTML='<div class="menu-item-ico"><i class="ph ph-arrows-down-up"></i></div><span class="menu-item-label">Orden de rotación</span>';
+  b.addEventListener('click',()=>{cerrarSheet();setTimeout(abrirOrdenSheet,300)});
   c.appendChild(b);
+  const b2=document.createElement('button');
+  b2.className='menu-item';
+  b2.innerHTML='<div class="menu-item-ico"><i class="ph ph-calendar-x"></i></div><span class="menu-item-label">Jornadas canceladas</span>';
+  b2.addEventListener('click',()=>{cerrarSheet();setTimeout(abrirHistorial,300)});
+  c.appendChild(b2);
 }
 
 function toast(msg,icoCls,undoFn){
@@ -1377,15 +1432,6 @@ function mkExpandBtn(cont,diasFuturos,equiposPorDia,admin){
 }
 
 function mkSearchBar(cont){
-  const wrap=document.createElement('div');
-  wrap.className='search-bar';
-  wrap.innerHTML='<i class="ph ph-magnifying-glass search-bar-ico"></i><input class="search-bar-inp" type="search" placeholder="Buscar por nombre o número…" autocomplete="off">';
-  const inp=wrap.querySelector('input');
-  inp.addEventListener('input',()=>filtrarAlumnos(inp.value));
-  cont.appendChild(wrap);
-}
-
-function mkSearchBar(cont){
   const row=document.createElement('div');
   row.className='search-row';
   row.innerHTML=`
@@ -1496,6 +1542,108 @@ function _aplicarFiltros(){
   });
 }
 
+function abrirOrdenSheet(){
+  const body=document.getElementById('sheet-orden-body');
+  body.innerHTML='';
+  if(!_alumnos.length){
+    body.innerHTML='<div class="empty-state"><i class="ph ph-users"></i><p class="e-title">Sin estudiantes registrados</p></div>';
+    abrirOverlay('sheet-orden');return;
+  }
+  _alumnos.forEach((a,i)=>{
+    const row=document.createElement('div');
+    row.className='orden-row';
+    row.dataset.idx=i;
+    const fbKey=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase())||'';
+    row.dataset.fbkey=fbKey;
+    row.innerHTML=`<div class="orden-handle"><i class="ph ph-dots-six-vertical"></i></div><span class="orden-num">${i+1}</span><span class="orden-name">${nombre(a)}</span>${esMMFD(a)?'<span class="orden-badge">Dual</span>':''}`;
+    body.appendChild(row);
+  });
+  _initOrdenDrag(body);
+  abrirOverlay('sheet-orden');
+}
+
+function _initOrdenDrag(body){
+  let dragging=null,startY=0,origNext=null;
+
+  function getRowAt(y){
+    const rows=[...body.querySelectorAll('.orden-row:not(.dragging)')];
+    for(const r of rows){const rect=r.getBoundingClientRect();if(y>=rect.top&&y<=rect.bottom)return r;}
+    return null;
+  }
+
+  body.addEventListener('touchstart',e=>{
+    const handle=e.target.closest('.orden-handle');
+    if(!handle)return;
+    dragging=handle.closest('.orden-row');
+    if(!dragging)return;
+    startY=e.touches[0].clientY;
+    origNext=dragging.nextSibling;
+    dragging.classList.add('dragging');
+    e.preventDefault();
+  },{passive:false});
+
+  body.addEventListener('touchmove',e=>{
+    if(!dragging)return;
+    e.preventDefault();
+    const y=e.touches[0].clientY;
+    const target=getRowAt(y);
+    if(target&&target!==dragging){
+      const rect=target.getBoundingClientRect();
+      const mid=rect.top+rect.height/2;
+      if(y<mid)body.insertBefore(dragging,target);
+      else body.insertBefore(dragging,target.nextSibling);
+    }
+  },{passive:false});
+
+  body.addEventListener('touchend',()=>{
+    if(!dragging)return;
+    dragging.classList.remove('dragging');
+    dragging=null;
+    _renumerarOrden(body);
+    _programarGuardado(body);
+  });
+}
+
+function _renumerarOrden(body){
+  body.querySelectorAll('.orden-row').forEach((row,i)=>{
+    row.dataset.idx=i;
+    row.querySelector('.orden-num').textContent=i+1;
+  });
+}
+
+function _programarGuardado(body){
+  clearTimeout(_ordenDebounce);
+  _ordenDebounce=setTimeout(()=>_guardarOrden(body),800);
+}
+
+async function _guardarOrden(body){
+  const keys=[...body.querySelectorAll('.orden-row')].map(r=>r.dataset.fbkey).filter(Boolean);
+  if(!keys.length)return;
+  try{
+    await db.ref('ordenAlumnos').set(keys);
+    _ordenPersonalizado=keys;
+    _alumnos=[...body.querySelectorAll('.orden-row')].map(r=>{
+      return _alumnos.find(a=>_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase())===r.dataset.fbkey);
+    }).filter(Boolean);
+    toast('Orden guardado','ph-check-circle ok');
+  }catch{
+    toast('No se pudo guardar el orden. Intenta de nuevo.','ph-warning err');
+  }
+}
+
+async function _restaurarOrdenOriginal(){
+  try{
+    await db.ref('ordenAlumnos').remove();
+    _ordenPersonalizado=null;
+    _alumnos.sort((a,b)=>(parseInt(a['No'])||0)-(parseInt(b['No'])||0));
+    toast('Orden restablecido por número','ph-check-circle ok');
+    cerrarSheet();
+    _aseoLoaded=false;setTimeout(()=>cargarAseo(),280);
+  }catch{
+    toast('No se pudo restablecer. Intenta de nuevo.','ph-warning err');
+  }
+}
+
 async function cargarAseo(){
   if(_aseoLoaded)return;_aseoLoaded=true;
   _searchTerm='';_searchFilter='todos';
@@ -1529,6 +1677,29 @@ async function cargarAseo(){
       return;
     }
     alumnos.sort((a,b)=>(parseInt(a['No'])||0)-(parseInt(b['No'])||0));
+
+    if(_esAdmin){
+      try{
+        const ausSnap=await db.ref('ausencias').once('value');
+        ausSnap.forEach(c=>{const v=c.val();if(v)_ausenciasData.set(c.key,v);});
+      }catch{}
+    }
+
+    try{
+      const ordenSnap=await db.ref('ordenAlumnos').once('value');
+      const orden=ordenSnap.val();
+      if(Array.isArray(orden)&&orden.length){
+        _ordenPersonalizado=orden;
+        const keyMap=new Map(alumnos.map(a=>[_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase()),a]));
+        const ordenados=[];
+        orden.forEach(k=>{if(keyMap.has(k))ordenados.push(keyMap.get(k));});
+        alumnos.forEach(a=>{const k=_fbKeyMap.get((a['Correo Institucional']||'').toLowerCase());if(!orden.includes(k))ordenados.push(a);});
+        alumnos.splice(0,alumnos.length,...ordenados);
+      }else{
+        _ordenPersonalizado=null;
+      }
+    }catch{_ordenPersonalizado=null;}
+
     _alumnos=alumnos;
 
     if(_pagoListener){_pagoListener();_pagoListener=null;}
@@ -1537,13 +1708,6 @@ async function cargarAseo(){
       const handler=s=>_actualizarEstadoPagoUI(s.val()===true);
       ref.on('value',handler);
       _pagoListener=()=>ref.off('value',handler);
-    }
-
-    if(_esAdmin){
-      try{
-        const ausSnap=await db.ref('ausencias').once('value');
-        ausSnap.forEach(c=>{const v=c.val();if(v)_ausenciasData.set(c.key,v);});
-      }catch{}
     }
 
     const hoy=new Date();hoy.setHours(0,0,0,0);
@@ -1682,7 +1846,7 @@ async function confirmarAjuste(){
 
 function cerrarSheet(){
   const ov=document.getElementById('overlay');
-  ['sheet-equipo','sheet-ajuste','sheet-historial','sheet-menu','sheet-alumno','sheet-filtro'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  ['sheet-equipo','sheet-ajuste','sheet-historial','sheet-menu','sheet-alumno','sheet-filtro','sheet-orden'].forEach(id=>document.getElementById(id).classList.remove('open'));
   ov.classList.remove('vis');
   setTimeout(()=>ov.classList.remove('open'),240);
 }
@@ -1713,7 +1877,9 @@ auth.onAuthStateChanged(async user=>{
   }else{
     if(_pagoListener){_pagoListener();_pagoListener=null;}
     _cancelados={};_esAdmin=false;_aseoLoaded=false;_equipoSheet=[];_yoIdx=null;_tabActual='aseo';
-    _fbKeyMap.clear();
+    _fbKeyMap.clear();_pagoData.clear();_ausenciasData.clear();_alumnos=[];
+    _searchTerm='';_searchFilter='todos';_undoFn=null;clearTimeout(_toastTimer);
+    _ordenPersonalizado=null;clearTimeout(_ordenDebounce);
     document.getElementById('aseo-body').innerHTML='';
     document.getElementById('menu-admin-rows').innerHTML='';
     document.querySelectorAll('.tab-screen').forEach(s=>s.classList.remove('active'));
