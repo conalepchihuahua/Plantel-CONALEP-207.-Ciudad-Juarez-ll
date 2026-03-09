@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>CONALEP 207</title>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#007E67"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="CONALEP 207"/>
+<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/favicon.ico"/>
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/apple-touch-icon.png"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-568LMD97GW"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"/>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="page-login" class="page active">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_2.png" alt="CONALEP" class="auth-logo"/>
+      <p class="reset-heading">Iniciar sesión</p>
+      <p class="reset-desc">Accede con tus credenciales institucionales para continuar.</p>
+      <div class="field-block">
+        <label class="field-label" for="correo">Correo institucional</label>
+        <div class="field-wrap">
+          <input id="correo" type="email" placeholder="usuario@chih.conalep.edu.mx" autocomplete="email" class="field-input"/>
+          <i class="ph ph-envelope field-ico"></i>
+        </div>
+        <p id="login-correo-error" class="field-msg"></p>
+      </div>
+      <div class="field-block last">
+        <label class="field-label" for="pass">Contraseña</label>
+        <div class="field-wrap">
+          <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" class="field-input"/>
+          <button type="button" onclick="togglePass(this)" class="field-eye"><i class="ph ph-eye"></i></button>
+        </div>
+        <p id="login-pass-error" class="field-msg"></p>
+      </div>
+      <button type="button" onclick="entrar()" class="btn-primary">Iniciar sesión</button>
+      <p id="login-error" class="field-msg center mt-8"></p>
+      <button type="button" onclick="irAReset()" class="btn-text">¿Olvidaste tu contraseña?</button>
+    </div>
+  </div>
+  <div class="auth-foot">
+    <button type="button" onclick="irARegistro()" class="btn-secondary">Registrarse</button>
+  </div>
+</div>
+
+<div id="page-registro" class="page">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_2.png" alt="CONALEP" class="auth-logo"/>
+      <p class="reset-heading">Crear cuenta</p>
+      <p class="reset-desc">Utiliza tu correo institucional para registrarte en la plataforma de CONALEP Plantel 207.</p>
+      <div class="field-block">
+        <label class="field-label" for="reg-correo">Correo institucional</label>
+        <div class="field-wrap">
+          <input id="reg-correo" type="email" placeholder="usuario@chih.conalep.edu.mx" autocomplete="email" class="field-input" oninput="validarCorreo(this)"/>
+          <i class="ph ph-envelope field-ico"></i>
+        </div>
+        <p id="reg-correo-error" class="field-msg">El correo debe pertenecer al dominio @chih.conalep.edu.mx</p>
+      </div>
+      <div class="field-block last">
+        <label class="field-label" for="reg-pass">Contraseña</label>
+        <div class="field-wrap">
+          <input id="reg-pass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" class="field-input"/>
+          <button type="button" onclick="togglePass(this)" class="field-eye"><i class="ph ph-eye"></i></button>
+        </div>
+      </div>
+      <button type="button" onclick="registrar()" class="btn-primary">Crear cuenta</button>
+      <p id="reg-error" class="field-msg center mt-8"></p>
+    </div>
+  </div>
+  <div class="auth-foot">
+    <button type="button" onclick="irALogin()" class="btn-secondary">Iniciar sesión</button>
+  </div>
+</div>
+
+<div id="page-reset" class="page">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/Logotipos%20del%20Estado/Chihuahua_2.png" alt="CONALEP" class="auth-logo"/>
+      <p class="reset-heading">Restablecer contraseña</p>
+      <p class="reset-desc">Ingresa tu correo institucional y recibirás un enlace para restablecer tu contraseña.</p>
+      <div class="field-block last">
+        <label class="field-label" for="reset-correo">Correo institucional</label>
+        <div class="field-wrap">
+          <input id="reset-correo" type="email" placeholder="usuario@chih.conalep.edu.mx" autocomplete="email" class="field-input"/>
+          <i class="ph ph-envelope field-ico"></i>
+        </div>
+      </div>
+      <button type="button" onclick="enviarReset()" class="btn-primary">Enviar enlace</button>
+      <p id="reset-msg" class="field-msg center mt-8"></p>
+    </div>
+  </div>
+  <div class="auth-foot">
+    <button type="button" onclick="irALogin()" class="btn-secondary">Volver al inicio de sesión</button>
+  </div>
+</div>
+
+<div id="page-app" class="page">
+  <header class="app-header">
+    <button class="hdr-btn" onclick="abrirMenu()"><i class="ph ph-list"></i></button>
+    <img class="hdr-logo"
+      src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/Chihuahua/207.%20Ciudad%20Ju%C3%A1rez%20II/207.%20Ciudad%20Jua%CC%81rez%20II_h1.png"
+      alt="CONALEP Plantel 207 Ciudad Juárez II"/>
+
+  </header>
+
+  <div class="tab-content">
+    <div id="screen-aseo" class="tab-screen active">
+      <div id="aseo-body" class="aseo-body"></div>
+    </div>
+    <div id="screen-avisos" class="tab-screen">
+      <div class="avisos-body">
+        <div id="notif-card" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tab-bar">
+    <button class="tab-btn active" id="tab-aseo" onclick="cambiarTab('aseo')">
+      <i class="ph-fill ph-broom"></i>Limpieza
+    </button>
+    <button class="tab-btn" id="tab-avisos" onclick="cambiarTab('avisos')">
+      <i class="ph ph-bell"></i>Avisos
+    </button>
+  </nav>
+</div>
+
+<div id="sheet-filtro" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Filtro de búsqueda</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="sheet-scroll">
+    <div class="filter-option selected" data-filter="todos" onclick="seleccionarFiltro('todos')">
+      <div class="filter-option-ico"><i class="ph ph-users"></i></div>
+      <span class="filter-option-label">Todos los alumnos</span>
+      <i class="ph ph-check filter-option-check"></i>
+    </div>
+    <div class="filter-option" data-filter="dual" onclick="seleccionarFiltro('dual')">
+      <div class="filter-option-ico"><i class="ph ph-graduation-cap"></i></div>
+      <span class="filter-option-label">Sistema dual</span>
+      <i class="ph ph-check filter-option-check"></i>
+    </div>
+    <div id="filter-admin-opts" style="display:none">
+      <div class="filter-option" data-filter="pagado" onclick="seleccionarFiltro('pagado')">
+        <div class="filter-option-ico"><i class="ph ph-check-circle"></i></div>
+        <span class="filter-option-label">Aportación registrada</span>
+        <i class="ph ph-check filter-option-check"></i>
+      </div>
+      <div class="filter-option" data-filter="pendiente" onclick="seleccionarFiltro('pendiente')">
+        <div class="filter-option-ico"><i class="ph ph-clock"></i></div>
+        <span class="filter-option-label">Aportación pendiente</span>
+        <i class="ph ph-check filter-option-check"></i>
+      </div>
+      <div class="filter-option" data-filter="ausentes" onclick="seleccionarFiltro('ausentes')">
+        <div class="filter-option-ico"><i class="ph ph-calendar-x"></i></div>
+        <span class="filter-option-label">Ausencias pendientes</span>
+        <i class="ph ph-check filter-option-check"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sheet-orden" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Orden de rotación</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="orden-toolbar">
+    <span class="orden-info">Arrastra los equipos para cambiar el orden de rotación. Los alumnos <span class="st-badge" style="vertical-align:middle">Dual</span> no limpian lunes ni martes.</span>
+    <button class="orden-restore" onclick="_restaurarOrdenOriginal()">
+      <i class="ph ph-arrow-counter-clockwise"></i>Restablecer
+    </button>
+  </div>
+  <div id="sheet-orden-body" class="sheet-scroll"></div>
+</div>
+
+<div id="overlay" class="overlay" onclick="cerrarSheet()"></div>
+
+<div id="sheet-equipo" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Equipo de limpieza</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div id="sheet-equipo-body" class="sheet-scroll"></div>
+</div>
+
+<div id="sheet-ajuste" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p id="ajuste-title" class="sheet-title"></p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="ajuste-body">
+    <p id="ajuste-desc" class="ajuste-desc"></p>
+  </div>
+  <div class="ajuste-foot">
+    <button id="ajuste-action" class="ajuste-action cancel" onclick="confirmarAjuste()"></button>
+    <button class="ajuste-dismiss" onclick="cerrarSheet()">Cancelar</button>
+  </div>
+</div>
+
+<div id="sheet-historial" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Jornadas canceladas</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div id="sheet-historial-body" class="sheet-scroll"></div>
+</div>
+
+<div id="sheet-menu" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Mi cuenta</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="menu-user">
+    <div class="menu-avatar"><i class="ph ph-user"></i></div>
+    <div style="flex:1;min-width:0">
+      <p id="menu-name" class="menu-user-name"></p>
+      <span id="menu-email" class="menu-user-email"></span>
+    </div>
+  </div>
+  <div id="menu-admin-rows"></div>
+  <button class="menu-item danger-zone" onclick="cerrarSesion()">
+    <div class="menu-item-ico danger"><i class="ph ph-sign-out"></i></div>
+    <span class="menu-item-label danger">Cerrar sesión</span>
+  </button>
+</div>
+
+<div id="sheet-alumno" class="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hdr">
+    <p class="sheet-title">Perfil del alumno</p>
+    <button class="sheet-close-btn" onclick="cerrarSheet()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="sheet-scroll">
+    <div class="menu-user">
+      <div class="menu-avatar" id="alumno-avatar"><i class="ph ph-user"></i></div>
+      <div style="flex:1;min-width:0">
+        <p id="alumno-nombre" class="menu-user-name"></p>
+        <span id="alumno-no" class="menu-user-email"></span>
+      </div>
+    </div>
+    <div id="alumno-estado-pago" class="sheet-row">
+      <div class="sr-icon" id="alumno-pago-ico"><i class="ph ph-money"></i></div>
+      <div class="sr-info">
+        <p class="sr-name">Aportación grupal</p>
+        <p id="alumno-pago-desc" class="sr-you"></p>
+      </div>
+      <button id="alumno-pago-btn" class="hist-btn" type="button">
+        <i class="ph ph-check" id="alumno-pago-btn-ico"></i>
+        <span id="alumno-pago-btn-lbl">Validar</span>
+      </button>
+    </div>
+    <div id="alumno-ausencia-row" class="sheet-row">
+      <div class="sr-icon" id="alumno-aus-ico"><i class="ph ph-calendar-x"></i></div>
+      <div class="sr-info">
+        <p class="sr-name">Asistencia</p>
+        <p id="alumno-aus-desc" class="sr-you"></p>
+      </div>
+      <button id="alumno-aus-btn" class="hist-btn" type="button">
+        <i class="ph ph-plus" id="alumno-aus-btn-ico"></i>
+        <span id="alumno-aus-btn-lbl">Registrar</span>
+      </button>
+    </div>
+    <div id="alumno-deudas-list"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast">
+  <i id="toast-ico" class="ph toast-ico"></i>
+  <span id="toast-msg" class="toast-msg"></span>
+  <button id="toast-undo" class="toast-undo" onclick="deshacerAccion()">Deshacer</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
