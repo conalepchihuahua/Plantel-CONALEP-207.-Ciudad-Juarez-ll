@@ -254,7 +254,10 @@ function simular(alumnos, fechas) {
   const d = new Date(ROTACION_INICIO); d.setHours(0, 0, 0, 0);
   const h = new Date(max); h.setHours(0, 0, 0, 0);
 
-  // Round-robin pointer: advances strictly in order 0,1,...,N-1,0,1,...
+  const n = teams.length;
+  // Round-robin: nextIdx always points to who should clean next.
+  // On restricted days, if nextIdx is Dual we KEEP nextIdx unchanged and
+  // find the nearest non-Dual without advancing past the Dual team.
   let nextIdx = 0;
 
   while (d <= h) {
@@ -263,15 +266,22 @@ function simular(alumnos, fechas) {
       const allDual = teams.every(t => t.tieneMMFD);
       const restr = (dow === 1 || dow === 2) && !allDual;
 
-      // Find the next eligible team in round-robin order
       let chosen = null;
-      const n = teams.length;
-      for (let attempt = 0; attempt < n; attempt++) {
-        const candidate = teams[(nextIdx + attempt) % n];
-        if (restr && candidate.tieneMMFD) continue;
-        chosen = candidate;
-        nextIdx = (nextIdx + attempt + 1) % n;
-        break;
+      if (!restr || !teams[nextIdx].tieneMMFD) {
+        // Normal case: pick the team at nextIdx and advance
+        chosen = teams[nextIdx];
+        nextIdx = (nextIdx + 1) % n;
+      } else {
+        // Restricted day and nextIdx is Dual: find nearest non-Dual
+        // WITHOUT moving nextIdx (so Dual keeps its slot for later)
+        for (let attempt = 1; attempt < n; attempt++) {
+          const candidate = teams[(nextIdx + attempt) % n];
+          if (!candidate.tieneMMFD) {
+            chosen = candidate;
+            break;
+          }
+        }
+        // nextIdx stays the same — the Dual team will be next on a free day
       }
 
       if (chosen && set.has(fkey(d))) result.set(fkey(d), chosen);
@@ -301,7 +311,8 @@ function obtenerConteosLimpieza(alumnos, hastaFecha) {
   const d = new Date(ROTACION_INICIO); d.setHours(0, 0, 0, 0);
   const h = new Date(hastaFecha); h.setHours(0, 0, 0, 0);
 
-  // Round-robin pointer: same logic as simular()
+  const n = teams.length;
+  // Identical round-robin logic as simular()
   let nextIdx = 0;
 
   while (d < h) {
@@ -310,14 +321,19 @@ function obtenerConteosLimpieza(alumnos, hastaFecha) {
       const allDual = teams.every(t => t.tieneMMFD);
       const restr = (dow === 1 || dow === 2) && !allDual;
 
-      const n = teams.length;
       let chosen = null;
-      for (let attempt = 0; attempt < n; attempt++) {
-        const candidate = teams[(nextIdx + attempt) % n];
-        if (restr && candidate.tieneMMFD) continue;
-        chosen = candidate;
-        nextIdx = (nextIdx + attempt + 1) % n;
-        break;
+      if (!restr || !teams[nextIdx].tieneMMFD) {
+        chosen = teams[nextIdx];
+        nextIdx = (nextIdx + 1) % n;
+      } else {
+        for (let attempt = 1; attempt < n; attempt++) {
+          const candidate = teams[(nextIdx + attempt) % n];
+          if (!candidate.tieneMMFD) {
+            chosen = candidate;
+            break;
+          }
+        }
+        // nextIdx unchanged — Dual team retains its slot
       }
 
       if (chosen) counts.set(chosen.id, counts.get(chosen.id) + 1);
