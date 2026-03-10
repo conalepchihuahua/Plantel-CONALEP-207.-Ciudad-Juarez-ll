@@ -246,10 +246,6 @@ function simular(alumnos, fechas) {
 
   teams.forEach((t, i) => { t.id = 'T' + i; t.num = i + 1; });
 
-  const counts = new Map();
-  const lastSeq = new Map();
-  teams.forEach((t, i) => { counts.set(t.id, 0); lastSeq.set(t.id, i - teams.length); });
-
   const sorted = [...fechas].sort((a, b) => a - b);
   const max = sorted[sorted.length - 1];
   const set = new Set(fechas.map(f => fkey(f)));
@@ -258,7 +254,8 @@ function simular(alumnos, fechas) {
   const d = new Date(ROTACION_INICIO); d.setHours(0, 0, 0, 0);
   const h = new Date(max); h.setHours(0, 0, 0, 0);
 
-  let seq = 0;
+  // Round-robin pointer: advances strictly in order 0,1,...,N-1,0,1,...
+  let nextIdx = 0;
 
   while (d <= h) {
     const dow = d.getDay();
@@ -266,28 +263,18 @@ function simular(alumnos, fechas) {
       const allDual = teams.every(t => t.tieneMMFD);
       const restr = (dow === 1 || dow === 2) && !allDual;
 
-      let minCount = Infinity;
-      teams.forEach(t => {
-        if (restr && t.tieneMMFD) return;
-        const c = counts.get(t.id);
-        if (c < minCount) minCount = c;
-      });
-
-      let chosen = null; let oldestSeq = Infinity;
-      teams.forEach(t => {
-        if (restr && t.tieneMMFD) return;
-        if (counts.get(t.id) === minCount) {
-          const ls = lastSeq.get(t.id);
-          if (ls < oldestSeq) { oldestSeq = ls; chosen = t; }
-          else if (ls === oldestSeq && chosen && t.num < chosen.num) { oldestSeq = ls; chosen = t; }
-        }
-      });
-
-      if (chosen) {
-        counts.set(chosen.id, counts.get(chosen.id) + 1);
-        lastSeq.set(chosen.id, seq++);
-        if (set.has(fkey(d))) result.set(fkey(d), chosen);
+      // Find the next eligible team in round-robin order
+      let chosen = null;
+      const n = teams.length;
+      for (let attempt = 0; attempt < n; attempt++) {
+        const candidate = teams[(nextIdx + attempt) % n];
+        if (restr && candidate.tieneMMFD) continue;
+        chosen = candidate;
+        nextIdx = (nextIdx + attempt + 1) % n;
+        break;
       }
+
+      if (chosen && set.has(fkey(d))) result.set(fkey(d), chosen);
     }
     d.setDate(d.getDate() + 1);
   }
@@ -309,13 +296,13 @@ function obtenerConteosLimpieza(alumnos, hastaFecha) {
 
   teams.forEach((t, i) => { t.id = 'T' + i; });
   const counts = new Map();
-  const lastSeq = new Map();
-  teams.forEach((t, i) => { counts.set(t.id, 0); lastSeq.set(t.id, i - teams.length); });
+  teams.forEach(t => counts.set(t.id, 0));
 
   const d = new Date(ROTACION_INICIO); d.setHours(0, 0, 0, 0);
   const h = new Date(hastaFecha); h.setHours(0, 0, 0, 0);
 
-  let seq = 0;
+  // Round-robin pointer: same logic as simular()
+  let nextIdx = 0;
 
   while (d < h) {
     const dow = d.getDay();
@@ -323,27 +310,17 @@ function obtenerConteosLimpieza(alumnos, hastaFecha) {
       const allDual = teams.every(t => t.tieneMMFD);
       const restr = (dow === 1 || dow === 2) && !allDual;
 
-      let minCount = Infinity;
-      teams.forEach(t => {
-        if (restr && t.tieneMMFD) return;
-        const c = counts.get(t.id);
-        if (c < minCount) minCount = c;
-      });
-
-      let chosen = null; let oldestSeq = Infinity;
-      teams.forEach((t, i) => {
-        if (restr && t.tieneMMFD) return;
-        if (counts.get(t.id) === minCount) {
-          const ls = lastSeq.get(t.id);
-          if (ls < oldestSeq) { oldestSeq = ls; chosen = t; }
-          else if (ls === oldestSeq && chosen && i < Number(chosen.id.replace('T', ''))) { oldestSeq = ls; chosen = t; }
-        }
-      });
-
-      if (chosen) {
-        counts.set(chosen.id, counts.get(chosen.id) + 1);
-        lastSeq.set(chosen.id, seq++);
+      const n = teams.length;
+      let chosen = null;
+      for (let attempt = 0; attempt < n; attempt++) {
+        const candidate = teams[(nextIdx + attempt) % n];
+        if (restr && candidate.tieneMMFD) continue;
+        chosen = candidate;
+        nextIdx = (nextIdx + attempt + 1) % n;
+        break;
       }
+
+      if (chosen) counts.set(chosen.id, counts.get(chosen.id) + 1);
     }
     d.setDate(d.getDate() + 1);
   }
