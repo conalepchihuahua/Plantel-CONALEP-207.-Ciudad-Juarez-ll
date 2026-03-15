@@ -218,8 +218,8 @@ input[type="password"]::-webkit-contacts-auto-fill-button,input[type="password"]
 }
 .card-header-info{display:flex;flex-direction:column;gap:4px}
 .card-date{font-size:11px;font-weight:700;letter-spacing:.7px;color:var(--gold);text-transform:uppercase}
-.card-title-row{display:flex;align-items:baseline;gap:8px}
-.card-title{font-size:14px;font-weight:600;color:var(--ink)}
+.card-title-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px}
+.card-title{font-size:14px;font-weight:600;color:var(--ink);flex:1 1 100%}
 .card-count{
   font-size:11px;font-weight:600;color:var(--ink-3);
   display:flex;align-items:center;gap:4px;
@@ -461,6 +461,7 @@ input[type="password"]::-webkit-contacts-auto-fill-button,input[type="password"]
 .equipo-stats{display:flex;align-items:center;gap:16px;padding:16px;margin:16px 16px 0;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--line)}
 .equipo-stats-ico{width:48px;height:48px;border-radius:var(--r-md);flex-shrink:0;background:var(--white);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ink-2)}
 .equipo-stats-desc{font-size:14px;font-weight:500;color:var(--ink-2);line-height:1.4}
+.equipo-stats-desc strong{color:var(--ink)}
 .logout-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:16px}
 .logout-ico{width:44px;height:44px;border-radius:50%;background:var(--maroon-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logout-ico i{font-size:20px;color:var(--maroon)}
@@ -1121,7 +1122,7 @@ function mkCard(cont,equipo,fecha,titulo,esCancelado,admin,teamNum){
   const k=equipo[0]?getEstudianteKey(equipo[0]):'';
   const limpiezas=_conteosEquipos.get(k)||0;
   const titleText=teamNum?`${titulo} (Equipo ${teamNum})`:titulo;
-  info.innerHTML=`<p class="card-date">${fstr(fecha)}</p><div class="card-title-row" style="flex-wrap:wrap;gap:6px"><p class="card-title" style="flex:1 1 100%">${titleText}</p><span class="card-count"><i class="ph ph-users"></i>${equipo.length} integrantes</span><span class="card-count"><i class="ph ph-clock-counter-clockwise"></i>${limpiezas} ${limpiezas===1?'turno registrado':'turnos registrados'}</span></div>`;
+  info.innerHTML=`<p class="card-date">${fstr(fecha)}</p><div class="card-title-row"><p class="card-title">${titleText}</p><span class="card-count"><i class="ph ph-users"></i>${equipo.length} integrantes</span><span class="card-count"><i class="ph ph-clock-counter-clockwise"></i>${limpiezas} ${limpiezas===1?'turno registrado':'turnos registrados'}</span></div>`;
   hdr.appendChild(info);
   if(admin){
     const ab=document.createElement('button');
@@ -1361,7 +1362,7 @@ function abrirEquipoSheet(){
     const k=targetA?getEstudianteKey(targetA):'';
     const limpiezas=_conteosEquipos.get(k)||0;
     const stats=document.createElement('div');stats.className='equipo-stats';
-    stats.innerHTML=`<div class="equipo-stats-ico"><i class="ph ph-clock-counter-clockwise"></i></div><div class="estado-info"><p class="estado-titulo">Registro de Limpieza</p><p class="equipo-stats-desc">Han participado en <strong style="color:var(--ink)">${limpiezas} ${limpiezas===1?'turno':'turnos'}</strong> en total.</p></div>`;
+    stats.innerHTML=`<div class="equipo-stats-ico"><i class="ph ph-clock-counter-clockwise"></i></div><div class="estado-info"><p class="estado-titulo">Registro de Limpieza</p><p class="equipo-stats-desc">Han participado en <strong>${limpiezas} ${limpiezas===1?'turno':'turnos'}</strong> en total.</p></div>`;
     body.appendChild(stats);
   }
   _equipoSheet.forEach((a,i)=>{
