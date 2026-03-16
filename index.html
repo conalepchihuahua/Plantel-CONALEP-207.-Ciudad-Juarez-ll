@@ -21,6 +21,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="https://js.puter.com/v2/"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -520,6 +521,46 @@ input[type="password"]::-webkit-contacts-auto-fill-button,input[type="password"]
   cursor:pointer;transition:background var(--t)
 }
 .toast-undo:active{background:rgba(255,255,255,.15)}
+#screen-chat{background:var(--bg);height:100%}
+.chat-body{flex:1;display:flex;flex-direction:column;height:100%;overflow:hidden;position:relative}
+.chat-messages{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 20px;display:flex;flex-direction:column;gap:16px}
+.chat-msg-wrap{display:flex;width:100%;animation:fadeInUp 0.3s ease-out forwards}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg-wrap.user{justify-content:flex-end}
+.chat-msg-wrap.ai{justify-content:flex-start}
+.chat-msg{
+  max-width:85%;padding:10px 14px;border-radius:var(--r-md);
+  font-size:14px;line-height:1.45;word-wrap:break-word
+}
+.chat-msg.user{background:var(--green);color:var(--white);border-bottom-right-radius:4px}
+.chat-msg.ai{background:var(--white);color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:4px;box-shadow:var(--shadow-sm)}
+.chat-input-area{
+  flex-shrink:0;padding:12px 16px;
+  background:var(--white);border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:max(12px,env(safe-area-inset-bottom));
+  z-index:10;
+}
+.chat-input-wrap{
+  flex:1;position:relative;display:flex;align-items:center;
+}
+.chat-input{
+  width:100%;height:44px;background:var(--bg);
+  border:1.5px solid var(--line);border-radius:var(--r-xl);
+  padding:0 48px 0 16px;
+  font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;color:var(--ink);
+  outline:none;appearance:none;transition:border-color var(--t),background var(--t);
+}
+.chat-input::placeholder{color:var(--ink-3);font-weight:400}
+.chat-send-btn{
+  position:absolute;right:4px;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;border-radius:50%;border:none;
+  background:var(--green);color:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:transform var(--t),opacity var(--t);
+}
+.chat-send-btn:hover{opacity:.9}
+.chat-send-btn i{font-size:18px;}
 </style>
 </head>
 <body>
@@ -650,11 +691,23 @@ input[type="password"]::-webkit-contacts-auto-fill-button,input[type="password"]
         <img src="https://raw.githubusercontent.com/conalepchihuahua/Plantel-CONALEP-207.-Ciudad-Juarez-ll/refs/heads/main/CALENDARIO_2025_2026_TIPO_A%20(1).png" class="cal-img" alt="Calendario Escolar 2025-2026"/>
       </div>
     </div>
+    <div id="screen-chat" class="tab-screen">
+      <div class="chat-body">
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-area">
+          <div class="chat-input-wrap">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Pregunta algo sobre el plantel..." onkeypress="handleChatKeyPress(event)"/>
+            <button id="chat-send-btn" class="chat-send-btn" onclick="sendChatMessage()"><i class="ph-fill ph-paper-plane-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <nav class="tab-bar">
     <button class="tab-btn active" id="tab-inicio" onclick="cambiarTab('inicio')"><i class="ph-fill ph-house"></i>Inicio</button>
     <button class="tab-btn" id="tab-aseo" onclick="cambiarTab('aseo')"><i class="ph ph-broom"></i>Limpieza</button>
     <button class="tab-btn" id="tab-cred" onclick="cambiarTab('cred')"><i class="ph ph-identification-card"></i>Credencial</button>
+    <button class="tab-btn" id="tab-chat" onclick="cambiarTab('chat')"><i class="ph ph-chat-teardrop-text"></i>Chat</button>
   </nav>
 </div>
 
@@ -1522,6 +1575,42 @@ async function cargarCredencial(){
       document.getElementById('cred-carrera').textContent='Usuario sin registro de alumno';
     }
   }catch{document.getElementById('cred-nombre').textContent='Error al cargar';}
+}
+
+function appendMessage(role,text){
+  const container=document.getElementById('chat-messages');
+  const wrap=document.createElement('div');
+  wrap.className='chat-msg-wrap '+role;
+  const msg=document.createElement('div');
+  msg.className='chat-msg '+role;
+  msg.textContent=text;
+  wrap.appendChild(msg);
+  container.appendChild(wrap);
+  container.scrollTop=container.scrollHeight;
+  return wrap;
+}
+function handleChatKeyPress(e){
+  if(e.key==='Enter')sendChatMessage();
+}
+async function sendChatMessage(){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text)return;
+  
+  input.value='';
+  appendMessage('user',text);
+  
+  const btn=document.getElementById('chat-send-btn');
+  btn.classList.add('loading');
+  
+  try{
+    const response=await puter.ai.chat(text);
+    appendMessage('ai',response.message.content);
+  }catch(err){
+    appendMessage('ai','Hubo un problema de conexión con la IA. Asegúrate de permitir las "ventanas emergentes" o Popups en tu navegador para poder iniciar sesión.');
+    console.error('Puter AI error:',err);
+  }
+  btn.classList.remove('loading');
 }
 
 async function abrirAlumnoSheet(a,fecha){
